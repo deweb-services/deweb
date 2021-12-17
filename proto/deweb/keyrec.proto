@@ -1,0 +1,14 @@
+syntax = "proto3";
+package dewebservices.deweb.deweb;
+option go_package = "github.com/deweb-services/deweb/x/deweb/types";
+
+message UserKeyRec {
+  string creator = 1;
+  string message = 2;
+  string chain = 3;
+  bool deleted = 4;
+}
+
+message RecordsToUser {
+  repeated string records = 1;
+}

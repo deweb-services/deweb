@@ -11769,6 +11769,144 @@ paths:
           type: boolean
       tags:
         - Query
+  /deweb-services/dewebchain/dewebchain/filterUserKeyRecords:
+    get:
+      summary: Queries a list of filterUserKeyRecords items.
+      operationId: DewebservicesDewebDewebFilterUserKeyRecords
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              records:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uuid:
+                      type: string
+                    message:
+                      type: string
+                    chain:
+                      type: string
+                    deleted:
+                      type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: address
+          in: query
+          required: false
+          type: string
+        - name: chain
+          in: query
+          required: false
+          type: string
+        - name: deleted
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /deweb-services/dewebchain/dewebchain/getKeyRecord:
+    get:
+      summary: Queries a list of getKeyRecord items.
+      operationId: DewebservicesDewebDewebGetKeyRecord
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              uuid:
+                type: string
+              message:
+                type: string
+              chain:
+                type: string
+              deleted:
+                type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: uuid
+          in: query
+          required: false
+          type: string
+      tags:
+        - Query
+  /deweb-services/dewebchain/dewebchain/getUserKeyRecords:
+    get:
+      summary: Queries a list of getUserKeyRecords items.
+      operationId: DewebservicesDewebDewebGetUserKeyRecords
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              uuids:
+                type: array
+                items:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: address
+          in: query
+          required: false
+          type: string
+      tags:
+        - Query
   /ibc/apps/transfer/v1/denom_traces:
     get:
       summary: DenomTraces queries all denomination traces.
@@ -19650,6 +19788,44 @@ definitions:
     description: >-
       MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount
       response type.
+  dewebservices.deweb.deweb.MsgDeleteKeyResponse:
+    type: object
+  dewebservices.deweb.deweb.MsgSaveUserResponse:
+    type: object
+  dewebservices.deweb.deweb.QueryFilterUserKeyRecordsResponse:
+    type: object
+    properties:
+      records:
+        type: array
+        items:
+          type: object
+          properties:
+            uuid:
+              type: string
+            message:
+              type: string
+            chain:
+              type: string
+            deleted:
+              type: boolean
+  dewebservices.deweb.deweb.QueryGetKeyRecordResponse:
+    type: object
+    properties:
+      uuid:
+        type: string
+      message:
+        type: string
+      chain:
+        type: string
+      deleted:
+        type: boolean
+  dewebservices.deweb.deweb.QueryGetUserKeyRecordsResponse:
+    type: object
+    properties:
+      uuids:
+        type: array
+        items:
+          type: string
   ibc.applications.transfer.v1.DenomTrace:
     type: object
     properties:

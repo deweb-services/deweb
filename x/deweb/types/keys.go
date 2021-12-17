@@ -15,6 +15,12 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_deweb"
+
+	// RecordsKey defines prefix for users storage. Here we get record by UUID
+	RecordsKey = "records-"
+
+	// UsersRecords defines prefix for storage where we store mapping between user and list of records uuids
+	UsersRecords = "users-"
 )
 
 func KeyPrefix(p string) []byte {

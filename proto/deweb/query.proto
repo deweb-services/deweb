@@ -9,7 +9,51 @@ option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 
 // Query defines the gRPC querier service.
 service Query {
-    // this line is used by starport scaffolding # 2
+	// Queries a list of getKeyRecord items.
+	rpc GetKeyRecord(QueryGetKeyRecordRequest) returns (QueryGetKeyRecordResponse) {
+		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/getKeyRecord";
+	}
+
+	// Queries a list of getUserKeyRecords items.
+	rpc GetUserKeyRecords(QueryGetUserKeyRecordsRequest) returns (QueryGetUserKeyRecordsResponse) {
+		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/getUserKeyRecords";
+	}
+
+	// Queries a list of filterUserKeyRecords items.
+	rpc FilterUserKeyRecords(QueryFilterUserKeyRecordsRequest) returns (QueryFilterUserKeyRecordsResponse) {
+		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/filterUserKeyRecords";
+	}
+
+	// this line is used by starport scaffolding # 2
+}
+
+message QueryGetKeyRecordRequest {
+	string uuid = 1;
+}
+
+message QueryGetKeyRecordResponse {
+	string uuid = 1;
+	string message = 2;
+	string chain = 3;
+	bool deleted = 4;
+}
+
+message QueryGetUserKeyRecordsRequest {
+	string address = 1;
+}
+
+message QueryGetUserKeyRecordsResponse {
+	repeated string uuids = 1;
+}
+
+message QueryFilterUserKeyRecordsRequest {
+	string address = 1;
+	string chain = 2;
+	bool deleted = 3;
+}
+
+message QueryFilterUserKeyRecordsResponse {
+	repeated QueryGetKeyRecordResponse records = 1;
 }
 
 // this line is used by starport scaffolding # 3
