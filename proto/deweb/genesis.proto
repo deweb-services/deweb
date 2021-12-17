@@ -1,0 +1,11 @@
+syntax = "proto3";
+package dewebservices.deweb.deweb;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/deweb-services/deweb/x/deweb/types";
+
+// GenesisState defines the deweb module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+}
