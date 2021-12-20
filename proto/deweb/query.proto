@@ -9,51 +9,33 @@ option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 
 // Query defines the gRPC querier service.
 service Query {
-	// Queries a list of getKeyRecord items.
-	rpc GetKeyRecord(QueryGetKeyRecordRequest) returns (QueryGetKeyRecordResponse) {
-		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/getKeyRecord";
-	}
-
-	// Queries a list of getUserKeyRecords items.
-	rpc GetUserKeyRecords(QueryGetUserKeyRecordsRequest) returns (QueryGetUserKeyRecordsResponse) {
-		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/getUserKeyRecords";
-	}
-
 	// Queries a list of filterUserKeyRecords items.
-	rpc FilterUserKeyRecords(QueryFilterUserKeyRecordsRequest) returns (QueryFilterUserKeyRecordsResponse) {
-		option (google.api.http).get = "/deweb-services/dewebchain/dewebchain/filterUserKeyRecords";
+	rpc FilterUserWalletRecords(QueryFilterUserWalletRecordsRequest) returns (QueryFilterUserWalletRecordsResponse) {
+		option (google.api.http).get = "/deweb/external_wallets/v1beta1/list";
 	}
 
 	// this line is used by starport scaffolding # 2
 }
 
-message QueryGetKeyRecordRequest {
-	string uuid = 1;
+message WalletRecordResponse {
+	string owner = 1;
+	string address = 2;
+	string encrypted_key = 3;
+	string chain = 4;
+	bool deleted = 5;
 }
 
-message QueryGetKeyRecordResponse {
-	string uuid = 1;
-	string message = 2;
+message QueryFilterUserWalletRecordsRequest {
+	string owner = 1;
+	string address = 2;
 	string chain = 3;
 	bool deleted = 4;
+	int32 limit = 5;
+	int32 offset = 6;
 }
 
-message QueryGetUserKeyRecordsRequest {
-	string address = 1;
-}
-
-message QueryGetUserKeyRecordsResponse {
-	repeated string uuids = 1;
-}
-
-message QueryFilterUserKeyRecordsRequest {
-	string address = 1;
-	string chain = 2;
-	bool deleted = 3;
-}
-
-message QueryFilterUserKeyRecordsResponse {
-	repeated QueryGetKeyRecordResponse records = 1;
+message QueryFilterUserWalletRecordsResponse {
+	repeated WalletRecordResponse records = 1;
 }
 
 // this line is used by starport scaffolding # 3

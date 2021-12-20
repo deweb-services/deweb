@@ -8,7 +8,7 @@ starport scaffold chain gitlab.com/deweb-services/deweb-chain
 
 Create messages
 ```
-starport scaffold message save_user message chain --module deweb-chain
+starport scaffold message save_wallet message chain --module deweb-chain
 starport scaffold message delete_key uuid --module deweb-chain
 ```
 
@@ -17,6 +17,31 @@ Create queries
 starport scaffold query get_key_record uuid --response message --module deweb-chain
 starport scaffold query get_user_key_records address --response uuids --module deweb-chain
 starport scaffold query filter_user_key_records address chain deleted --response uuids --module deweb-chain
+```
+
+## API
+```
+/deweb/external_wallets/v1beta1/list
+?owner=deweb1z3z7lgfawp22mktkhxav5nr8g35m20ddpc4txj // фильтр по овнеру, мандатори
+&address=deweb1z3z7lgfawp22mktkhxav5nr8g35m20ddpc4txj // это фильтр по полю address, может быть адресом любой сети, optional
+&chain=cosmos // optional, default: return all chains
+&deleted=true // optional, default: false
+&limit=1000 // optional, default: 10
+&page=1 // optional, default: 1
+```
+
+Response:
+```
+{
+    "records": [
+        {
+            "address": "",
+            "encrypted_key": "",
+            "chain": "",
+            "deleted": true
+        }
+    ]
+}
 ```
 
 ## Test cases from console
@@ -41,9 +66,9 @@ Test commands
 Created account "alice" with address "cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t"
 Created account "bob" with address "cosmos16vtqmpfd3w08awp2t608s9475747rn4ljk6ja9"
 
-~/go/bin/dewebd tx deweb save-user supermsg cosmos --from alice --chain-id deweb
-~/go/bin/dewebd tx deweb save-user superuser2 sia --from alice --chain-id deweb
-~/go/bin/dewebd tx deweb save-user superbob sia --from bob --chain-id deweb
+~/go/bin/dewebd tx deweb save-wallet supermsg cosmos --from alice --chain-id deweb
+~/go/bin/dewebd tx deweb save-wallet superuser2 sia --from alice --chain-id deweb
+~/go/bin/dewebd tx deweb save-wallet superbob sia --from bob --chain-id deweb
 
 ~/go/bin/dewebd q deweb get-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t
 uuids:
@@ -57,7 +82,7 @@ uuids:
 ~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" true
 ~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t cosmos true
 
-~/go/bin/dewebd tx deweb delete-key 65e0dcea-5cde-11ec-b160-acde48001122 --from alice --chain-id deweb
+~/go/bin/dewebd tx deweb delete-wallet 65e0dcea-5cde-11ec-b160-acde48001122 --from alice --chain-id deweb
 
 ~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" true
 ~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" false

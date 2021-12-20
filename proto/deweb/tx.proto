@@ -7,26 +7,27 @@ option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc SaveUser(MsgSaveUser) returns (MsgSaveUserResponse);
-  rpc DeleteKey(MsgDeleteKey) returns (MsgDeleteKeyResponse);
+  rpc SaveWallet(MsgSaveWallet) returns (MsgSaveWalletResponse);
+  rpc DeleteWallet(MsgDeleteWallet) returns (MsgDeleteWalletResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
-message MsgSaveUser {
+message MsgSaveWallet {
   string creator = 1;
-  string message = 2;
-  string chain = 3;
+  string address = 2;
+  string encrypted_key = 3;
+  string chain = 4;
 }
 
-message MsgSaveUserResponse {
+message MsgSaveWalletResponse {
 }
 
-message MsgDeleteKey {
+message MsgDeleteWallet {
   string creator = 1;
-  string uuid = 2;
+  string address = 2;
 }
 
-message MsgDeleteKeyResponse {
+message MsgDeleteWalletResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

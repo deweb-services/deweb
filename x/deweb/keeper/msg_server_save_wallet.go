@@ -8,42 +8,41 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/deweb-services/deweb/x/deweb/types"
-	"github.com/google/uuid"
 )
 
 const MaxMessageLength = 1000
 
-func (k msgServer) SaveUser(goCtx context.Context, msg *types.MsgSaveUser) (*types.MsgSaveUserResponse, error) {
+func (k msgServer) SaveWallet(goCtx context.Context, msg *types.MsgSaveWallet) (*types.MsgSaveWalletResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	message := msg.GetMessage()
-	if len(message) > MaxMessageLength {
+	encryptedKey := msg.GetEncryptedKey()
+	if len(encryptedKey) > MaxMessageLength {
 		return nil, fmt.Errorf("received mesage greater then maximum lengtx %d", MaxMessageLength)
 	}
-	address := msg.GetCreator()
+	creator := msg.GetCreator()
 	if msg.Chain == "" {
 		// Maybe create a list of allowed chains
 		return nil, fmt.Errorf("parameter chain required")
 	}
-	id, _ := uuid.NewUUID()
-	userRec := types.UserKeyRec{
-		Creator: address,
-		Message: message,
-		Chain:   msg.Chain,
+	userRec := types.UserWalletRec{
+		Address:      msg.Address,
+		EncryptedKey: encryptedKey,
+		Chain:        msg.Chain,
 	}
-	err := k.writeUserKeyRecord(ctx, userRec, id.String())
+	recordID := creator + "_" + userRec.Address
+	err := k.writeUserKeyRecord(ctx, userRec, recordID)
 	if err != nil {
 		return nil, fmt.Errorf("error writing  message to store: %w", err)
 	}
-	err = k.appendUserRecordID(ctx, address, id.String())
+	err = k.appendUserRecordID(ctx, creator, recordID)
 	if err != nil {
 		return nil, fmt.Errorf("error appending created record to user records list: %w", err)
 	}
-	k.Logger(ctx).Error(fmt.Sprintf("[SaveUser] Saved message with id: %s: %s", id.String(), message))
+	k.Logger(ctx).Error(fmt.Sprintf("[SaveWallet] Saved encrypted key with id: %s: %s", recordID, encryptedKey))
 	// Update the post count
-	return &types.MsgSaveUserResponse{}, nil
+	return &types.MsgSaveWalletResponse{}, nil
 }
 
-func (k msgServer) writeUserKeyRecord(ctx sdk.Context, userRec types.UserKeyRec, idVal string) error {
+func (k msgServer) writeUserKeyRecord(ctx sdk.Context, userRec types.UserWalletRec, idVal string) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.RecordsKey))
 
 	recordValue, err := k.cdc.Marshal(&userRec)
@@ -64,6 +63,11 @@ func (k msgServer) appendUserRecordID(ctx sdk.Context, address string, recordID 
 	}
 	if existRecords == nil {
 		existRecords = make([]string, 0, 1)
+	}
+	for _, recID := range existRecords {
+		if recID == recordID {
+			return nil
+		}
 	}
 	existRecords = append(existRecords, recordID)
 	k.Logger(ctx).Error(fmt.Sprintf("[appendUserRecordID] user records: %s", strings.Join(existRecords, ",")))

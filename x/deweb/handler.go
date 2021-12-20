@@ -17,11 +17,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgSaveUser:
-			res, err := msgServer.SaveUser(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgSaveWallet:
+			res, err := msgServer.SaveWallet(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeleteKey:
-			res, err := msgServer.DeleteKey(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDeleteWallet:
+			res, err := msgServer.DeleteWallet(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
 		default:

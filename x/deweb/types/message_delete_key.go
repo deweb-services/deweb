@@ -5,24 +5,24 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = &MsgDeleteKey{}
+var _ sdk.Msg = &MsgDeleteWallet{}
 
-func NewMsgDeleteKey(creator string, uuid string) *MsgDeleteKey {
-	return &MsgDeleteKey{
+func NewMsgDeleteKey(creator string, address string) *MsgDeleteWallet {
+	return &MsgDeleteWallet{
 		Creator: creator,
-		Uuid:    uuid,
+		Address: address,
 	}
 }
 
-func (msg *MsgDeleteKey) Route() string {
+func (msg *MsgDeleteWallet) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDeleteKey) Type() string {
-	return "DeleteKey"
+func (msg *MsgDeleteWallet) Type() string {
+	return "DeleteWallet"
 }
 
-func (msg *MsgDeleteKey) GetSigners() []sdk.AccAddress {
+func (msg *MsgDeleteWallet) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -30,12 +30,12 @@ func (msg *MsgDeleteKey) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgDeleteKey) GetSignBytes() []byte {
+func (msg *MsgDeleteWallet) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgDeleteKey) ValidateBasic() error {
+func (msg *MsgDeleteWallet) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

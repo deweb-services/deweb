@@ -8,17 +8,17 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgSaveUser{}, "deweb/SaveUser", nil)
-	cdc.RegisterConcrete(&MsgDeleteKey{}, "deweb/DeleteKey", nil)
+	cdc.RegisterConcrete(&MsgSaveWallet{}, "deweb/SaveWallet", nil)
+	cdc.RegisterConcrete(&MsgDeleteWallet{}, "deweb/DeleteWallet", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgSaveUser{},
+		&MsgSaveWallet{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgDeleteKey{},
+		&MsgDeleteWallet{},
 	)
 	// this line is used by starport scaffolding # 3
 

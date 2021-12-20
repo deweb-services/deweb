@@ -13,17 +13,48 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdFilterUserKeyRecords() *cobra.Command {
+func CmdFilterUserWalletRecords() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "filter-user-key-records [address] [chain] [deleted]",
-		Short: "Query filter_user_key_records",
-		Args:  cobra.ExactArgs(3),
+		Use:   "filter-user-wallet-records [owner] [address] [chain] [deleted] [limit] [offset]",
+		Short: "Query filter_user_wallet_records",
+		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			reqAddress := args[0]
-			reqChain := args[1]
-			reqDeleted, err := strconv.ParseBool(args[2])
-			if err != nil {
-				return fmt.Errorf("error processing parameter deleted, must be true/false")
+			reqOwner := args[0]
+
+			var reqAddress string
+			if len(args) > 1 {
+				reqAddress = args[1]
+			}
+
+			var reqChain string
+			if len(args) > 2 {
+				reqChain = args[2]
+			}
+
+			var reqDeleted bool
+			if len(args) > 3 {
+				reqDeleted, err = strconv.ParseBool(args[3])
+				if err != nil {
+					return fmt.Errorf("cannot parse parameter deleted: %w", err)
+				}
+			}
+
+			var reqLimit int64
+			if len(args) > 4 {
+				reqLimit, err = strconv.ParseInt(args[4], 10, 32)
+				if err != nil {
+					return fmt.Errorf("cannot parse parameter limit: %w", err)
+				}
+			} else {
+				reqLimit = 10
+			}
+
+			var reqOffset int64
+			if len(args) > 5 {
+				reqOffset, err = strconv.ParseInt(args[5], 10, 32)
+				if err != nil {
+					return fmt.Errorf("cannot parse parameter offset: %w", err)
+				}
 			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -33,14 +64,16 @@ func CmdFilterUserKeyRecords() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryFilterUserKeyRecordsRequest{
-
+			params := &types.QueryFilterUserWalletRecordsRequest{
+				Owner:   reqOwner,
 				Address: reqAddress,
 				Chain:   reqChain,
 				Deleted: reqDeleted,
+				Limit:   int32(reqLimit),
+				Offset:  int32(reqOffset),
 			}
 
-			res, err := queryClient.FilterUserKeyRecords(cmd.Context(), params)
+			res, err := queryClient.FilterUserWalletRecords(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

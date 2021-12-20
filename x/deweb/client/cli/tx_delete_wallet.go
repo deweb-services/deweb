@@ -13,24 +13,22 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdSaveUser() *cobra.Command {
+func CmdDeleteWallet() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "save-user [message] [chain]",
-		Short: "Broadcast message save_user",
-		Args:  cobra.ExactArgs(2),
+		Use:   "delete-wallet [address]",
+		Short: "Broadcast message delete_wallet",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argMessage := args[0]
-			argChain := args[1]
+			argAddress := args[0]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSaveUser(
+			msg := types.NewMsgDeleteKey(
 				clientCtx.GetFromAddress().String(),
-				argMessage,
-				argChain,
+				argAddress,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
