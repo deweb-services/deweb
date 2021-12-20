@@ -9,7 +9,33 @@ option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 
 // Query defines the gRPC querier service.
 service Query {
-    // this line is used by starport scaffolding # 2
+	// Queries a list of filterUserKeyRecords items.
+	rpc FilterUserWalletRecords(QueryFilterUserWalletRecordsRequest) returns (QueryFilterUserWalletRecordsResponse) {
+		option (google.api.http).get = "/deweb/external_wallets/v1beta1/list";
+	}
+
+	// this line is used by starport scaffolding # 2
+}
+
+message WalletRecordResponse {
+	string owner = 1;
+	string address = 2;
+	string encrypted_key = 3;
+	string chain = 4;
+	bool deleted = 5;
+}
+
+message QueryFilterUserWalletRecordsRequest {
+	string owner = 1;
+	string address = 2;
+	string chain = 3;
+	bool deleted = 4;
+	int32 limit = 5;
+	int32 offset = 6;
+}
+
+message QueryFilterUserWalletRecordsResponse {
+	repeated WalletRecordResponse records = 1;
 }
 
 // this line is used by starport scaffolding # 3

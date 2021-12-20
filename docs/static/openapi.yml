@@ -11769,6 +11769,78 @@ paths:
           type: boolean
       tags:
         - Query
+  /deweb/external_wallets/v1beta1/list:
+    get:
+      summary: Queries a list of filterUserKeyRecords items.
+      operationId: DewebservicesDewebDewebFilterUserWalletRecords
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              records:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    owner:
+                      type: string
+                    address:
+                      type: string
+                    encryptedKey:
+                      type: string
+                    chain:
+                      type: string
+                    deleted:
+                      type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: owner
+          in: query
+          required: false
+          type: string
+        - name: address
+          in: query
+          required: false
+          type: string
+        - name: chain
+          in: query
+          required: false
+          type: string
+        - name: deleted
+          in: query
+          required: false
+          type: boolean
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Query
   /ibc/apps/transfer/v1/denom_traces:
     get:
       summary: DenomTraces queries all denomination traces.
@@ -19650,6 +19722,41 @@ definitions:
     description: >-
       MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount
       response type.
+  dewebservices.deweb.deweb.MsgDeleteWalletResponse:
+    type: object
+  dewebservices.deweb.deweb.MsgSaveWalletResponse:
+    type: object
+  dewebservices.deweb.deweb.QueryFilterUserWalletRecordsResponse:
+    type: object
+    properties:
+      records:
+        type: array
+        items:
+          type: object
+          properties:
+            owner:
+              type: string
+            address:
+              type: string
+            encryptedKey:
+              type: string
+            chain:
+              type: string
+            deleted:
+              type: boolean
+  dewebservices.deweb.deweb.WalletRecordResponse:
+    type: object
+    properties:
+      owner:
+        type: string
+      address:
+        type: string
+      encryptedKey:
+        type: string
+      chain:
+        type: string
+      deleted:
+        type: boolean
   ibc.applications.transfer.v1.DenomTrace:
     type: object
     properties:
