@@ -8,15 +8,13 @@ starport scaffold chain gitlab.com/deweb-services/deweb-chain
 
 Create messages
 ```
-starport scaffold message save_wallet message chain --module deweb-chain
-starport scaffold message delete_key uuid --module deweb-chain
+starport scaffold message save_wallet private_key chain --module deweb
+starport scaffold message delete_wallet address --module deweb
 ```
 
 Create queries
 ```
-starport scaffold query get_key_record uuid --response message --module deweb-chain
-starport scaffold query get_user_key_records address --response uuids --module deweb-chain
-starport scaffold query filter_user_key_records address chain deleted --response uuids --module deweb-chain
+starport scaffold query filter_user_key_records owner address chain deleted limit offset --response uuids --module deweb
 ```
 
 ## API
@@ -27,7 +25,7 @@ starport scaffold query filter_user_key_records address chain deleted --response
 &chain=cosmos // optional, default: return all chains
 &deleted=true // optional, default: false
 &limit=1000 // optional, default: 10
-&page=1 // optional, default: 1
+&offset=1 // optional, default: 1
 ```
 
 Response:
@@ -35,6 +33,7 @@ Response:
 {
     "records": [
         {
+            "owner": "",
             "address": "",
             "encrypted_key": "",
             "chain": "",
@@ -44,11 +43,42 @@ Response:
 }
 ```
 
+## Commands
+Create record (transaction):
+```
+dewebd tx deweb save-wallet [address] [encrypted_key] [chain] [flags]
+```
+- address - address for which private key to store
+- encrypted_key - message with key to store
+- chain - from which chain is that address
+- flags - cosmos SDK flags
+
+After execution will set owner for this record - who sent transaction.
+
+Mark address removed (transaction):
+```
+dewebd tx deweb delete-wallet [address] [flags]
+```
+- address - address for which private key to store
+On execution check that this record owner sent transaction
+
+Filter for records:
+```
+dewebd query deweb filter-user-wallet-records [owner] [address] [chain] [deleted] [limit] [offset] [flags]
+```
+Mandatory attribute os only owner. To leave string attribute empty set "" on position
+- owner - address of owner for which to list records
+- address - get record for selected address
+- chain - filter addresses from chain
+- deleted - add removed records to list (default: false)
+- limit - limit for result
+- offset - offset of results list
+
 ## Test cases from console
 
 **Initial configuration for Cosmos SDK located in folder: cosmos_sdk_config in current repository**
 
-You must scaffold chain and then replace files in config and data home folder (by default located in ~/.deweb-chain).
+You must scaffold chain and then replace files in config and data home folder (by default located in ~/.deweb).
 And then replace generate files of blockchain with files in this repo.
 Or you can try to clone this repo, build binary and then set config hole folder via flag --home
 
@@ -62,31 +92,100 @@ starport chain init
 ```
 
 Test commands
+
+Created account "alice" with address "cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz"
+
+Created account "bob" with address "cosmos1z8yef05j2d3h6qzewdl68t48007xrmurztz7wy"
+
+Creating test records:
 ```
-Created account "alice" with address "cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t"
-Created account "bob" with address "cosmos16vtqmpfd3w08awp2t608s9475747rn4ljk6ja9"
-
-~/go/bin/dewebd tx deweb save-wallet supermsg cosmos --from alice --chain-id deweb
-~/go/bin/dewebd tx deweb save-wallet superuser2 sia --from alice --chain-id deweb
-~/go/bin/dewebd tx deweb save-wallet superbob sia --from bob --chain-id deweb
-
-~/go/bin/dewebd q deweb get-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t
-uuids:
-- 65e0dcea-5cde-11ec-b160-acde48001122
-- 81724728-5cde-11ec-b160-acde48001122
-
-~/go/bin/dewebd q deweb get-user-key-records cosmos16vtqmpfd3w08awp2t608s9475747rn4ljk6ja9
-uuids:
-- 8ab65676-5cde-11ec-b160-acde48001122
-
-~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" true
-~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t cosmos true
-
-~/go/bin/dewebd tx deweb delete-wallet 65e0dcea-5cde-11ec-b160-acde48001122 --from alice --chain-id deweb
-
-~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" true
-~/go/bin/dewebd q deweb filter-user-key-records cosmos1naleh8tvj6ks63270mqdt7wqtee877plrvmk3t "" false
+~/go/bin/dewebd tx deweb save-wallet cosmosaddress private_cosmos_key cosmos --from alice --chain-id deweb
+~/go/bin/dewebd tx deweb save-wallet siaaddress private_sia_key sia --from alice --chain-id deweb
+~/go/bin/dewebd tx deweb save-wallet bobaddress private_bob_key sia --from bob --chain-id deweb
 ```
+
+Get records by owner address
+```
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1z8yef05j2d3h6qzewdl68t48007xrmurztz7wy
+records:
+- address: bobaddress
+  chain: sia
+  deleted: false
+  encrypted_key: private_bob_key
+  owner: cosmos1z8yef05j2d3h6qzewdl68t48007xrmurztz7wy
+
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+records:
+- address: cosmosaddress
+  chain: cosmos
+  deleted: false
+  encrypted_key: private_cosmos_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+- address: siaaddress
+  chain: sia
+  deleted: false
+  encrypted_key: private_sia_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+```
+
+Get records for chain cosmos:
+```
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz "" cosmos
+records:
+- address: cosmosaddress
+  chain: cosmos
+  deleted: false
+  encrypted_key: private_cosmos_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+```
+
+Remove records:
+```
+~/go/bin/dewebd tx deweb delete-wallet siaaddress --from alice --chain-id deweb
+```
+
+Check that records marked as removed:
+```
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+records:
+- address: cosmosaddress
+  chain: cosmos
+  deleted: false
+  encrypted_key: private_cosmos_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz "" "" true
+records:
+- address: cosmosaddress
+  chain: cosmos
+  deleted: false
+  encrypted_key: private_cosmos_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+- address: siaaddress
+  chain: sia
+  deleted: true
+  encrypted_key: private_sia_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+```
+
+Limits and offsets:
+```
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz "" "" true 1
+records:
+- address: cosmosaddress
+  chain: cosmos
+  deleted: false
+  encrypted_key: private_cosmos_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+
+~/go/bin/dewebd q deweb filter-user-wallet-records cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz "" "" true 1 1
+records:
+- address: siaaddress
+  chain: sia
+  deleted: true
+  encrypted_key: private_sia_key
+  owner: cosmos1r5xmpu03ne6pg262qy3ds0y7ujnvkpe9lsh9cz
+  ```
 
 
 ## Get started
