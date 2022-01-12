@@ -1,13 +1,13 @@
 accounts:
   - name: alice
-    coins: ["2000000000000udws", "1000000wsc"]
+    coins: ["100000000000000udws"]
   - name: bob
-    coins: ["100000000udws"]
+    coins: ["1000000000udws", "10000000000000000000000000000000uwsc", "1000000000000uwhns"]
 build:
   binary: "dewebd"
 validator:
-  name: alice
-  staked: "100000000udws"
+  name: bob
+  staked: "10000000udws"
 client:
   openapi:
     path: "docs/static/openapi.yml"
@@ -28,7 +28,13 @@ genesis:
           - amount: "10000000"
             denom: "udws"
     mint:
+      minter:
+        inflation: "0.000000000000000000"
       params:
+        blocks_per_year: "5256000"
+        inflation_max: "0.000000000000000000"
+        inflation_min: "0.000000000000000000"
+        inflation_rate_change: "0.000000000000000000"
         mint_denom: "udws"
     token: 
       params: 
