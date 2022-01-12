@@ -55,7 +55,7 @@ To know the version:
 ```
 build/dewebd version
 ```
-The output must be `v1.0`
+The output must be `1.0`
 
 Is the version match, now you have two options
 * Move the binary to the /usr/local/bin path with: `sudo mv build/dewebd /usr/local/bin/`
