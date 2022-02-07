@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/deweb-services/deweb/x/deweb/keeper"
 	"github.com/deweb-services/deweb/x/deweb/types"
 	"github.com/stretchr/testify/require"
@@ -27,12 +28,25 @@ func DewebKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
-	k := keeper.NewKeeper(
-		codec.NewProtoCodec(registry),
+	cdc := codec.NewProtoCodec(registry)
+
+	paramsSubspace := typesparams.NewSubspace(cdc,
+		types.Amino,
 		storeKey,
 		memStoreKey,
+		"DewebParams",
+	)
+	k := keeper.NewKeeper(
+		cdc,
+		storeKey,
+		memStoreKey,
+		paramsSubspace,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
+
+	// Initialize params
+	k.SetParams(ctx, types.DefaultParams())
+
 	return k, ctx
 }

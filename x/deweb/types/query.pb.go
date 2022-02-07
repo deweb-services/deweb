@@ -7,6 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types/query"
+	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -29,6 +30,89 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// QueryParamsRequest is request type for the Query/Params RPC method.
+type QueryParamsRequest struct {
+}
+
+func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
+func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsRequest) ProtoMessage()    {}
+func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fa3f738e95cca609, []int{0}
+}
+func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
+}
+func (m *QueryParamsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+type QueryParamsResponse struct {
+	// params holds all the parameters of this module.
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+}
+
+func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
+func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsResponse) ProtoMessage()    {}
+func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fa3f738e95cca609, []int{1}
+}
+func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
+}
+func (m *QueryParamsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
+
+func (m *QueryParamsResponse) GetParams() Params {
+	if m != nil {
+		return m.Params
+	}
+	return Params{}
+}
+
 type WalletRecordResponse struct {
 	Owner        string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	Address      string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
@@ -41,7 +125,7 @@ func (m *WalletRecordResponse) Reset()         { *m = WalletRecordResponse{} }
 func (m *WalletRecordResponse) String() string { return proto.CompactTextString(m) }
 func (*WalletRecordResponse) ProtoMessage()    {}
 func (*WalletRecordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fa3f738e95cca609, []int{0}
+	return fileDescriptor_fa3f738e95cca609, []int{2}
 }
 func (m *WalletRecordResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -118,7 +202,7 @@ func (m *QueryFilterUserWalletRecordsRequest) Reset()         { *m = QueryFilter
 func (m *QueryFilterUserWalletRecordsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryFilterUserWalletRecordsRequest) ProtoMessage()    {}
 func (*QueryFilterUserWalletRecordsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fa3f738e95cca609, []int{1}
+	return fileDescriptor_fa3f738e95cca609, []int{3}
 }
 func (m *QueryFilterUserWalletRecordsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -197,7 +281,7 @@ func (m *QueryFilterUserWalletRecordsResponse) Reset()         { *m = QueryFilte
 func (m *QueryFilterUserWalletRecordsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryFilterUserWalletRecordsResponse) ProtoMessage()    {}
 func (*QueryFilterUserWalletRecordsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fa3f738e95cca609, []int{2}
+	return fileDescriptor_fa3f738e95cca609, []int{4}
 }
 func (m *QueryFilterUserWalletRecordsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -234,6 +318,8 @@ func (m *QueryFilterUserWalletRecordsResponse) GetRecords() []*WalletRecordRespo
 }
 
 func init() {
+	proto.RegisterType((*QueryParamsRequest)(nil), "dewebservices.deweb.deweb.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "dewebservices.deweb.deweb.QueryParamsResponse")
 	proto.RegisterType((*WalletRecordResponse)(nil), "dewebservices.deweb.deweb.WalletRecordResponse")
 	proto.RegisterType((*QueryFilterUserWalletRecordsRequest)(nil), "dewebservices.deweb.deweb.QueryFilterUserWalletRecordsRequest")
 	proto.RegisterType((*QueryFilterUserWalletRecordsResponse)(nil), "dewebservices.deweb.deweb.QueryFilterUserWalletRecordsResponse")
@@ -242,35 +328,40 @@ func init() {
 func init() { proto.RegisterFile("deweb/query.proto", fileDescriptor_fa3f738e95cca609) }
 
 var fileDescriptor_fa3f738e95cca609 = []byte{
-	// 440 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x41, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0x4d, 0x93, 0xea, 0xa8, 0x07, 0x87, 0xa2, 0x63, 0x90, 0x25, 0xa4, 0x45, 0x82,
-	0xd8, 0x1d, 0x5a, 0xef, 0x0a, 0x1e, 0x14, 0xf1, 0xe4, 0x82, 0x08, 0x5e, 0xca, 0xec, 0xee, 0x6b,
-	0x3a, 0x38, 0x99, 0xd9, 0xcc, 0x9b, 0x34, 0xdd, 0xab, 0x9f, 0x40, 0xf0, 0xe8, 0xc7, 0xf0, 0x4b,
-	0xf4, 0x58, 0xf4, 0xe2, 0x51, 0x12, 0x3f, 0x88, 0x64, 0x26, 0x09, 0x0a, 0x26, 0x68, 0x2f, 0xbb,
-	0xfc, 0xff, 0xfb, 0xde, 0x7f, 0x7e, 0x3b, 0xef, 0xd1, 0xdb, 0x25, 0x4c, 0x20, 0x17, 0xa3, 0x31,
-	0xb8, 0x3a, 0xad, 0x9c, 0xf5, 0x96, 0xdd, 0x0b, 0x16, 0x82, 0x3b, 0x53, 0x05, 0x60, 0x1a, 0x54,
-	0x7c, 0x76, 0xee, 0x0f, 0xac, 0x1d, 0x68, 0x10, 0xb2, 0x52, 0x42, 0x1a, 0x63, 0xbd, 0xf4, 0xca,
-	0x1a, 0x8c, 0x8d, 0x9d, 0x87, 0x85, 0xc5, 0xa1, 0x45, 0x91, 0x4b, 0x84, 0x98, 0x28, 0xce, 0x0e,
-	0x73, 0xf0, 0xf2, 0x50, 0x54, 0x72, 0xa0, 0x4c, 0x28, 0x8e, 0xb5, 0xbd, 0xcf, 0x84, 0xee, 0xbe,
-	0x95, 0x5a, 0x83, 0xcf, 0xa0, 0xb0, 0xae, 0xcc, 0x00, 0x2b, 0x6b, 0x10, 0xd8, 0x2e, 0x6d, 0xd9,
-	0x89, 0x01, 0xc7, 0x49, 0x97, 0xf4, 0xaf, 0x67, 0x51, 0x30, 0x4e, 0x77, 0x64, 0x59, 0x3a, 0x40,
-	0xe4, 0x5b, 0xc1, 0x5f, 0x4a, 0xb6, 0x47, 0x6f, 0x81, 0x29, 0x5c, 0x5d, 0x79, 0x28, 0x8f, 0xdf,
-	0x43, 0xcd, 0x9b, 0xe1, 0xfb, 0xcd, 0x95, 0xf9, 0x0a, 0xea, 0x79, 0x68, 0x71, 0x2a, 0x95, 0xe1,
-	0xdb, 0x31, 0x34, 0x88, 0x79, 0x68, 0x09, 0x1a, 0x3c, 0x94, 0xbc, 0xd5, 0x25, 0xfd, 0x6b, 0xd9,
-	0x52, 0xf6, 0xbe, 0x10, 0xba, 0xf7, 0x7a, 0xfe, 0x03, 0xcf, 0x95, 0xf6, 0xe0, 0xde, 0x20, 0xb8,
-	0xdf, 0x61, 0x31, 0x83, 0xd1, 0x18, 0xd0, 0xff, 0x37, 0xec, 0x8a, 0xa3, 0xb9, 0x86, 0x63, 0xfb,
-	0x0f, 0x8e, 0x79, 0xbd, 0x56, 0x43, 0xe5, 0x03, 0x5f, 0x2b, 0x8b, 0x82, 0xdd, 0xa1, 0x6d, 0x7b,
-	0x72, 0x82, 0xe0, 0x79, 0x3b, 0xd8, 0x0b, 0xd5, 0x1b, 0xd1, 0xfd, 0xcd, 0xd0, 0x8b, 0x2b, 0x7e,
-	0x49, 0x77, 0x5c, 0xb4, 0x38, 0xe9, 0x36, 0xfb, 0x37, 0x8e, 0x44, 0xba, 0x76, 0xe4, 0xe9, 0xdf,
-	0x86, 0x94, 0x2d, 0xfb, 0x8f, 0xbe, 0x12, 0xda, 0x0a, 0x67, 0xb2, 0x0b, 0x42, 0xef, 0xae, 0x39,
-	0x98, 0x3d, 0xd9, 0x90, 0xff, 0x0f, 0xd7, 0xdc, 0x79, 0x7a, 0xe5, 0xfe, 0xc8, 0xdb, 0x7b, 0xf4,
-	0xe1, 0xdb, 0xcf, 0x4f, 0x5b, 0x0f, 0xd8, 0xbe, 0x88, 0xeb, 0x0e, 0xe7, 0x1e, 0x9c, 0x91, 0xfa,
-	0x78, 0x12, 0xca, 0x71, 0xb5, 0xa7, 0x5a, 0xa1, 0x7f, 0xf6, 0xe2, 0x62, 0x9a, 0x90, 0xcb, 0x69,
-	0x42, 0x7e, 0x4c, 0x13, 0xf2, 0x71, 0x96, 0x34, 0x2e, 0x67, 0x49, 0xe3, 0xfb, 0x2c, 0x69, 0xbc,
-	0x3b, 0x18, 0x28, 0x7f, 0x3a, 0xce, 0xd3, 0xc2, 0x0e, 0x63, 0xd2, 0xc1, 0x92, 0x69, 0x11, 0x7c,
-	0xbe, 0x78, 0xfb, 0xba, 0x02, 0xcc, 0xdb, 0x61, 0xd7, 0x1f, 0xff, 0x0a, 0x00, 0x00, 0xff, 0xff,
-	0x2e, 0x76, 0x0b, 0xc8, 0x65, 0x03, 0x00, 0x00,
+	// 527 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x6e, 0x13, 0x31,
+	0x10, 0x8e, 0xf3, 0x57, 0x70, 0xe1, 0x80, 0x89, 0x60, 0x89, 0xd0, 0x92, 0x6e, 0x2a, 0x14, 0x10,
+	0x59, 0xab, 0xe1, 0x4e, 0xa5, 0x1e, 0x40, 0x88, 0x0b, 0xac, 0x04, 0x48, 0x5c, 0x2a, 0x67, 0x77,
+	0xba, 0xb5, 0xd8, 0xac, 0x37, 0xb6, 0xd3, 0x34, 0x57, 0x9e, 0x00, 0xc1, 0x91, 0xc7, 0xe0, 0x25,
+	0x72, 0xac, 0xc4, 0x85, 0x13, 0x42, 0x09, 0x12, 0xaf, 0x81, 0xd6, 0xde, 0x44, 0x0d, 0x90, 0xf0,
+	0x73, 0x49, 0xf6, 0x1b, 0xcf, 0xf7, 0xcd, 0x37, 0x33, 0x36, 0xbe, 0x12, 0xc1, 0x18, 0xfa, 0x74,
+	0x38, 0x02, 0x39, 0xf1, 0x33, 0x29, 0xb4, 0x20, 0x37, 0x4c, 0x48, 0x81, 0x3c, 0xe1, 0x21, 0x28,
+	0xdf, 0x20, 0xfb, 0xdb, 0x6c, 0xc4, 0x22, 0x16, 0x26, 0x8b, 0xe6, 0x5f, 0x96, 0xd0, 0xbc, 0x19,
+	0x0b, 0x11, 0x27, 0x40, 0x59, 0xc6, 0x29, 0x4b, 0x53, 0xa1, 0x99, 0xe6, 0x22, 0x55, 0xc5, 0xe9,
+	0xdd, 0x50, 0xa8, 0x81, 0x50, 0xb4, 0xcf, 0x14, 0xd8, 0x3a, 0xf4, 0x64, 0xaf, 0x0f, 0x9a, 0xed,
+	0xd1, 0x8c, 0xc5, 0x3c, 0x35, 0xc9, 0x45, 0x2e, 0xb1, 0x6e, 0x32, 0x26, 0xd9, 0xa0, 0xe0, 0x7b,
+	0x0d, 0x4c, 0x9e, 0xe5, 0xac, 0xa7, 0x26, 0x18, 0xc0, 0x70, 0x04, 0x4a, 0x7b, 0x2f, 0xf0, 0xd5,
+	0x95, 0xa8, 0xca, 0x44, 0xaa, 0x80, 0xec, 0xe3, 0xba, 0x25, 0x3b, 0xa8, 0x85, 0x3a, 0xdb, 0xbd,
+	0x1d, 0x7f, 0x6d, 0x33, 0xbe, 0xa5, 0x1e, 0x54, 0xa7, 0x5f, 0x6e, 0x95, 0x82, 0x82, 0xe6, 0x7d,
+	0x40, 0xb8, 0xf1, 0x92, 0x25, 0x09, 0xe8, 0x00, 0x42, 0x21, 0xa3, 0xa5, 0x72, 0x03, 0xd7, 0xc4,
+	0x38, 0x05, 0x69, 0x84, 0x2f, 0x06, 0x16, 0x10, 0x07, 0x6f, 0xb1, 0x28, 0x92, 0xa0, 0x94, 0x53,
+	0x36, 0xf1, 0x05, 0x24, 0x6d, 0x7c, 0x19, 0xd2, 0x50, 0x4e, 0x32, 0x0d, 0xd1, 0xe1, 0x6b, 0x98,
+	0x38, 0x15, 0x73, 0x7e, 0x69, 0x19, 0x7c, 0x02, 0x93, 0x5c, 0x34, 0x3c, 0x66, 0x3c, 0x75, 0xaa,
+	0x56, 0xd4, 0x80, 0x5c, 0x34, 0x82, 0x04, 0x34, 0x44, 0x4e, 0xad, 0x85, 0x3a, 0x17, 0x82, 0x05,
+	0xf4, 0x3e, 0x22, 0xdc, 0x36, 0x6d, 0x3f, 0xe4, 0x89, 0x06, 0xf9, 0x5c, 0x81, 0x3c, 0x6f, 0x76,
+	0x31, 0x9d, 0x7f, 0x36, 0xbb, 0xf4, 0x51, 0x59, 0xe3, 0xa3, 0xba, 0xe2, 0x23, 0xcf, 0x4f, 0xf8,
+	0x80, 0x6b, 0xe3, 0xaf, 0x16, 0x58, 0x40, 0xae, 0xe1, 0xba, 0x38, 0x3a, 0x52, 0xa0, 0x9d, 0xba,
+	0x09, 0x17, 0xc8, 0x1b, 0xe2, 0xdd, 0xcd, 0xa6, 0x8b, 0x11, 0x3f, 0xc6, 0x5b, 0xd2, 0x86, 0x1c,
+	0xd4, 0xaa, 0x74, 0xb6, 0x7b, 0x74, 0xc3, 0xf6, 0x7e, 0xb7, 0xa4, 0x60, 0xc1, 0xef, 0x7d, 0x2f,
+	0xe3, 0x9a, 0xa9, 0x49, 0xde, 0x21, 0x5c, 0xb7, 0x9b, 0x26, 0xdd, 0x0d, 0x72, 0xbf, 0x5e, 0xb1,
+	0xa6, 0xff, 0xb7, 0xe9, 0xb6, 0xb8, 0x77, 0xe7, 0xcd, 0xa7, 0x6f, 0xef, 0xcb, 0x6d, 0xb2, 0x43,
+	0x57, 0x78, 0x16, 0xd1, 0xf3, 0x37, 0x9b, 0x4c, 0x11, 0xbe, 0xbe, 0x66, 0x1a, 0xe4, 0xc1, 0x9f,
+	0xca, 0x6e, 0xde, 0x7d, 0x73, 0xff, 0xbf, 0xf9, 0x45, 0x1f, 0xf7, 0x4c, 0x1f, 0xb7, 0xc9, 0x6e,
+	0xe1, 0x19, 0x4e, 0x35, 0xc8, 0x94, 0x25, 0x87, 0x63, 0x93, 0xae, 0x96, 0xcf, 0x37, 0xe1, 0x4a,
+	0x1f, 0x3c, 0x9a, 0xce, 0x5c, 0x74, 0x36, 0x73, 0xd1, 0xd7, 0x99, 0x8b, 0xde, 0xce, 0xdd, 0xd2,
+	0xd9, 0xdc, 0x2d, 0x7d, 0x9e, 0xbb, 0xa5, 0x57, 0xdd, 0x98, 0xeb, 0xe3, 0x51, 0xdf, 0x0f, 0xc5,
+	0xc0, 0x2a, 0x75, 0x7f, 0x1a, 0xc9, 0x69, 0xf1, 0xaf, 0x27, 0x19, 0xa8, 0x7e, 0xdd, 0x3c, 0xf7,
+	0xfb, 0x3f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xfa, 0x86, 0xaa, 0xfb, 0x92, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -285,7 +376,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Queries a list of filterUserKeyRecords items.
+	// Parameters queries the parameters of the module.
+	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	FilterUserWalletRecords(ctx context.Context, in *QueryFilterUserWalletRecordsRequest, opts ...grpc.CallOption) (*QueryFilterUserWalletRecordsResponse, error)
 }
 
@@ -295,6 +387,15 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
+}
+
+func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+	out := new(QueryParamsResponse)
+	err := c.cc.Invoke(ctx, "/dewebservices.deweb.deweb.Query/Params", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *queryClient) FilterUserWalletRecords(ctx context.Context, in *QueryFilterUserWalletRecordsRequest, opts ...grpc.CallOption) (*QueryFilterUserWalletRecordsResponse, error) {
@@ -308,7 +409,8 @@ func (c *queryClient) FilterUserWalletRecords(ctx context.Context, in *QueryFilt
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Queries a list of filterUserKeyRecords items.
+	// Parameters queries the parameters of the module.
+	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	FilterUserWalletRecords(context.Context, *QueryFilterUserWalletRecordsRequest) (*QueryFilterUserWalletRecordsResponse, error)
 }
 
@@ -316,12 +418,33 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
+func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
 func (*UnimplementedQueryServer) FilterUserWalletRecords(ctx context.Context, req *QueryFilterUserWalletRecordsRequest) (*QueryFilterUserWalletRecordsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FilterUserWalletRecords not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
+}
+
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dewebservices.deweb.deweb.Query/Params",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_FilterUserWalletRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -347,12 +470,72 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
+		},
+		{
 			MethodName: "FilterUserWalletRecords",
 			Handler:    _Query_FilterUserWalletRecords_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "deweb/query.proto",
+}
+
+func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
 }
 
 func (m *WalletRecordResponse) Marshal() (dAtA []byte, err error) {
@@ -528,6 +711,26 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *QueryParamsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
 func (m *WalletRecordResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -606,6 +809,139 @@ func sovQuery(x uint64) (n int) {
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *WalletRecordResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
