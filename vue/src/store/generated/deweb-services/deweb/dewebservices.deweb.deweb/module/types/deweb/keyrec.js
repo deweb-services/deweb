@@ -1,45 +1,45 @@
 /* eslint-disable */
 import { Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "dewebservices.deweb.deweb";
-const baseUserKeyRec = {
-    creator: "",
-    message: "",
+const baseUserWalletRec = {
+    address: "",
+    encryptedKey: "",
     chain: "",
     deleted: false,
 };
-export const UserKeyRec = {
+export const UserWalletRec = {
     encode(message, writer = Writer.create()) {
-        if (message.creator !== "") {
-            writer.uint32(10).string(message.creator);
+        if (message.address !== "") {
+            writer.uint32(18).string(message.address);
         }
-        if (message.message !== "") {
-            writer.uint32(18).string(message.message);
+        if (message.encryptedKey !== "") {
+            writer.uint32(26).string(message.encryptedKey);
         }
         if (message.chain !== "") {
-            writer.uint32(26).string(message.chain);
+            writer.uint32(34).string(message.chain);
         }
         if (message.deleted === true) {
-            writer.uint32(32).bool(message.deleted);
+            writer.uint32(40).bool(message.deleted);
         }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...baseUserKeyRec };
+        const message = { ...baseUserWalletRec };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                case 1:
-                    message.creator = reader.string();
-                    break;
                 case 2:
-                    message.message = reader.string();
+                    message.address = reader.string();
                     break;
                 case 3:
-                    message.chain = reader.string();
+                    message.encryptedKey = reader.string();
                     break;
                 case 4:
+                    message.chain = reader.string();
+                    break;
+                case 5:
                     message.deleted = reader.bool();
                     break;
                 default:
@@ -50,18 +50,18 @@ export const UserKeyRec = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...baseUserKeyRec };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = String(object.creator);
+        const message = { ...baseUserWalletRec };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = String(object.address);
         }
         else {
-            message.creator = "";
+            message.address = "";
         }
-        if (object.message !== undefined && object.message !== null) {
-            message.message = String(object.message);
+        if (object.encryptedKey !== undefined && object.encryptedKey !== null) {
+            message.encryptedKey = String(object.encryptedKey);
         }
         else {
-            message.message = "";
+            message.encryptedKey = "";
         }
         if (object.chain !== undefined && object.chain !== null) {
             message.chain = String(object.chain);
@@ -79,25 +79,26 @@ export const UserKeyRec = {
     },
     toJSON(message) {
         const obj = {};
-        message.creator !== undefined && (obj.creator = message.creator);
-        message.message !== undefined && (obj.message = message.message);
+        message.address !== undefined && (obj.address = message.address);
+        message.encryptedKey !== undefined &&
+            (obj.encryptedKey = message.encryptedKey);
         message.chain !== undefined && (obj.chain = message.chain);
         message.deleted !== undefined && (obj.deleted = message.deleted);
         return obj;
     },
     fromPartial(object) {
-        const message = { ...baseUserKeyRec };
-        if (object.creator !== undefined && object.creator !== null) {
-            message.creator = object.creator;
+        const message = { ...baseUserWalletRec };
+        if (object.address !== undefined && object.address !== null) {
+            message.address = object.address;
         }
         else {
-            message.creator = "";
+            message.address = "";
         }
-        if (object.message !== undefined && object.message !== null) {
-            message.message = object.message;
+        if (object.encryptedKey !== undefined && object.encryptedKey !== null) {
+            message.encryptedKey = object.encryptedKey;
         }
         else {
-            message.message = "";
+            message.encryptedKey = "";
         }
         if (object.chain !== undefined && object.chain !== null) {
             message.chain = object.chain;
