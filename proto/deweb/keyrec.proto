@@ -12,3 +12,9 @@ message UserWalletRec {
 message RecordsToUser {
   repeated string records = 1;
 }
+
+message ChainAddressMapping {
+  string ext_address = 1;
+  string chain = 2;
+  bool deleted = 3;
+}

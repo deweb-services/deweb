@@ -24,7 +24,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgConnectChain = "op_weight_msg_create_chain"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgConnectChain int = 100
+
+	opWeightMsgDeleteChainConnect = "op_weight_msg_create_chain"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteChainConnect int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -56,6 +64,28 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgConnectChain int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgConnectChain, &weightMsgConnectChain, nil,
+		func(_ *rand.Rand) {
+			weightMsgConnectChain = defaultWeightMsgConnectChain
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgConnectChain,
+		dewebsimulation.SimulateMsgConnectChain(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteChainConnect int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteChainConnect, &weightMsgDeleteChainConnect, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteChainConnect = defaultWeightMsgDeleteChainConnect
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteChainConnect,
+		dewebsimulation.SimulateMsgDeleteChainConnect(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 
