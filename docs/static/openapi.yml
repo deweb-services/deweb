@@ -14401,6 +14401,76 @@ paths:
           format: byte
       tags:
         - Query
+  '/deweb-services/deweb/deweb/filter_chain_mappings_records/{owner}/{address}/{chain}/{deleted}/{limit}/{offset}':
+    get:
+      summary: Queries a list of FilterChainMappingsRecords items.
+      operationId: DewebservicesDewebDewebFilterChainMappingsRecords
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              records:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    owner:
+                      type: string
+                    extAddress:
+                      type: string
+                    chain:
+                      type: string
+                    deleted:
+                      type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          type: string
+        - name: address
+          in: path
+          required: true
+          type: string
+        - name: chain
+          in: path
+          required: true
+          type: string
+        - name: deleted
+          in: path
+          required: true
+          type: boolean
+        - name: limit
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: offset
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - Query
   /deweb/external_wallets/v1beta1/list:
     get:
       operationId: DewebservicesDewebDewebFilterUserWalletRecords
@@ -23269,6 +23339,21 @@ definitions:
     title: |-
       QuerySmartContractStateResponse is the response type for the
       Query/SmartContractState RPC method
+  dewebservices.deweb.deweb.ChainMappingRecordResponse:
+    type: object
+    properties:
+      owner:
+        type: string
+      extAddress:
+        type: string
+      chain:
+        type: string
+      deleted:
+        type: boolean
+  dewebservices.deweb.deweb.MsgConnectChainResponse:
+    type: object
+  dewebservices.deweb.deweb.MsgDeleteChainConnectResponse:
+    type: object
   dewebservices.deweb.deweb.MsgDeleteWalletResponse:
     type: object
   dewebservices.deweb.deweb.MsgSaveWalletResponse:
@@ -23276,6 +23361,22 @@ definitions:
   dewebservices.deweb.deweb.Params:
     type: object
     description: Params defines the parameters for the module.
+  dewebservices.deweb.deweb.QueryFilterChainMappingsRecordsResponse:
+    type: object
+    properties:
+      records:
+        type: array
+        items:
+          type: object
+          properties:
+            owner:
+              type: string
+            extAddress:
+              type: string
+            chain:
+              type: string
+            deleted:
+              type: boolean
   dewebservices.deweb.deweb.QueryFilterUserWalletRecordsResponse:
     type: object
     properties:

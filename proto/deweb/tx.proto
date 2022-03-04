@@ -9,7 +9,9 @@ option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 service Msg {
   rpc SaveWallet(MsgSaveWallet) returns (MsgSaveWalletResponse);
   rpc DeleteWallet(MsgDeleteWallet) returns (MsgDeleteWalletResponse);
-  // this line is used by starport scaffolding # proto/tx/rpc
+    rpc ConnectChain(MsgConnectChain) returns (MsgConnectChainResponse);
+  rpc DeleteChainConnect(MsgDeleteChainConnect) returns (MsgDeleteChainConnectResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgSaveWallet {
@@ -28,6 +30,24 @@ message MsgDeleteWallet {
 }
 
 message MsgDeleteWalletResponse {
+}
+
+message MsgConnectChain {
+  string creator = 1;
+  string chain = 2;
+  string address = 3;
+}
+
+message MsgConnectChainResponse {
+}
+
+message MsgDeleteChainConnect {
+  string creator = 1;
+  string chain = 2;
+  string address = 3;
+}
+
+message MsgDeleteChainConnectResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

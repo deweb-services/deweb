@@ -21,6 +21,12 @@ const (
 
 	// UsersRecords defines prefix for storage where we store mapping between user and list of records addresses
 	UsersRecords = "users-"
+
+	// ConnectChainRecords defines prefix to store mapping between user address in dws and other chains addresses
+	ConnectChainRecords = "connections-"
+
+	// UserConnectChainRecords defines prefix to store mapping between user address in dws and other chains addresses
+	UserConnectChainRecords = "users_connections-"
 )
 
 func KeyPrefix(p string) []byte {

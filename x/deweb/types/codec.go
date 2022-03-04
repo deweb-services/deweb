@@ -12,6 +12,8 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSaveWallet{}, "deweb/SaveWallet", nil)
 	cdc.RegisterConcrete(&MsgDeleteWallet{}, "deweb/DeleteWallet", nil)
+	cdc.RegisterConcrete(&MsgConnectChain{}, "deweb/ConnectChain", nil)
+	cdc.RegisterConcrete(&MsgDeleteChainConnect{}, "deweb/DeleteChainConnect", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -21,6 +23,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgDeleteWallet{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgConnectChain{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgDeleteChainConnect{},
 	)
 	// this line is used by starport scaffolding # 3
 
