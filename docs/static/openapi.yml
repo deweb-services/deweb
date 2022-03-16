@@ -14401,10 +14401,9 @@ paths:
           format: byte
       tags:
         - Query
-  '/deweb-services/deweb/deweb/filter_chain_mappings_records/{owner}/{address}/{chain}/{deleted}/{limit}/{offset}':
+  /deweb/external_wallets/v1beta1/list:
     get:
-      summary: Queries a list of FilterChainMappingsRecords items.
-      operationId: DewebservicesDewebDewebFilterChainMappingsRecords
+      operationId: DewebservicesDewebDewebFilterUserWalletRecords
       responses:
         '200':
           description: A successful response.
@@ -14418,7 +14417,9 @@ paths:
                   properties:
                     owner:
                       type: string
-                    extAddress:
+                    address:
+                      type: string
+                    encryptedKey:
                       type: string
                     chain:
                       type: string
@@ -14444,36 +14445,37 @@ paths:
                   additionalProperties: {}
       parameters:
         - name: owner
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
         - name: address
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
         - name: chain
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
         - name: deleted
-          in: path
-          required: true
+          in: query
+          required: false
           type: boolean
         - name: limit
-          in: path
-          required: true
+          in: query
+          required: false
           type: integer
           format: int32
         - name: offset
-          in: path
-          required: true
+          in: query
+          required: false
           type: integer
           format: int32
       tags:
         - Query
-  /deweb/external_wallets/v1beta1/list:
+  /deweb/filter_chain_mappings_records/v1beta1/list:
     get:
-      operationId: DewebservicesDewebDewebFilterUserWalletRecords
+      summary: Queries a list of FilterChainMappingsRecords items.
+      operationId: DewebservicesDewebDewebFilterChainMappingsRecords
       responses:
         '200':
           description: A successful response.
@@ -14487,9 +14489,7 @@ paths:
                   properties:
                     owner:
                       type: string
-                    address:
-                      type: string
-                    encryptedKey:
+                    extAddress:
                       type: string
                     chain:
                       type: string

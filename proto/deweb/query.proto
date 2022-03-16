@@ -20,7 +20,7 @@ service Query {
   }
   // Queries a list of FilterChainMappingsRecords items.
 	rpc FilterChainMappingsRecords(QueryFilterChainMappingsRecordsRequest) returns (QueryFilterChainMappingsRecordsResponse) {
-		option (google.api.http).get = "/deweb-services/deweb/deweb/filter_chain_mappings_records/{owner}/{address}/{chain}/{deleted}/{limit}/{offset}";
+		option (google.api.http).get = "/deweb/filter_chain_mappings_records/v1beta1/list";
 	}
 
 // this line is used by starport scaffolding # 2
