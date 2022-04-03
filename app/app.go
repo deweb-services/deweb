@@ -169,6 +169,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
+		wasmdmodule.ModuleName: {authtypes.Burner},
 	}
 )
 
@@ -221,7 +222,6 @@ type App struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
-	wasmKeeper       wasmdmodule.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -229,12 +229,20 @@ type App struct {
 
 	DewebKeeper dewebmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
+	wasmKeeper       wasmdmodule.Keeper
+	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// mm is the module manager
 	mm *module.Manager
 
 	// sm is the simulation manager
 	sm *module.SimulationManager
+}
+
+func GetWasmOpts(appOpts servertypes.AppOptions) []wasmdmodule.Option {
+	var wasmOpts []wasmdmodule.Option
+
+	return wasmOpts
 }
 
 // New returns a reference to an initialized blockchain app
@@ -262,10 +270,11 @@ func New(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		dewebmoduletypes.StoreKey, wasmdmodule.StoreKey, authzkeeper.StoreKey,
+		authzkeeper.StoreKey, feegrant.StoreKey, dewebmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		wasmdmodule.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -293,6 +302,7 @@ func New(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmdmodule.ModuleName)
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -379,19 +389,6 @@ func New(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
-	// Create static IBC router, add transfer route, then set and seal it
-	ibcRouter := ibcporttypes.NewRouter()
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	ibcRouter.AddRoute(wasmdmodule.ModuleName, wasmdmodule.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper))
-	// this line is used by starport scaffolding # ibc/app/router
-	app.IBCKeeper.SetRouter(ibcRouter)
-
-	/****  Module Options ****/
-
-	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
-	// we prefer to be more strict in what arguments the modules expect.
-	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
-
 	// Creating wasmd module
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasmdmodule.ReadWasmConfig(appOpts)
@@ -403,9 +400,7 @@ func New(
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate"
 
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmdmodule.ModuleName)
-
-	var emptyWasmOpts []wasmdmodule.Option
+	wasmOpts := GetWasmOpts(appOpts)
 
 	app.wasmKeeper = wasmdmodule.NewKeeper(
 		appCodec,
@@ -424,8 +419,21 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		emptyWasmOpts...,
+		wasmOpts...,
 	)
+
+	// Create static IBC router, add transfer route, then set and seal it
+	ibcRouter := ibcporttypes.NewRouter()
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
+	// this line is used by starport scaffolding # ibc/app/router
+	ibcRouter.AddRoute(wasmdmodule.ModuleName, wasmdmodule.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper))
+	app.IBCKeeper.SetRouter(ibcRouter)
+
+	/****  Module Options ****/
+
+	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
+	// we prefer to be more strict in what arguments the modules expect.
+	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -600,7 +608,7 @@ func New(
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
-
+	app.scopedWasmKeeper = scopedWasmKeeper
 	return app
 }
 
