@@ -1,20 +1,20 @@
 import { Writer, Reader } from "protobufjs/minimal";
 export declare const protobufPackage = "dewebservices.deweb.deweb";
-export interface UserKeyRec {
-    creator: string;
-    message: string;
+export interface UserWalletRec {
+    address: string;
+    encryptedKey: string;
     chain: string;
     deleted: boolean;
 }
 export interface RecordsToUser {
     records: string[];
 }
-export declare const UserKeyRec: {
-    encode(message: UserKeyRec, writer?: Writer): Writer;
-    decode(input: Reader | Uint8Array, length?: number): UserKeyRec;
-    fromJSON(object: any): UserKeyRec;
-    toJSON(message: UserKeyRec): unknown;
-    fromPartial(object: DeepPartial<UserKeyRec>): UserKeyRec;
+export declare const UserWalletRec: {
+    encode(message: UserWalletRec, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): UserWalletRec;
+    fromJSON(object: any): UserWalletRec;
+    toJSON(message: UserWalletRec): unknown;
+    fromPartial(object: DeepPartial<UserWalletRec>): UserWalletRec;
 };
 export declare const RecordsToUser: {
     encode(message: RecordsToUser, writer?: Writer): Writer;

@@ -1,41 +1,79 @@
 syntax = "proto3";
 package dewebservices.deweb.deweb;
 
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "deweb/params.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/deweb-services/deweb/x/deweb/types";
 
 // Query defines the gRPC querier service.
 service Query {
-	// Queries a list of filterUserKeyRecords items.
-	rpc FilterUserWalletRecords(QueryFilterUserWalletRecordsRequest) returns (QueryFilterUserWalletRecordsResponse) {
-		option (google.api.http).get = "/deweb/external_wallets/v1beta1/list";
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/dewebservices/deweb/deweb/params";
+  }
+  rpc FilterUserWalletRecords(QueryFilterUserWalletRecordsRequest) returns (QueryFilterUserWalletRecordsResponse) {
+    option (google.api.http).get = "/deweb/external_wallets/v1beta1/list";
+  }
+  // Queries a list of FilterChainMappingsRecords items.
+	rpc FilterChainMappingsRecords(QueryFilterChainMappingsRecordsRequest) returns (QueryFilterChainMappingsRecordsResponse) {
+		option (google.api.http).get = "/deweb/filter_chain_mappings_records/v1beta1/list";
 	}
 
-	// this line is used by starport scaffolding # 2
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
 }
 
 message WalletRecordResponse {
-	string owner = 1;
-	string address = 2;
-	string encrypted_key = 3;
-	string chain = 4;
-	bool deleted = 5;
+  string owner = 1;
+  string address = 2;
+  string encrypted_key = 3;
+  string chain = 4;
+  bool deleted = 5;
 }
 
 message QueryFilterUserWalletRecordsRequest {
-	string owner = 1;
-	string address = 2;
-	string chain = 3;
-	bool deleted = 4;
-	int32 limit = 5;
-	int32 offset = 6;
+  string owner = 1;
+  string address = 2;
+  string chain = 3;
+  bool deleted = 4;
+  int32 limit = 5;
+  int32 offset = 6;
 }
 
 message QueryFilterUserWalletRecordsResponse {
-	repeated WalletRecordResponse records = 1;
+  repeated WalletRecordResponse records = 1;
+}
+
+message ChainMappingRecordResponse {
+  string owner = 1;
+  string ext_address = 2;
+  string chain = 3;
+  bool deleted = 4;
+}
+
+message QueryFilterChainMappingsRecordsRequest {
+  string owner = 1;
+  string address = 2;
+  string chain = 3;
+  bool deleted = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message QueryFilterChainMappingsRecordsResponse {
+  repeated ChainMappingRecordResponse records = 1;
 }
 
 // this line is used by starport scaffolding # 3

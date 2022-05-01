@@ -16,13 +16,13 @@ func (k msgServer) DeleteWallet(goCtx context.Context, msg *types.MsgDeleteWalle
 	recordID := msg.Creator + "_" + msg.Address
 	userRecord, err := k.getUserKeyRecord(ctx, recordID)
 	if err != nil {
-		return nil, fmt.Errorf("error getting record by id: %w", err)
+		return nil, fmt.Errorf("error chain mapping getting record by id: %w", err)
 	}
 
 	userRecord.Deleted = true
 	err = k.writeUserKeyRecord(ctx, userRecord, recordID)
 	if err != nil {
-		return nil, fmt.Errorf("error updating record by id: %w", err)
+		return nil, fmt.Errorf("error updating chain mapping record by id: %w", err)
 	}
 	return &types.MsgDeleteWalletResponse{}, nil
 }
