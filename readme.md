@@ -48,18 +48,18 @@ Should return go version go1.17.6 linux/amd64
 ```
 git clone https://github.com/deweb-services/deweb.git
 cd deweb
-git checkout v1.0
+git checkout v0.2
 make build   #it build the binary in build/ folder
 ```
 To know the version:
 ```
 build/dewebd version
 ```
-The output must be `1.0`
+The output must be `0.2`
 
 Is the version match, now you have two options
 * Move the binary to the /usr/local/bin path with: `sudo mv build/dewebd /usr/local/bin/`
 * Compile and install the binary in the $GOPATH path:  `make install`
 
-# Join our Andromeda Testnet: `deweb-testnet-0`
+# Join our Menkar Testnet: `deweb-testnet-1`
 * [Instructions](https://docs.deweb.services/guides/validator-setup-guide)
