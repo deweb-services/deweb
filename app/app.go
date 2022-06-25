@@ -93,6 +93,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	nftmodule "github.com/deweb-services/deweb/x/nftmodule"
+	nftkeeper "github.com/deweb-services/deweb/x/nftmodule/keeper"
+	nfttypes "github.com/deweb-services/deweb/x/nftmodule/types"
+
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"github.com/tendermint/starport/starport/pkg/openapiconsole"
 
@@ -155,6 +159,7 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		dewebmodule.AppModuleBasic{},
+		nftmodule.AppModuleBasic{},
 		wasmdmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -232,6 +237,8 @@ type App struct {
 	wasmKeeper       wasmdmodule.Keeper
 	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
+	NftKeeper nftkeeper.Keeper
+
 	// mm is the module manager
 	mm *module.Manager
 
@@ -274,7 +281,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		authzkeeper.StoreKey, feegrant.StoreKey, dewebmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		wasmdmodule.StoreKey,
+		wasmdmodule.StoreKey, nfttypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -387,6 +394,8 @@ func New(
 		app.GetSubspace(dewebmoduletypes.ModuleName),
 	)
 
+	app.NftKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
+
 	dewebModule := dewebmodule.NewAppModule(appCodec, app.DewebKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
@@ -467,6 +476,7 @@ func New(
 		dewebModule,
 		wasmdmodule.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
+		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -491,10 +501,12 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		// additional non simd modules
+		nfttypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
+		nfttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -519,6 +531,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
+		nfttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -549,6 +562,7 @@ func New(
 		// wasm after ibc transfer
 		dewebmoduletypes.ModuleName,
 		wasmdmodule.ModuleName,
+		nfttypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -572,6 +586,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		dewebModule,
+		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
