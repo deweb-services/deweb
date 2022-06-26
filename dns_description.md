@@ -6,7 +6,7 @@ First specify the nft Denom (nft classification) for domains. Only denom `domain
 Set test data for DNS:
 ```
 BasicData='{"records": [{"type": "A","values": ["192.168.1.10"]}]}'
-BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.12"]},{"type": "MX","values": ["192.168.1.15"]}]}'
+BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": "MX","values": ["mx.bob.alice.deweb."]}]}'
 ```
 
 First Bob mint NFT for TLD `deweb`.: 
@@ -42,7 +42,7 @@ Alice can register domain for Bob in her zone and then transfer this NFT to Bob,
 
 After transfer Alice cannot edit Bob's domain, but he can change DNS records: 
 ```
-./dewebd tx nft edit domains mx.bob.alice.deweb --data="$BasicDataWithMX" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx nft edit domains bob.alice.deweb --data="$BasicDataWithMX" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 ## DNS Server
@@ -57,3 +57,5 @@ To listen on port UDP/53 process must be executed from root user. To prevent all
 ```
 sudo ./dewebd q deweb run-dns-server 53
 ```
+
+Now supported only A and MX record types

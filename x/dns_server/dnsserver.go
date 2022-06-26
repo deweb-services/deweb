@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/deweb-services/deweb/x/nftmodule/keeper"
 	"github.com/deweb-services/deweb/x/nftmodule/types"
+	"golang.org/x/net/dns/dnsmessage"
 	"net"
 	"os"
 	"strings"
@@ -36,17 +37,11 @@ type DNSResourceRecord struct {
 
 // Type and Class values for DNSResourceRecord
 const (
-	TypeA                  uint16 = 1  // a host address
-	TypeMX                 uint16 = 15 // a host address
-	ClassINET              uint16 = 1  // the Internet
-	FlagResponse           uint16 = 1 << 15
+	TypeA                  uint16 = 1
+	TypeMX                 uint16 = 15
+	ClassINET              uint16 = 1   // the Internet
 	UDPMaxMessageSizeBytes uint   = 512 // RFC1035
 )
-
-var recordTypesMapping = map[uint16]string{
-	TypeA:  "A",
-	TypeMX: "MX",
-}
 
 type CacheRecord struct {
 	Values     []keeper.DNSTypeRecord
@@ -66,32 +61,37 @@ func NewDNSResolverService(cliCtx client.Context) *DNSResolverService {
 }
 
 // Pretend to look up values in a database
-func (srv *DNSResolverService) dbLookup(queryResourceRecord DNSResourceRecord) ([]DNSResourceRecord, []DNSResourceRecord, []DNSResourceRecord) {
+func (srv *DNSResolverService) dbLookup(queryResourceRecord DNSResourceRecord) []DNSResourceRecord {
 	var answerResourceRecords = make([]DNSResourceRecord, 0)
-	var authorityResourceRecords = make([]DNSResourceRecord, 0)
-	var additionalResourceRecords = make([]DNSResourceRecord, 0)
 
-	resolvedRecords, err := srv.ResolveDNSRecord(queryResourceRecord.DomainName, queryResourceRecord.Type)
+	resolvedRecords, err := srv.resolveDNSRecord(queryResourceRecord.DomainName, queryResourceRecord.Type)
 	if err != nil {
 		fmt.Printf("Cannot resolve record for %s (%d): %v", queryResourceRecord.DomainName, queryResourceRecord.Type, err)
-		return answerResourceRecords, authorityResourceRecords, additionalResourceRecords
+		return answerResourceRecords
 	}
 	for _, rec := range resolvedRecords {
-		ipAddr := net.ParseIP(rec)
+		var resData []byte
+		if queryResourceRecord.Type == 1 {
+			ipAddr := net.ParseIP(rec)
+			resData = ipAddr[12:16]
+		} else {
+			resData = []byte(rec)
+		}
+
 		answerResourceRecords = append(answerResourceRecords, DNSResourceRecord{
 			DomainName:         queryResourceRecord.DomainName,
 			Type:               queryResourceRecord.Type,
 			Class:              ClassINET,
 			TimeToLive:         31337,
-			ResourceData:       ipAddr[12:16], // ipv4 address
-			ResourceDataLength: 4,
+			ResourceData:       resData, // ipv4 address
+			ResourceDataLength: uint16(len(resData)),
 		})
 	}
 
-	return answerResourceRecords, authorityResourceRecords, additionalResourceRecords
+	return answerResourceRecords
 }
 
-func (srv *DNSResolverService) ResolveDNSRecord(domain string, recordType uint16) ([]string, error) {
+func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16) ([]string, error) {
 	queryClient := types.NewQueryClient(srv.cliCtx)
 	resp, err := queryClient.NFT(
 		context.Background(),
@@ -182,6 +182,77 @@ func (srv *DNSResolverService) writeDomainName(responseBuffer *bytes.Buffer, dom
 	return err
 }
 
+func (srv *DNSResolverService) prepareDNSAnswer(reqID uint16, dnsQuestions []DNSResourceRecord, dnsAnswers []DNSResourceRecord) ([]byte, error) {
+	msg := dnsmessage.Message{
+		Header: dnsmessage.Header{
+			Response:      true,
+			Authoritative: true,
+			ID:            reqID,
+		},
+		Questions: make([]dnsmessage.Question, 0, len(dnsQuestions)),
+		Answers:   make([]dnsmessage.Resource, 0, len(dnsAnswers)),
+	}
+	for _, qRec := range dnsQuestions {
+		domainName := qRec.DomainName + "."
+		name, err := dnsmessage.NewName(domainName)
+		if err != nil {
+			continue
+		}
+		qMessage := dnsmessage.Question{
+			Name:  name,
+			Type:  dnsmessage.Type(qRec.Type),
+			Class: dnsmessage.ClassINET,
+		}
+		msg.Questions = append(msg.Questions, qMessage)
+	}
+
+	for _, answer := range dnsAnswers {
+		domainName := answer.DomainName + "."
+		name, err := dnsmessage.NewName(domainName)
+		if err != nil {
+			continue
+		}
+		var body dnsmessage.ResourceBody
+		switch answer.Type {
+		case TypeA:
+			if len(answer.ResourceData) != 4 {
+				fmt.Printf("Invalid response with length %d: %v\n", len(answer.ResourceData), answer.ResourceData)
+			}
+			var resContent [4]byte
+			for i := 0; i < 4; i++ {
+				resContent[i] = answer.ResourceData[i]
+			}
+			body = &dnsmessage.AResource{A: resContent}
+		case TypeMX:
+			resName, err := dnsmessage.NewName(string(answer.ResourceData))
+			if err != nil {
+				fmt.Printf("cannot process MX response for %s. result=%s: %v",
+					answer.DomainName, string(answer.ResourceData), err)
+			}
+			body = &dnsmessage.MXResource{
+				Pref: 0,
+				MX:   resName,
+			}
+		}
+
+		answerRec := dnsmessage.Resource{
+			Header: dnsmessage.ResourceHeader{
+				Name:  name,
+				Type:  dnsmessage.Type(answer.Type),
+				Class: dnsmessage.ClassINET,
+			},
+			Body: body,
+		}
+		msg.Answers = append(msg.Answers, answerRec)
+	}
+
+	buf, err := msg.Pack()
+	if err != nil {
+		return nil, fmt.Errorf("cannot pack message: %w", err)
+	}
+	return buf, nil
+}
+
 func (srv *DNSResolverService) handleDNSClient(requestBytes []byte, serverConn *net.UDPConn, clientAddr *net.UDPAddr) {
 	/**
 	 * read request
@@ -213,92 +284,23 @@ func (srv *DNSResolverService) handleDNSClient(requestBytes []byte, serverConn *
 	 * lookup values
 	 */
 	var answerResourceRecords = make([]DNSResourceRecord, 0)
-	var authorityResourceRecords = make([]DNSResourceRecord, 0)
-	var additionalResourceRecords = make([]DNSResourceRecord, 0)
 
 	for _, queryResourceRecord := range queryResourceRecords {
-		newAnswerRR, newAuthorityRR, newAdditionalRR := srv.dbLookup(queryResourceRecord)
+		newAnswerRR := srv.dbLookup(queryResourceRecord)
 
 		answerResourceRecords = append(answerResourceRecords, newAnswerRR...) // three dots cause the two lists to be concatenated
-		authorityResourceRecords = append(authorityResourceRecords, newAuthorityRR...)
-		additionalResourceRecords = append(additionalResourceRecords, newAdditionalRR...)
 	}
 
 	/**
 	 * write response
 	 */
-	var responseBuffer = new(bytes.Buffer)
-	var responseHeader DNSHeader
 
-	responseHeader = DNSHeader{
-		TransactionID:  queryHeader.TransactionID,
-		Flags:          FlagResponse,
-		NumQuestions:   queryHeader.NumQuestions,
-		NumAnswers:     uint16(len(answerResourceRecords)),
-		NumAuthorities: uint16(len(authorityResourceRecords)),
-		NumAdditionals: uint16(len(additionalResourceRecords)),
-	}
-
-	err = Write(responseBuffer, &responseHeader)
-
+	resBytes, err := srv.prepareDNSAnswer(queryHeader.TransactionID, queryResourceRecords, answerResourceRecords)
 	if err != nil {
-		fmt.Println("Error writing to buffer: ", err.Error())
+		fmt.Printf("Error making response for %v: %v", queryResourceRecords, err)
+		resBytes = make([]byte, 0)
 	}
-
-	for _, queryResourceRecord := range queryResourceRecords {
-		err = srv.writeDomainName(responseBuffer, queryResourceRecord.DomainName)
-
-		if err != nil {
-			fmt.Println("Error writing to buffer: ", err.Error())
-		}
-
-		Write(responseBuffer, queryResourceRecord.Type)
-		Write(responseBuffer, queryResourceRecord.Class)
-	}
-
-	for _, answerResourceRecord := range answerResourceRecords {
-		err = srv.writeDomainName(responseBuffer, answerResourceRecord.DomainName)
-
-		if err != nil {
-			fmt.Println("Error writing to buffer: ", err.Error())
-		}
-
-		Write(responseBuffer, answerResourceRecord.Type)
-		Write(responseBuffer, answerResourceRecord.Class)
-		Write(responseBuffer, answerResourceRecord.TimeToLive)
-		Write(responseBuffer, answerResourceRecord.ResourceDataLength)
-		Write(responseBuffer, answerResourceRecord.ResourceData)
-	}
-
-	for _, authorityResourceRecord := range authorityResourceRecords {
-		err = srv.writeDomainName(responseBuffer, authorityResourceRecord.DomainName)
-
-		if err != nil {
-			fmt.Println("Error writing to buffer: ", err.Error())
-		}
-
-		Write(responseBuffer, authorityResourceRecord.Type)
-		Write(responseBuffer, authorityResourceRecord.Class)
-		Write(responseBuffer, authorityResourceRecord.TimeToLive)
-		Write(responseBuffer, authorityResourceRecord.ResourceDataLength)
-		Write(responseBuffer, authorityResourceRecord.ResourceData)
-	}
-
-	for _, additionalResourceRecord := range additionalResourceRecords {
-		err = srv.writeDomainName(responseBuffer, additionalResourceRecord.DomainName)
-
-		if err != nil {
-			fmt.Println("Error writing to buffer: ", err.Error())
-		}
-
-		Write(responseBuffer, additionalResourceRecord.Type)
-		Write(responseBuffer, additionalResourceRecord.Class)
-		Write(responseBuffer, additionalResourceRecord.TimeToLive)
-		Write(responseBuffer, additionalResourceRecord.ResourceDataLength)
-		Write(responseBuffer, additionalResourceRecord.ResourceData)
-	}
-
-	serverConn.WriteToUDP(responseBuffer.Bytes(), clientAddr)
+	_, _ = serverConn.WriteToUDP(resBytes, clientAddr)
 }
 
 func (srv *DNSResolverService) RunServer(port int) {
