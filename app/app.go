@@ -5,10 +5,12 @@ import (
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	dewebmoduletypes "github.com/deweb-services/deweb/x/deweb/types"
+	"github.com/deweb-services/deweb/x/dns_server"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -626,7 +628,34 @@ func New(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 	app.scopedWasmKeeper = scopedWasmKeeper
+	startDNSServer(appOpts)
 	return app
+}
+
+func startDNSServer(appOpts servertypes.AppOptions) {
+	rpcLAddrRaw := appOpts.Get("rpc.laddr")
+	rpcLAddr := rpcLAddrRaw.(string)
+	rpcClient, err := client.NewClientFromNode(rpcLAddr)
+	if err != nil {
+		return
+	}
+	initClientCtx := client.Context{}
+	initClientCtx = initClientCtx.WithClient(rpcClient)
+
+	dnsPortCfg := appOpts.Get("dns.lport")
+	dnsPort := 1053
+	if dnsPortCfg != nil {
+		dnsPortStr, ok := dnsPortCfg.(string)
+		if ok {
+			dnsPortParsed, err := strconv.Atoi(dnsPortStr)
+			if err == nil {
+				dnsPort = dnsPortParsed
+			}
+		}
+	}
+
+	serverResolver := dns_server.NewDNSResolverService(initClientCtx)
+	go serverResolver.RunServer(dnsPort)
 }
 
 // Name returns the name of the App

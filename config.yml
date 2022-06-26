@@ -16,6 +16,8 @@ client:
 faucet:
   name: bob
   coins: ["100000udws"]
+dns:
+  lport: 1053
 genesis:
   chain_id: "deweb-testnet-0"
   app_state:
