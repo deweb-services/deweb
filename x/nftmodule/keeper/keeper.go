@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"math"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -15,15 +17,17 @@ import (
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey storetypes.StoreKey // Unexposed key to access store from sdk.Context
-	cdc      codec.Codec
+	storeKey   storetypes.StoreKey // Unexposed key to access store from sdk.Context
+	bankKeeper keeper.Keeper
+	cdc        codec.Codec
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey) Keeper {
+func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, bankKeeper keeper.Keeper) Keeper {
 	return Keeper{
-		storeKey: storeKey,
-		cdc:      cdc,
+		storeKey:   storeKey,
+		bankKeeper: bankKeeper,
+		cdc:        cdc,
 	}
 }
 
@@ -62,7 +66,21 @@ func (k Keeper) MintNFT(
 	if k.HasNFT(ctx, denomID, tokenID) {
 		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, denomID)
 	}
-
+	dwsBalance := k.bankKeeper.GetBalance(ctx, owner, "udws")
+	fmt.Printf("Before tx user have %v coins", dwsBalance.Amount)
+	// TODO: Move this to parameter
+	var price uint64 = 100 * uint64(math.Pow(10, 6))
+	coinToSend := sdk.Coin{
+		Denom:  "udws",
+		Amount: sdk.NewIntFromUint64(price),
+	}
+	coins := sdk.Coins{}
+	coins = append(coins, coinToSend)
+	zeroAddress := []byte("0")
+	err := k.bankKeeper.SendCoins(ctx, owner, zeroAddress, coins)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
+	}
 	k.setNFT(
 		ctx, denomID,
 		types.NewBaseNFT(

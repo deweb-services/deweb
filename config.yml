@@ -2,7 +2,7 @@ accounts:
   - name: alice
     coins: ["100000000000000udws"]
   - name: bob
-    coins: ["1000000000udws", "10000000000000000000000000000000uwsc", "1000000000000uwhns"]
+    coins: ["1000000000udws"]
 build:
   binary: "dewebd"
 validator:
