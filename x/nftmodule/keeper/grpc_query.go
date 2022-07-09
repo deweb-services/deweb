@@ -134,14 +134,14 @@ func (q queryServer) Denoms(c context.Context, req *types.QueryDenomsRequest) (*
 func (q queryServer) NFT(c context.Context, request *types.QueryNFTRequest) (*types.QueryNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	nft, err := q.GetNFT(ctx, request.DenomId, request.TokenId)
+	nft, err := q.GetNFT(ctx, request.TokenId)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid domains NFT %s ", request.TokenId)
 	}
 
 	baseNFT, ok := nft.(types.BaseNFT)
 	if !ok {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid type NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid type NFT %s from collection %s", request.TokenId)
 	}
 
 	return &types.QueryNFTResponse{NFT: &baseNFT}, nil

@@ -16,16 +16,7 @@ import (
 // SetCollection saves all NFTs and returns an error if there already exists
 func (k Keeper) SetCollection(ctx sdk.Context, collection types.Collection) error {
 	for _, nft := range collection.NFTs {
-		if err := k.MintNFT(
-			ctx,
-			collection.Denom.Id,
-			nft.GetID(),
-			nft.GetName(),
-			nft.GetURI(),
-			nft.GetURIHash(),
-			nft.GetData(),
-			nft.GetOwner(),
-		); err != nil {
+		if err := k.MintNFT(ctx, nft.GetID(), nft.GetData(), nft.GetOwner(), nil); err != nil {
 			return err
 		}
 	}

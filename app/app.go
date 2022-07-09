@@ -588,7 +588,6 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		dewebModule,
-		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()

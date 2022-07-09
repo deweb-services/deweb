@@ -43,90 +43,90 @@ func TestMsgTransferNFTGetSignersMethod(t *testing.T) {
 }
 
 func TestMsgEditNFTValidateBasicMethod(t *testing.T) {
-	newMsgEditNFT := types.NewMsgEditNFT(id, denom, nftName, tokenURI, uriHash, tokenData, "")
+	newMsgEditNFT := types.NewMsgEditNFT(id, tokenData, "")
 
 	err := newMsgEditNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgEditNFT = types.NewMsgEditNFT("", denom, nftName, tokenURI, uriHash, tokenData, address.String())
+	newMsgEditNFT = types.NewMsgEditNFT("", tokenData, address.String())
 	err = newMsgEditNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgEditNFT = types.NewMsgEditNFT(id, "", nftName, tokenURI, uriHash, tokenData, address.String())
+	newMsgEditNFT = types.NewMsgEditNFT(id, tokenData, address.String())
 	err = newMsgEditNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgEditNFT = types.NewMsgEditNFT(id, denom, nftName, tokenURI, uriHash, tokenData, address.String())
+	newMsgEditNFT = types.NewMsgEditNFT(id, tokenData, address.String())
 	err = newMsgEditNFT.ValidateBasic()
 	require.NoError(t, err)
 }
 
 func TestMsgEditNFTGetSignBytesMethod(t *testing.T) {
-	newMsgEditNFT := types.NewMsgEditNFT(id, denom, nftName, tokenURI, uriHash, tokenData, address.String())
+	newMsgEditNFT := types.NewMsgEditNFT(id, tokenData, address.String())
 	sortedBytes := newMsgEditNFT.GetSignBytes()
 	expected := `{"type":"irismod/nft/MsgEditNFT","value":{"data":"https://google.com/token-1.json","denom_id":"denom","id":"id1","name":"report","sender":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq","uri":"https://google.com/token-1.json","uri_hash":"uriHash"}}`
 	require.Equal(t, expected, string(sortedBytes))
 }
 
 func TestMsgEditNFTGetSignersMethod(t *testing.T) {
-	newMsgEditNFT := types.NewMsgEditNFT(id, denom, nftName, tokenURI, uriHash, tokenData, address.String())
+	newMsgEditNFT := types.NewMsgEditNFT(id, tokenData, address.String())
 	signers := newMsgEditNFT.GetSigners()
 	require.Equal(t, 1, len(signers))
 	require.Equal(t, address.String(), signers[0].String())
 }
 
 func TestMsgMsgMintNFTValidateBasicMethod(t *testing.T) {
-	newMsgMintNFT := types.NewMsgMintNFT(id, denom, nftName, tokenURI, uriHash, tokenData, "", address2.String())
+	newMsgMintNFT := types.NewMsgMintNFT(id, tokenData, "", address2.String())
 	err := newMsgMintNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgMintNFT = types.NewMsgMintNFT("", denom, nftName, tokenURI, uriHash, tokenData, address.String(), address2.String())
+	newMsgMintNFT = types.NewMsgMintNFT("", tokenData, address.String(), address2.String())
 	err = newMsgMintNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgMintNFT = types.NewMsgMintNFT(id, "", nftName, tokenURI, uriHash, tokenData, address.String(), address2.String())
+	newMsgMintNFT = types.NewMsgMintNFT(id, tokenData, address.String(), address2.String())
 	err = newMsgMintNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgMintNFT = types.NewMsgMintNFT(id, denom, nftName, tokenURI, uriHash, tokenData, address.String(), address2.String())
+	newMsgMintNFT = types.NewMsgMintNFT(id, tokenData, address.String(), address2.String())
 	err = newMsgMintNFT.ValidateBasic()
 	require.NoError(t, err)
 }
 
 func TestMsgMintNFTGetSignBytesMethod(t *testing.T) {
-	newMsgMintNFT := types.NewMsgMintNFT(id, denom, nftName, tokenURI, uriHash, tokenData, address.String(), address2.String())
+	newMsgMintNFT := types.NewMsgMintNFT(id, tokenData, address.String(), address2.String())
 	sortedBytes := newMsgMintNFT.GetSignBytes()
 	expected := `{"type":"irismod/nft/MsgMintNFT","value":{"data":"https://google.com/token-1.json","denom_id":"denom","id":"id1","name":"report","recipient":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj","sender":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq","uri":"https://google.com/token-1.json","uri_hash":"uriHash"}}`
 	require.Equal(t, expected, string(sortedBytes))
 }
 
 func TestMsgMsgBurnNFTValidateBasicMethod(t *testing.T) {
-	newMsgBurnNFT := types.NewMsgBurnNFT("", id, denom)
+	newMsgBurnNFT := types.NewMsgBurnNFT("", id)
 	err := newMsgBurnNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), "", denom)
+	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), "")
 	err = newMsgBurnNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), id, "")
+	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), id)
 	err = newMsgBurnNFT.ValidateBasic()
 	require.Error(t, err)
 
-	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), id, denom)
+	newMsgBurnNFT = types.NewMsgBurnNFT(address.String(), id)
 	err = newMsgBurnNFT.ValidateBasic()
 	require.NoError(t, err)
 }
 
 func TestMsgBurnNFTGetSignBytesMethod(t *testing.T) {
-	newMsgBurnNFT := types.NewMsgBurnNFT(address.String(), id, denom)
+	newMsgBurnNFT := types.NewMsgBurnNFT(address.String(), id)
 	sortedBytes := newMsgBurnNFT.GetSignBytes()
 	expected := `{"type":"irismod/nft/MsgBurnNFT","value":{"denom_id":"denom","id":"id1","sender":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq"}}`
 	require.Equal(t, expected, string(sortedBytes))
 }
 
 func TestMsgBurnNFTGetSignersMethod(t *testing.T) {
-	newMsgBurnNFT := types.NewMsgBurnNFT(address.String(), id, denom)
+	newMsgBurnNFT := types.NewMsgBurnNFT(address.String(), id)
 	signers := newMsgBurnNFT.GetSigners()
 	require.Equal(t, 1, len(signers))
 	require.Equal(t, address.String(), signers[0].String())

@@ -32,7 +32,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgEditNFT{}, "irismod/nft/MsgEditNFT", nil)
 	cdc.RegisterConcrete(&MsgMintNFT{}, "irismod/nft/MsgMintNFT", nil)
 	cdc.RegisterConcrete(&MsgBurnNFT{}, "irismod/nft/MsgBurnNFT", nil)
-	cdc.RegisterConcrete(&MsgTransferDenom{}, "irismod/nft/MsgTransferDenom", nil)
 
 	cdc.RegisterInterface((*exported.NFT)(nil), nil)
 	cdc.RegisterConcrete(&BaseNFT{}, "irismod/nft/BaseNFT", nil)
@@ -46,7 +45,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgEditNFT{},
 		&MsgMintNFT{},
 		&MsgBurnNFT{},
-		&MsgTransferDenom{},
 	)
 
 	registry.RegisterImplementations(

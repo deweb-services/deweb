@@ -12,8 +12,6 @@ type msgServer struct {
 	dnsDenomName string
 }
 
-const DNSDenomName = "domains"
-
 var _ types.MsgServer = msgServer{}
 
 // NewMsgServerImpl returns an implementation of the NFT MsgServer interface
@@ -44,20 +42,6 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeIssueDenom,
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeyDenomName, msg.Name),
-			sdk.NewAttribute(types.AttributeKeyCreator, msg.Sender),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
-
 	return &types.MsgIssueDenomResponse{}, nil
 }
 
@@ -74,56 +58,9 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	denom, found := m.Keeper.GetDenom(ctx, msg.DenomId)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", msg.DenomId)
-	}
-
-	if denom.MintRestricted && denom.Creator != sender.String() {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint NFT of denom %s", msg.Sender, msg.DenomId)
-	}
-
-	// check domain in blacklist
-	domainBlocked := CheckDomainBlocked(msg.Id)
-	if domainBlocked {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "domain %s in block list", msg.Id)
-	}
-
-	// Check ownership of upper-level domain
-	chErr := m.CheckAllowedForAddress(ctx, msg.Id, sender)
-	if chErr != nil {
-		return nil, sdkerrors.Wrapf(types.ErrDomainPermissionDenied, chErr.Error())
-	}
-
-	_, err = ParseNFTData([]byte(msg.Data))
-	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
-	}
-
-	if err := m.Keeper.MintNFT(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
-		msg.Data,
-		recipient,
-	); err != nil {
+	if err := m.Keeper.MintNFT(ctx, msg.Id, msg.Data, sender, recipient); err != nil {
 		return nil, err
 	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeMintNFT,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
-			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
 
 	return &types.MsgMintNFTResponse{}, nil
 }
@@ -140,30 +77,9 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.EditNFT(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
-		msg.Data,
-		sender,
-	); err != nil {
+	if err := m.Keeper.EditNFT(ctx, msg.Id, msg.Data, sender); err != nil {
 		return nil, err
 	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeEditNFT,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
-			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
 
 	return &types.MsgEditNFTResponse{}, nil
 }
@@ -174,37 +90,17 @@ func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT)
 		return nil, err
 	}
 
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
-	if err != nil {
-		return nil, err
+	if len(msg.Recipient) > 0 {
+		_, err = sdk.AccAddressFromBech32(msg.Recipient)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
-		msg.Name,
-		msg.URI,
-		msg.UriHash,
-		msg.Data,
-		sender,
-		recipient,
-	); err != nil {
+	if err := m.Keeper.TransferDomainOwner(ctx, msg.Id, msg.Cancel, msg.Price, sender, msg.Recipient); err != nil {
 		return nil, err
 	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeTransfer,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
 
 	return &types.MsgTransferNFTResponse{}, nil
 }
@@ -216,56 +112,9 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.BurnNFT(ctx, msg.DenomId, msg.Id, sender); err != nil {
+	if err := m.Keeper.BurnNFT(ctx, msg.Id, sender); err != nil {
 		return nil, err
 	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeBurnNFT,
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
 
 	return &types.MsgBurnNFTResponse{}, nil
-}
-
-func (m msgServer) TransferDenom(goCtx context.Context, msg *types.MsgTransferDenom) (*types.MsgTransferDenomResponse, error) {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return nil, err
-	}
-
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferDenomOwner(ctx, msg.Id, sender, recipient); err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeTransferDenom,
-			sdk.NewAttribute(types.AttributeKeyDenomID, msg.Id),
-			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
-	})
-
-	return &types.MsgTransferDenomResponse{}, nil
 }

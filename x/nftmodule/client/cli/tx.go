@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -32,7 +33,6 @@ func NewTxCmd() *cobra.Command {
 		GetCmdEditNFT(),
 		GetCmdTransferNFT(),
 		GetCmdBurnNFT(),
-		GetCmdTransferDenom(),
 	)
 
 	return txCmd
@@ -137,19 +137,18 @@ func GetCmdIssueDenom() *cobra.Command {
 // GetCmdMintNFT is the CLI command for a MintNFT transaction
 func GetCmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "mint [denom-id] [nft-id]",
-		Long: "Mint an NFT and set the owner to the recipient.",
+		Use:  "mint [domain]",
+		Long: "Register an NFT domain and set the owner to the recipient.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft mint <denom-id> <nft-id> "+
-				"--uri=<uri> "+
-				"--uri-hash=<uri-hash> "+
+			"$ %s tx nft mint <domain> "+
+				"--data=<data> "+
 				"--recipient=<recipient> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -171,30 +170,13 @@ func GetCmdMintNFT() *cobra.Command {
 			} else {
 				recipient = sender
 			}
-
-			tokenName, err := cmd.Flags().GetString(FlagTokenName)
-			if err != nil {
-				return err
-			}
-			tokenURI, err := cmd.Flags().GetString(FlagURI)
-			if err != nil {
-				return err
-			}
-			tokenURIHash, err := cmd.Flags().GetString(FlagURIHash)
-			if err != nil {
-				return err
-			}
 			tokenData, err := cmd.Flags().GetString(FlagData)
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgMintNFT(
-				args[1],
 				args[0],
-				tokenName,
-				tokenURI,
-				tokenURIHash,
 				tokenData,
 				sender,
 				recipient,
@@ -214,49 +196,28 @@ func GetCmdMintNFT() *cobra.Command {
 // GetCmdEditNFT is the CLI command for sending an MsgEditNFT transaction
 func GetCmdEditNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "edit [denom-id] [nft-id]",
-		Long: "Edit the token data of an NFT.",
+		Use:  "edit [domain]",
+		Long: "Edit the domain data of an NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft edit <denom-id> <nft-id> "+
-				"--uri=<uri> "+
-				"--uri-hash=<uri-hash> "+
+			"$ %s tx nft edit <domain> "+
+				"--data=<data> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			tokenName, err := cmd.Flags().GetString(FlagTokenName)
-			if err != nil {
-				return err
-			}
-			tokenURI, err := cmd.Flags().GetString(FlagURI)
-			if err != nil {
-				return err
-			}
-			tokenURIHash, err := cmd.Flags().GetString(FlagURIHash)
-			if err != nil {
-				return err
-			}
 			tokenData, err := cmd.Flags().GetString(FlagData)
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgEditNFT(
-				args[1],
-				args[0],
-				tokenName,
-				tokenURI,
-				tokenURIHash,
-				tokenData,
-				clientCtx.GetFromAddress().String(),
-			)
+			msg := types.NewMsgEditNFT(args[0], tokenData, clientCtx.GetFromAddress().String())
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -272,58 +233,67 @@ func GetCmdEditNFT() *cobra.Command {
 // GetCmdTransferNFT is the CLI command for sending a TransferNFT transaction
 func GetCmdTransferNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "transfer [recipient] [denom-id] [nft-id]",
-		Long: "Transfer an NFT to a recipient.",
+		Use:  "transfer [domain]",
+		Long: "Transfer an domain NFT to a recipient.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft transfer <recipient> <denom-id> <nft-id> "+
-				"--uri=<uri> "+
-				"--uri-hash=<uri-hash> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
-			version.AppName,
+			"$ %s tx nft transfer <domain> " +
+				"--recipient=<recipient> " +
+				"--cancel=<cancel> " +
+				"--price=<price_udws> " +
+				"--uri-hash=<uri-hash> " +
+				"--from=<key-name> " +
+				"--chain-id=<chain-id> " +
+				version.AppName,
 		),
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
+			tokenPriceStr, err := cmd.Flags().GetString(FlagTokenPrice)
+			if err != nil {
 				return err
+			}
+			priceInt, err := strconv.ParseUint(tokenPriceStr, 10, 64)
+			if err != nil {
+				return fmt.Errorf("cannot parse price value: %w", err)
+			}
+			cancelTransferStr, err := cmd.Flags().GetString(FlagCancel)
+			if err != nil {
+				return err
+			}
+			var cancelTransfer bool
+			if len(cancelTransferStr) > 0 {
+				cancelTransfer, err = strconv.ParseBool(cancelTransferStr)
+				if err != nil {
+					return fmt.Errorf("cannot parse cacnel flag: %w", err)
+				}
 			}
 
-			tokenName, err := cmd.Flags().GetString(FlagTokenName)
+			tokenRecipient, err := cmd.Flags().GetString(FlagRecipient)
 			if err != nil {
 				return err
 			}
-			tokenURI, err := cmd.Flags().GetString(FlagURI)
-			if err != nil {
-				return err
+			if len(tokenRecipient) > 0 {
+				if _, err := sdk.AccAddressFromBech32(tokenRecipient); err != nil {
+					return err
+				}
 			}
-			tokenURIHash, err := cmd.Flags().GetString(FlagURIHash)
-			if err != nil {
-				return err
-			}
-			tokenData, err := cmd.Flags().GetString(FlagData)
-			if err != nil {
-				return err
-			}
+
 			msg := types.NewMsgTransferNFT(
-				args[2],
-				args[1],
-				tokenName,
-				tokenURI,
-				tokenURIHash,
-				tokenData,
-				clientCtx.GetFromAddress().String(),
 				args[0],
+				priceInt,
+				cancelTransfer,
+				clientCtx.GetFromAddress().String(),
+				tokenRecipient,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			err = tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return err
 		},
 	}
 	cmd.Flags().AddFlagSet(FsTransferNFT)
@@ -335,73 +305,29 @@ func GetCmdTransferNFT() *cobra.Command {
 // GetCmdBurnNFT is the CLI command for sending a BurnNFT transaction
 func GetCmdBurnNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "burn [denom-id] [nft-id]",
-		Long: "Burn an NFT.",
+		Use:  "burn [domain]",
+		Long: "Burn a domain NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft burn <denom-id> <nft-id> "+
+			"$ %s tx nft burn <domain> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgBurnNFT(
-				clientCtx.GetFromAddress().String(),
-				args[1],
-				args[0],
-			)
+			msg := types.NewMsgBurnNFT(clientCtx.GetFromAddress().String(), args[0])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-// GetCmdTransferDenom is the CLI command for sending a TransferDenom transaction
-func GetCmdTransferDenom() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:  "transfer-denom [recipient] [denom-id]",
-		Long: "Transfer an Denom to a recipient.",
-		Example: fmt.Sprintf(
-			"$ %s tx nft transfer-denom <recipient> <denom-id> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
-			version.AppName,
-		),
-		Args: cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
-				return err
-			}
-
-			msg := types.NewMsgTransferDenom(
-				args[1],
-				clientCtx.GetFromAddress().String(),
-				args[0],
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-	cmd.Flags().AddFlagSet(FsTransferDenom)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

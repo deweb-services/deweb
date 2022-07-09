@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -15,19 +17,27 @@ import (
 	"github.com/deweb-services/deweb/x/nftmodule/types"
 )
 
+const DNSDenomName = "domains"
+
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey   storetypes.StoreKey // Unexposed key to access store from sdk.Context
-	bankKeeper keeper.Keeper
-	cdc        codec.Codec
+	storeKey                     storetypes.StoreKey // Unexposed key to access store from sdk.Context
+	bankKeeper                   keeper.Keeper
+	dnsDenomName                 string
+	domainBasePrice              uint64
+	domainDefaultValidityMinutes int
+	cdc                          codec.Codec
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
 func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, bankKeeper keeper.Keeper) Keeper {
 	return Keeper{
-		storeKey:   storeKey,
-		bankKeeper: bankKeeper,
-		cdc:        cdc,
+		storeKey:                     storeKey,
+		bankKeeper:                   bankKeeper,
+		dnsDenomName:                 DNSDenomName,
+		domainBasePrice:              100 * uint64(math.Pow(10, 6)),
+		domainDefaultValidityMinutes: 10,
+		cdc:                          cdc,
 	}
 }
 
@@ -59,53 +69,83 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 }
 
 // MintNFT mints an NFT and manages the NFT's existence within Collections and Owners
-func (k Keeper) MintNFT(
-	ctx sdk.Context, denomID, tokenID, tokenNm,
-	tokenURI, uriHash, tokenData string, owner sdk.AccAddress,
-) error {
-	if k.HasNFT(ctx, denomID, tokenID) {
-		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, denomID)
+func (k Keeper) MintNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
+	if k.HasNFT(ctx, k.dnsDenomName, tokenID) {
+		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, k.dnsDenomName)
 	}
-	dwsBalance := k.bankKeeper.GetBalance(ctx, owner, "udws")
-	fmt.Printf("Before tx user have %v coins", dwsBalance.Amount)
-	// TODO: Move this to parameter
-	var price uint64 = 100 * uint64(math.Pow(10, 6))
-	coinToSend := sdk.Coin{
-		Denom:  "udws",
-		Amount: sdk.NewIntFromUint64(price),
+	err := k.checkNFTValid(ctx, tokenID, owner)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "validation check failed")
 	}
-	coins := sdk.Coins{}
-	coins = append(coins, coinToSend)
+	domainReceivedData, err := ParseNFTData([]byte(tokenData))
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
+	}
+	domainReceivedData.Issued = time.Now()
+	domainReceivedData.ValidTill = time.Now().Add(time.Duration(k.domainDefaultValidityMinutes) * time.Minute)
+
+	dataToSaveRaw, err := json.Marshal(domainReceivedData)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
+	}
+	dataToSave := string(dataToSaveRaw)
+
 	zeroAddress := []byte("0")
-	err := k.bankKeeper.SendCoins(ctx, owner, zeroAddress, coins)
+	err = k.payForDomain(ctx, k.domainBasePrice, owner, zeroAddress)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
 	}
-	k.setNFT(
-		ctx, denomID,
-		types.NewBaseNFT(
-			tokenID,
-			tokenNm,
-			owner,
-			tokenURI,
-			uriHash,
-			tokenData,
-		),
+	k.registerDomain(
+		ctx,
+		types.NewBaseNFT(tokenID, recipient, dataToSave),
 	)
-	k.setOwner(ctx, denomID, tokenID, owner)
-	k.increaseSupply(ctx, denomID)
+	k.setOwner(ctx, k.dnsDenomName, tokenID, recipient)
+	k.increaseSupply(ctx, k.dnsDenomName)
 
 	return nil
 }
 
+func (k Keeper) checkNFTValid(ctx sdk.Context, tokenID string, owner sdk.AccAddress) error {
+	// check domain in blacklist
+	domainBlocked := CheckDomainBlocked(tokenID)
+	if domainBlocked {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "domain %s in block list", tokenID)
+	}
+
+	// Check ownership of upper-level domain
+	chErr := k.CheckAllowedForAddress(ctx, tokenID, owner)
+	if chErr != nil {
+		return sdkerrors.Wrapf(types.ErrDomainPermissionDenied, chErr.Error())
+	}
+
+	return nil
+}
+
+func (k Keeper) ProcessDomainsExpiration(ctx sdk.Context) {
+	allDomains := k.GetNFTs(ctx, k.dnsDenomName)
+	now := time.Now()
+	for _, domain := range allDomains {
+		storedData := domain.GetData()
+		domainRecord, err := ParseNFTData([]byte(storedData))
+		if err != nil {
+			k.Logger(ctx).Error(fmt.Sprintf("cannot process record for domain %s", domain.GetID()), err)
+			continue
+		}
+		if domainRecord.ValidTill.Before(now) {
+			err := k.BurnNFT(ctx, domain.GetID(), domain.GetOwner())
+			if err != nil {
+				k.Logger(ctx).Error(fmt.Sprintf("cannot burn expired domain %s", domain.GetID()), err)
+				continue
+			}
+		}
+	}
+}
+
 // EditNFT updates an already existing NFT
-func (k Keeper) EditNFT(
-	ctx sdk.Context, denomID, tokenID, tokenNm,
-	tokenURI, tokenURIHash, tokenData string, owner sdk.AccAddress,
-) error {
-	denom, found := k.GetDenom(ctx, denomID)
+func (k Keeper) EditNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress) error {
+	denom, found := k.GetDenom(ctx, k.dnsDenomName)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", k.dnsDenomName)
 	}
 
 	if denom.UpdateRestricted {
@@ -114,112 +154,121 @@ func (k Keeper) EditNFT(
 	}
 
 	// just the owner of NFT can edit
-	nft, err := k.Authorize(ctx, denomID, tokenID, owner)
+	nft, err := k.Authorize(ctx, k.dnsDenomName, tokenID, owner)
 	if err != nil {
 		return err
-	}
-
-	if types.Modified(tokenNm) {
-		nft.Name = tokenNm
-	}
-
-	if types.Modified(tokenURI) {
-		nft.URI = tokenURI
-	}
-
-	if types.Modified(tokenURIHash) {
-		nft.UriHash = tokenURIHash
 	}
 
 	if types.Modified(tokenData) {
 		nft.Data = tokenData
 	}
 
-	k.setNFT(ctx, denomID, nft)
+	k.registerDomain(ctx, nft)
 
 	return nil
 }
 
-// TransferOwner transfers the ownership of the given NFT to the new owner
-func (k Keeper) TransferOwner(
-	ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI, tokenURIHash,
-	tokenData string, srcOwner, dstOwner sdk.AccAddress,
-) error {
-	denom, found := k.GetDenom(ctx, denomID)
+// TransferDomainOwner performs 2-step transfer
+func (k Keeper) TransferDomainOwner(ctx sdk.Context, tokenID string, cancelTransfer bool, price uint64, trxSender sdk.AccAddress, recipientAddr string) error {
+	denom, found := k.GetDenom(ctx, k.dnsDenomName)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", k.dnsDenomName)
 	}
 
-	if denom.UpdateRestricted && (types.Modified(tokenNm) ||
-		types.Modified(tokenURI) ||
-		types.Modified(tokenData) ||
-		types.Modified(tokenURIHash)) {
+	if denom.UpdateRestricted {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "It is restricted to update NFT under this denom %s", denom.Id)
 	}
 
-	nft, err := k.Authorize(ctx, denomID, tokenID, srcOwner)
+	domainRec, err := k.GetNFT(ctx, tokenID)
 	if err != nil {
 		return err
 	}
+	domainRecordData, err := ParseNFTData([]byte(domainRec.GetData()))
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
+			fmt.Sprintf("cannot process record for domain %s", domainRec.GetID()), err)
+	}
+	currentOwner := domainRec.GetOwner()
+	domainRecUpdate := domainRec.(types.BaseNFT)
+	if currentOwner.Equals(trxSender) {
+		// Create transfer offer
+		// TODO: Create query to check for transfers
+		if cancelTransfer {
+			domainRecordData.TransferOffer = nil
+		} else {
+			transferOffer := &DNSTransferOffer{
+				Price:                price,
+				ExpectedOwnerAddress: recipientAddr,
+			}
+			domainRecordData.TransferOffer = transferOffer
+		}
+	} else {
+		// process request to buy
+		if domainRecordData.TransferOffer == nil {
+			return sdkerrors.Wrap(types.ErrUnauthorized, trxSender.String())
+		}
+		transferOffer := domainRecordData.TransferOffer
+		expectedReceiver := transferOffer.ExpectedOwnerAddress
+		if expectedReceiver != "" {
+			receivedAddr, err := sdk.AccAddressFromBech32(expectedReceiver)
+			if err != nil {
+				return sdkerrors.Wrap(err, "cannot process expected receiver address")
+			}
+			if !receivedAddr.Equals(trxSender) {
+				return sdkerrors.Wrap(types.ErrUnauthorized,
+					fmt.Sprintf("expected domain receiver address is %s", expectedReceiver))
+			}
+		}
+		err = k.payForDomain(ctx, transferOffer.Price, domainRec.GetOwner(), trxSender)
+		if err != nil {
+			return sdkerrors.Wrapf(err, "cannot send coins to pay for domain")
+		}
+		k.swapOwner(ctx, k.dnsDenomName, tokenID, domainRec.GetOwner(), trxSender)
+		domainRecUpdate.Owner = trxSender.String()
+		domainRecordData.TransferOffer = nil
+	}
 
-	nft.Owner = dstOwner.String()
+	dataToSaveRaw, err := json.Marshal(domainRecordData)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
+	}
+	dataToSave := string(dataToSaveRaw)
 
-	if types.Modified(tokenNm) {
-		nft.Name = tokenNm
-	}
-	if types.Modified(tokenURI) {
-		nft.URI = tokenURI
-	}
-	if types.Modified(tokenURIHash) {
-		nft.UriHash = tokenURIHash
-	}
-	if types.Modified(tokenData) {
-		nft.Data = tokenData
+	domainRecUpdate.Data = dataToSave
+	k.registerDomain(ctx, domainRecUpdate)
+
+	return nil
+}
+
+func (k Keeper) payForDomain(ctx sdk.Context, amountUDWS uint64, sender sdk.AccAddress, target sdk.AccAddress) error {
+	coinToSend := sdk.Coin{
+		Denom:  "udws",
+		Amount: sdk.NewIntFromUint64(amountUDWS),
 	}
 
-	k.setNFT(ctx, denomID, nft)
-	k.swapOwner(ctx, denomID, tokenID, srcOwner, dstOwner)
+	coins := sdk.Coins{}
+	coins = append(coins, coinToSend)
+	err := k.bankKeeper.SendCoins(ctx, sender, target, coins)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // BurnNFT deletes a specified NFT
-func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
-	if !k.HasDenomID(ctx, denomID) {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+func (k Keeper) BurnNFT(ctx sdk.Context, tokenID string, owner sdk.AccAddress) error {
+	if !k.HasDenomID(ctx, k.dnsDenomName) {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", k.dnsDenomName)
 	}
 
-	nft, err := k.Authorize(ctx, denomID, tokenID, owner)
+	nft, err := k.Authorize(ctx, k.dnsDenomName, tokenID, owner)
 	if err != nil {
 		return err
 	}
 
-	k.deleteNFT(ctx, denomID, nft)
-	k.deleteOwner(ctx, denomID, tokenID, owner)
-	k.decreaseSupply(ctx, denomID)
-
-	return nil
-}
-
-// TransferDenomOwner transfers the ownership of the given denom to the new owner
-func (k Keeper) TransferDenomOwner(
-	ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress,
-) error {
-	denom, found := k.GetDenom(ctx, denomID)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
-	}
-
-	// authorize
-	if srcOwner.String() != denom.Creator {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to transfer denom %s", srcOwner.String(), denomID)
-	}
-
-	denom.Creator = dstOwner.String()
-
-	err := k.UpdateDenom(ctx, denom)
-	if err != nil {
-		return err
-	}
+	k.deleteNFT(ctx, k.dnsDenomName, nft)
+	k.deleteOwner(ctx, k.dnsDenomName, tokenID, owner)
+	k.decreaseSupply(ctx, k.dnsDenomName)
 
 	return nil
 }

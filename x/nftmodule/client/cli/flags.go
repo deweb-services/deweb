@@ -6,12 +6,14 @@ import (
 
 const (
 	FlagTokenName   = "name"
+	FlagTokenPrice  = "price"
 	FlagURI         = "uri"
 	FlagURIHash     = "uri-hash"
 	FlagDescription = "description"
 	FlagRecipient   = "recipient"
 	FlagOwner       = "owner"
 	FlagData        = "data"
+	FlagCancel      = "cancel"
 
 	FlagDenomName        = "name"
 	FlagDenomID          = "denom-id"
@@ -22,13 +24,12 @@ const (
 )
 
 var (
-	FsIssueDenom    = flag.NewFlagSet("", flag.ContinueOnError)
-	FsMintNFT       = flag.NewFlagSet("", flag.ContinueOnError)
-	FsEditNFT       = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferNFT   = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQuerySupply   = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQueryOwner    = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferDenom = flag.NewFlagSet("", flag.ContinueOnError)
+	FsIssueDenom  = flag.NewFlagSet("", flag.ContinueOnError)
+	FsMintNFT     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsEditNFT     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferNFT = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQuerySupply = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQueryOwner  = flag.NewFlagSet("", flag.ContinueOnError)
 )
 
 func init() {
@@ -42,21 +43,14 @@ func init() {
 	FsIssueDenom.Bool(FlagMintRestricted, false, "mint restricted of nft under denom")
 	FsIssueDenom.Bool(FlagUpdateRestricted, false, "update restricted of nft under denom")
 
-	FsMintNFT.String(FlagURI, "", "The uri for supplemental off-chain tokenData (should return a JSON object)")
-	FsMintNFT.String(FlagURIHash, "", "The uri_hash is a hash of the document pointed by uri. Optional")
 	FsMintNFT.String(FlagRecipient, "", "The receiver of the nft, if not filled, the default is the sender of the transaction")
 	FsMintNFT.String(FlagData, "", "The origin data of the nft")
-	FsMintNFT.String(FlagTokenName, "", "The name of the nft")
 
-	FsEditNFT.String(FlagURI, "[do-not-modify]", "URI for the supplemental off-chain token data (should return a JSON object)")
-	FsEditNFT.String(FlagURIHash, "[do-not-modify]", "The uri_hash is a hash of the document pointed by uri. Optional")
 	FsEditNFT.String(FlagData, "[do-not-modify]", "The token data of the nft")
-	FsEditNFT.String(FlagTokenName, "[do-not-modify]", "The name of the nft")
 
-	FsTransferNFT.String(FlagURI, "[do-not-modify]", "URI for the supplemental off-chain token data (should return a JSON object)")
-	FsTransferNFT.String(FlagURIHash, "[do-not-modify]", "The uri_hash is a hash of the document pointed by uri. Optional")
-	FsTransferNFT.String(FlagData, "[do-not-modify]", "The token data of the nft")
-	FsTransferNFT.String(FlagTokenName, "[do-not-modify]", "The name of the nft")
+	FsTransferNFT.String(FlagRecipient, "", "Domain NFT recipient")
+	FsTransferNFT.String(FlagTokenPrice, "0", "Price for NFT in uDWS")
+	FsTransferNFT.String(FlagCancel, "false", "Cancel created transfer for NFT")
 
 	FsQuerySupply.String(FlagOwner, "", "The owner of the nft")
 

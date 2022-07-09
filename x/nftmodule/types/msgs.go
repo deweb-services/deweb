@@ -21,7 +21,6 @@ var (
 	_ sdk.Msg = &MsgEditNFT{}
 	_ sdk.Msg = &MsgMintNFT{}
 	_ sdk.Msg = &MsgBurnNFT{}
-	_ sdk.Msg = &MsgTransferDenom{}
 )
 
 // NewMsgIssueDenom is a constructor function for MsgSetName
@@ -79,15 +78,12 @@ func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
 
 // NewMsgTransferNFT is a constructor function for MsgSetName
 func NewMsgTransferNFT(
-	tokenID, denomID, tokenName, tokenURI, tokenURIHash, tokenData, sender, recipient string,
+	tokenID string, transferPrice uint64, cancelTransfer bool, sender, recipient string,
 ) *MsgTransferNFT {
 	return &MsgTransferNFT{
 		Id:        tokenID,
-		DenomId:   denomID,
-		Name:      tokenName,
-		URI:       tokenURI,
-		UriHash:   tokenURIHash,
-		Data:      tokenData,
+		Price:     transferPrice,
+		Cancel:    cancelTransfer,
 		Sender:    sender,
 		Recipient: recipient,
 	}
@@ -101,16 +97,8 @@ func (msg MsgTransferNFT) Type() string { return TypeMsgTransferNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgTransferNFT) ValidateBasic() error {
-	if err := ValidateDenomID(msg.DenomId); err != nil {
-		return err
-	}
-
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
 	return ValidateTokenID(msg.Id)
 }
@@ -131,17 +119,11 @@ func (msg MsgTransferNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgEditNFT is a constructor function for MsgSetName
-func NewMsgEditNFT(
-	tokenID, denomID, tokenName, tokenURI, tokenURIHash, tokenData, sender string,
-) *MsgEditNFT {
+func NewMsgEditNFT(tokenID, tokenData, sender string) *MsgEditNFT {
 	return &MsgEditNFT{
-		Id:      tokenID,
-		DenomId: denomID,
-		Name:    tokenName,
-		URI:     tokenURI,
-		UriHash: tokenURIHash,
-		Data:    tokenData,
-		Sender:  sender,
+		Id:     tokenID,
+		Data:   tokenData,
+		Sender: sender,
 	}
 }
 
@@ -155,14 +137,6 @@ func (msg MsgEditNFT) Type() string { return TypeMsgEditNFT }
 func (msg MsgEditNFT) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
-	}
-
-	if err := ValidateDenomID(msg.DenomId); err != nil {
-		return err
-	}
-
-	if err := ValidateTokenURI(msg.URI); err != nil {
-		return err
 	}
 	return ValidateTokenID(msg.Id)
 }
@@ -183,15 +157,9 @@ func (msg MsgEditNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgMintNFT is a constructor function for MsgMintNFT
-func NewMsgMintNFT(
-	tokenID, denomID, tokenName, tokenURI, tokenURIHash, tokenData, sender, recipient string,
-) *MsgMintNFT {
+func NewMsgMintNFT(tokenID, tokenData, sender, recipient string) *MsgMintNFT {
 	return &MsgMintNFT{
 		Id:        tokenID,
-		DenomId:   denomID,
-		Name:      tokenName,
-		URI:       tokenURI,
-		UriHash:   tokenURIHash,
 		Data:      tokenData,
 		Sender:    sender,
 		Recipient: recipient,
@@ -212,15 +180,6 @@ func (msg MsgMintNFT) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid receipt address (%s)", err)
 	}
-	if err := ValidateDenomID(msg.DenomId); err != nil {
-		return err
-	}
-	if err := ValidateKeywords(msg.DenomId); err != nil {
-		return err
-	}
-	if err := ValidateTokenURI(msg.URI); err != nil {
-		return err
-	}
 	return ValidateTokenID(msg.Id)
 }
 
@@ -240,11 +199,10 @@ func (msg MsgMintNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgBurnNFT is a constructor function for MsgBurnNFT
-func NewMsgBurnNFT(sender, tokenID, denomID string) *MsgBurnNFT {
+func NewMsgBurnNFT(sender, tokenID string) *MsgBurnNFT {
 	return &MsgBurnNFT{
-		Sender:  sender,
-		Id:      tokenID,
-		DenomId: denomID,
+		Sender: sender,
+		Id:     tokenID,
 	}
 }
 
@@ -259,9 +217,6 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
-	if err := ValidateDenomID(msg.DenomId); err != nil {
-		return err
-	}
 	return ValidateTokenID(msg.Id)
 }
 
@@ -273,50 +228,6 @@ func (msg MsgBurnNFT) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
-// NewMsgTransferDenom is a constructor function for msgTransferDenom
-func NewMsgTransferDenom(denomId, sender, recipient string) *MsgTransferDenom {
-	return &MsgTransferDenom{
-		Id:        denomId,
-		Sender:    sender,
-		Recipient: recipient,
-	}
-}
-
-// Route Implements Msg
-func (msg MsgTransferDenom) Route() string { return RouterKey }
-
-// Type Implements Msg
-func (msg MsgTransferDenom) Type() string { return TypeMsgTransferDenom }
-
-// ValidateBasic Implements Msg.
-func (msg MsgTransferDenom) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
-	}
-	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
-	}
-	if err := ValidateDenomID(msg.Id); err != nil {
-		return err
-	}
-	return nil
-}
-
-// GetSignBytes Implements Msg.
-func (msg MsgTransferDenom) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
-}
-
-// GetSigners Implements Msg.
-func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)

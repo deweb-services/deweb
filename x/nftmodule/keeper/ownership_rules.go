@@ -42,10 +42,10 @@ func CheckDomainBlocked(domain string) bool {
 	return false
 }
 
-func (m msgServer) CheckAllowedForAddress(ctx types.Context, dnsName string, creatorAddress types.AccAddress) error {
+func (k Keeper) CheckAllowedForAddress(ctx types.Context, dnsName string, creatorAddress types.AccAddress) error {
 	domainParts := strings.Split(dnsName, ".")
 	if len(domainParts) == 1 {
-		_, err := m.Keeper.GetNFT(ctx, m.dnsDenomName, domainParts[0])
+		_, err := k.GetNFT(ctx, domainParts[0])
 		if err == nil {
 			return DomainAlreadyCreated{domainName: domainParts[0]}
 		}
@@ -53,15 +53,15 @@ func (m msgServer) CheckAllowedForAddress(ctx types.Context, dnsName string, cre
 	}
 	parentDomainParts := domainParts[1:len(domainParts)]
 	parentDomain := strings.Join(parentDomainParts, ".")
-	chErr := m.checkUserOwnsDomain(ctx, parentDomain, creatorAddress)
+	chErr := k.checkUserOwnsDomain(ctx, parentDomain, creatorAddress)
 	if chErr != nil {
 		return errors.Wrap(chErr, "parent domain check error")
 	}
 	return nil
 }
 
-func (m msgServer) checkUserOwnsDomain(ctx types.Context, dnsName string, creatorAddress types.AccAddress) error {
-	nftRec, err := m.Keeper.GetNFT(ctx, m.dnsDenomName, dnsName)
+func (k Keeper) checkUserOwnsDomain(ctx types.Context, dnsName string, creatorAddress types.AccAddress) error {
+	nftRec, err := k.GetNFT(ctx, dnsName)
 	if err != nil {
 		return DomainDoesntExist{domainName: dnsName}
 	}

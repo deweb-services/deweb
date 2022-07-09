@@ -218,24 +218,23 @@ func GetCmdQueryDenom() *cobra.Command {
 // GetCmdQueryNFT queries a single NFTs from a collection
 func GetCmdQueryNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "token [denom-id] [nft-id]",
-		Long:    "Query a single NFT from a collection.",
-		Example: fmt.Sprintf("$ %s query nft token <denom-id> <nft-id>", version.AppName),
-		Args:    cobra.ExactArgs(2),
+		Use:     "token [domain]",
+		Long:    "Query a single domain NFT ",
+		Example: fmt.Sprintf("$ %s query nft token <domain>", version.AppName),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			if err := types.ValidateTokenID(args[1]); err != nil {
+			if err := types.ValidateTokenID(args[0]); err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.NFT(context.Background(), &types.QueryNFTRequest{
-				DenomId: args[0],
-				TokenId: args[1],
+				TokenId: args[0],
 			})
 			if err != nil {
 				return err

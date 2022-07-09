@@ -11,8 +11,6 @@ validator:
 client:
   openapi:
     path: "docs/static/openapi.yml"
-  vuex:
-    path: "vue/src/store"
 faucet:
   name: bob
   coins: ["100000udws"]

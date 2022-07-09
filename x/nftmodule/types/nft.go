@@ -9,14 +9,11 @@ import (
 var _ exported.NFT = BaseNFT{}
 
 // NewBaseNFT creates a new NFT instance
-func NewBaseNFT(id, name string, owner sdk.AccAddress, uri, uriHash, data string) BaseNFT {
+func NewBaseNFT(id string, owner sdk.AccAddress, data string) BaseNFT {
 	return BaseNFT{
-		Id:      id,
-		Name:    name,
-		Owner:   owner.String(),
-		URI:     uri,
-		UriHash: uriHash,
-		Data:    data,
+		Id:    id,
+		Owner: owner.String(),
+		Data:  data,
 	}
 }
 

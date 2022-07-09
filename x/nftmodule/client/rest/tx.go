@@ -100,14 +100,7 @@ func editNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		// create the message
-		msg := types.NewMsgEditNFT(
-			vars[RestParamTokenID],
-			vars[RestParamDenomID],
-			req.Name,
-			req.URI,
-			req.UriHash,
-			req.Data, req.Owner,
-		)
+		msg := types.NewMsgEditNFT(vars[RestParamTokenID], req.Data, req.Owner)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -167,11 +160,7 @@ func burnNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		// create the message
-		msg := types.NewMsgBurnNFT(
-			req.Owner,
-			vars[RestParamTokenID],
-			vars[RestParamDenomID],
-		)
+		msg := types.NewMsgBurnNFT(req.Owner, vars[RestParamTokenID])
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

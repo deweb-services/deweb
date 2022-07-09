@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 type DNSTypeRecord struct {
@@ -10,8 +11,16 @@ type DNSTypeRecord struct {
 	RecordValues []string `json:"values"`
 }
 
+type DNSTransferOffer struct {
+	Price                uint64 `json:"price"` // in udws
+	ExpectedOwnerAddress string `json:"expected_owner_address"`
+}
+
 type DNSNameRecord struct {
-	Records []DNSTypeRecord `json:"records"`
+	Issued        time.Time         `json:"issued"`
+	ValidTill     time.Time         `json:"valid_till"`
+	TransferOffer *DNSTransferOffer `json:"transfer_offer"`
+	Records       []DNSTypeRecord   `json:"records"`
 }
 
 func ParseNFTData(data []byte) (DNSNameRecord, error) {

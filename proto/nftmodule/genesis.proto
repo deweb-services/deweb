@@ -1,0 +1,12 @@
+syntax = "proto3";
+package dewebservices.nft;
+
+import "gogoproto/gogo.proto";
+import "nftmodule/nft.proto";
+
+option go_package = "github.com/deweb-services/deweb/x/nftmodule/types";
+
+// GenesisState defines the NFT module's genesis state
+message GenesisState {
+    repeated Collection collections = 1 [ (gogoproto.nullable) = false ];
+}

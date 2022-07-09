@@ -96,7 +96,6 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 	resp, err := queryClient.NFT(
 		context.Background(),
 		&types.QueryNFTRequest{
-			DenomId: "domains",
 			TokenId: domain,
 		},
 	)

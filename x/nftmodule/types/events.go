@@ -18,5 +18,6 @@ var (
 	AttributeKeyTokenID   = "token_id"
 	AttributeKeyTokenURI  = "token_uri"
 	AttributeKeyDenomID   = "denom_id"
+	AttributeKeyPrice     = "price"
 	AttributeKeyDenomName = "denom_name"
 )

@@ -9,10 +9,10 @@ import (
 )
 
 // GetNFT gets the the specified NFT
-func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {
+func (k Keeper) GetNFT(ctx sdk.Context, tokenID string) (nft exported.NFT, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.KeyNFT(denomID, tokenID))
+	bz := store.Get(types.KeyNFT(k.dnsDenomName, tokenID))
 	if bz == nil {
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "not found NFT: %s", tokenID)
 	}
@@ -41,7 +41,7 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
 // Authorize checks if the sender is the owner of the given NFT
 // Return the NFT if true, an error otherwise
 func (k Keeper) Authorize(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) (types.BaseNFT, error) {
-	nft, err := k.GetNFT(ctx, denomID, tokenID)
+	nft, err := k.GetNFT(ctx, tokenID)
 	if err != nil {
 		return types.BaseNFT{}, err
 	}
@@ -59,11 +59,11 @@ func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
 	return store.Has(types.KeyNFT(denomID, tokenID))
 }
 
-func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
+func (k Keeper) registerDomain(ctx sdk.Context, nft types.BaseNFT) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshal(&nft)
-	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
+	store.Set(types.KeyNFT(k.dnsDenomName, nft.GetID()), bz)
 }
 
 // deleteNFT deletes an existing NFT from store

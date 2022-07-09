@@ -128,14 +128,3 @@ func QueryNFTExec(clientCtx client.Context, denomID string, tokenID string, extr
 
 	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryNFT(), args)
 }
-
-func TransferDenomExec(clientCtx client.Context, from string, recipient string, denomID string, extraArgs ...string) (testutil.BufferWriter, error) {
-	args := []string{
-		recipient,
-		denomID,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
-	}
-
-	args = append(args, extraArgs...)
-	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdTransferDenom(), args)
-}
