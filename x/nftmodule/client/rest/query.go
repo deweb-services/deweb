@@ -21,7 +21,21 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router, queryRoute string
 
 func queryParams(cliCtx client.Context, queryRoute string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
 
+		res, height, err := cliCtx.Query(
+			fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryParams),
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
 

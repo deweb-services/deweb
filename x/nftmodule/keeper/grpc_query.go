@@ -24,9 +24,14 @@ func NewQueryServerImpl(keeper Keeper) types.QueryServer {
 	}
 }
 
-func (q queryServer) Params(context.Context, *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	// TODO:Implement
-	return nil, nil
+func (q queryServer) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	params := q.GetParams(ctx)
+
+	return &types.QueryParamsResponse{
+		Params: params,
+	}, nil
 }
 
 func (q queryServer) Domain(c context.Context, request *types.QueryDomainRequest) (*types.QueryDomainResponse, error) {

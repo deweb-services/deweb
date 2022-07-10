@@ -147,7 +147,7 @@ func (m *MsgEditDomain) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgEditDomain proto.InternalMessageInfo
 
-// MsgEditNFTResponse defines the Msg/EditDomain response type.
+// MsgEditNFTResponse defines the Msg/EditNFT response type.
 type MsgEditdomainResponse struct {
 }
 
@@ -225,7 +225,7 @@ func (m *MsgRegisterDomain) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterDomain proto.InternalMessageInfo
 
-// MsgMintNFTResponse defines the Msg/RegisterDomain response type.
+// MsgMintNFTResponse defines the Msg/MintNFT response type.
 type MsgRegisterDomainResponse struct {
 }
 
@@ -522,7 +522,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// RegisterDomain defines a method for mint a new nft
+	// MintNFT defines a method for mint a new nft
 	RegisterDomain(ctx context.Context, in *MsgRegisterDomain, opts ...grpc.CallOption) (*MsgRegisterDomainResponse, error)
 	// RefundHTLC defines a method for editing a nft.
 	EditDomain(ctx context.Context, in *MsgEditDomain, opts ...grpc.CallOption) (*MsgEditdomainResponse, error)
@@ -578,7 +578,7 @@ func (c *msgClient) RemoveDomain(ctx context.Context, in *MsgRemoveDomain, opts 
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// RegisterDomain defines a method for mint a new nft
+	// MintNFT defines a method for mint a new nft
 	RegisterDomain(context.Context, *MsgRegisterDomain) (*MsgRegisterDomainResponse, error)
 	// RefundHTLC defines a method for editing a nft.
 	EditDomain(context.Context, *MsgEditDomain) (*MsgEditdomainResponse, error)

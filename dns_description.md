@@ -55,6 +55,22 @@ After transfer Alice cannot edit Bob's domain, but he can change DNS records:
 ./dewebd tx nft edit domains `bob.alice.deweb` --data="$BasicDataWithMX" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
+## Module parameters 
+
+Parameters to change:
+
+- DomainPrice
+- DomainExpiration
+- DomainOwnerProlongation
+- BlockedTLDs
+
+Submit proposal command:
+```
+./dewebd tx gov submit-proposal param-change dns_proposal.json --from alice --chain-id deweb-testnet-0 --gas 2000000
+```
+
+
+
 ## DNS Server
 
 DNS Server starts with node process. Listen for UDP/1053, this parameter can be changed in client.toml in config path (~/.deweb/config/config.toml).
