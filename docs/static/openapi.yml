@@ -15772,10 +15772,10 @@ paths:
                   domainPrice:
                     type: string
                     format: uint64
-                  domainExpirationMinutes:
+                  domainExpirationHours:
                     type: string
                     format: int64
-                  domainOwnerProlongationMinutes:
+                  domainOwnerProlongationHours:
                     type: string
                     format: int64
                   blockTLDs:
@@ -25584,10 +25584,10 @@ definitions:
       domainPrice:
         type: string
         format: uint64
-      domainExpirationMinutes:
+      domainExpirationHours:
         type: string
         format: int64
-      domainOwnerProlongationMinutes:
+      domainOwnerProlongationHours:
         type: string
         format: int64
       blockTLDs:
@@ -25625,10 +25625,10 @@ definitions:
           domainPrice:
             type: string
             format: uint64
-          domainExpirationMinutes:
+          domainExpirationHours:
             type: string
             format: int64
-          domainOwnerProlongationMinutes:
+          domainOwnerProlongationHours:
             type: string
             format: int64
           blockTLDs:

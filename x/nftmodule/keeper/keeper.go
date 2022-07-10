@@ -88,8 +88,8 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, tokenID, tokenData string, owner
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
 	}
 	domainReceivedData.Issued = time.Now()
-	domainExpirationMinutes := k.DomainExpirationMinutes(ctx)
-	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationMinutes) * time.Minute)
+	domainExpirationHours := k.DomainExpirationHours(ctx)
+	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationHours) * time.Hour)
 
 	dataToSaveRaw, err := json.Marshal(domainReceivedData)
 	if err != nil {
@@ -120,16 +120,16 @@ func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseNFT, owner 
 		return sdkerrors.Wrapf(err, "cannot process record for domain %s", domain.GetID())
 	}
 	now := time.Now()
-	prologMinutes := k.DomainOwnerProlongationMinutes(ctx)
-	prologDuration := time.Duration(prologMinutes) * time.Minute
+	prologHourss := k.DomainOwnerProlongationHours(ctx)
+	prologDuration := time.Duration(prologHourss) * time.Hour
 	allowedProlongationAfter := domainRecordData.ValidTill.Add(-prologDuration)
 	if allowedProlongationAfter.After(now) {
 		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists,
 			"Domain %s prolongation not allowed not, try after %s",
 			domain.GetID(), allowedProlongationAfter.Format("2006-01-02T15:04:05"))
 	}
-	domainExpirationMinutes := k.DomainExpirationMinutes(ctx)
-	domainRecordData.ValidTill = domainRecordData.ValidTill.Add(time.Duration(domainExpirationMinutes) * time.Minute)
+	domainExpirationHours := k.DomainExpirationHours(ctx)
+	domainRecordData.ValidTill = domainRecordData.ValidTill.Add(time.Duration(domainExpirationHours) * time.Hour)
 	dataToSaveRaw, err := json.Marshal(domainRecordData)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
