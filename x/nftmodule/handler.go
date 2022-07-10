@@ -16,24 +16,20 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgIssueDenom:
-			res, err := msgServer.IssueDenom(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgRegisterDomain:
+			res, err := msgServer.RegisterDomain(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgMintNFT:
-			res, err := msgServer.MintNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgTransferDomain:
+			res, err := msgServer.TransferDomain(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgTransferNFT:
-			res, err := msgServer.TransferNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgEditDomain:
+			res, err := msgServer.EditDomain(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgEditNFT:
-			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-
-		case *types.MsgBurnNFT:
-			res, err := msgServer.BurnNFT(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgRemoveDomain:
+			res, err := msgServer.RemoveDomain(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:

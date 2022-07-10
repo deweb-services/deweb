@@ -14,7 +14,6 @@ func RegisterHandlers(cliCtx client.Context, r *mux.Router, queryRoute string) {
 }
 
 const (
-	RestParamDenomID = "denom-id"
 	RestParamTokenID = "token-id"
 	RestParamOwner   = "owner"
 )
@@ -34,38 +33,29 @@ type issueDenomReq struct {
 	Data             string       `json:"data"`
 }
 
-type mintNFTReq struct {
+type registerDomainReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`
 	Owner     string       `json:"owner"`
 	Recipient string       `json:"recipient"`
-	DenomID   string       `json:"denom_id"`
 	ID        string       `json:"id"`
-	Name      string       `json:"name"`
-	URI       string       `json:"uri"`
-	UriHash   string       `json:"uri_hash"`
 	Data      string       `json:"data"`
 }
 
-type editNFTReq struct {
+type editDomainReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
-	Name    string       `json:"name"`
-	URI     string       `json:"uri"`
-	UriHash string       `json:"uri_hash"`
 	Data    string       `json:"data"`
 }
 
-type transferNFTReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	Owner     string       `json:"owner"`
-	Recipient string       `json:"recipient"`
-	Name      string       `json:"name"`
-	URI       string       `json:"uri"`
-	UriHash   string       `json:"uri_hash"`
-	Data      string       `json:"data"`
+type transferDomainReq struct {
+	BaseReq     rest.BaseReq `json:"base_req"`
+	Owner       string       `json:"owner"`
+	Recipient   string       `json:"recipient"`
+	Price       uint64       `json:"price"`
+	CancelOffer bool         `json:"cancel_offer"`
 }
 
-type burnNFTReq struct {
+type RemoveDomainReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
 }

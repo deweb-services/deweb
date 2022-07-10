@@ -27,24 +27,22 @@ func init() {
 
 // RegisterLegacyAminoCodec concrete types on codec
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgIssueDenom{}, "irismod/nft/MsgIssueDenom", nil)
-	cdc.RegisterConcrete(&MsgTransferNFT{}, "irismod/nft/MsgTransferNFT", nil)
-	cdc.RegisterConcrete(&MsgEditNFT{}, "irismod/nft/MsgEditNFT", nil)
-	cdc.RegisterConcrete(&MsgMintNFT{}, "irismod/nft/MsgMintNFT", nil)
-	cdc.RegisterConcrete(&MsgBurnNFT{}, "irismod/nft/MsgBurnNFT", nil)
+	cdc.RegisterConcrete(&MsgTransferDomain{}, "deweb/dns/MsgTransferDomain", nil)
+	cdc.RegisterConcrete(&MsgEditDomain{}, "deweb/dns/MsgEditDomain", nil)
+	cdc.RegisterConcrete(&MsgRegisterDomain{}, "deweb/dns/MsgRegisterDomain", nil)
+	cdc.RegisterConcrete(&MsgRemoveDomain{}, "deweb/dns/MsgRemoveDomain", nil)
 
 	cdc.RegisterInterface((*exported.NFT)(nil), nil)
-	cdc.RegisterConcrete(&BaseNFT{}, "irismod/nft/BaseNFT", nil)
+	cdc.RegisterConcrete(&BaseNFT{}, "deweb/dns/BaseNFT", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgIssueDenom{},
-		&MsgTransferNFT{},
-		&MsgEditNFT{},
-		&MsgMintNFT{},
-		&MsgBurnNFT{},
+		&MsgTransferDomain{},
+		&MsgEditDomain{},
+		&MsgRegisterDomain{},
+		&MsgRemoveDomain{},
 	)
 
 	registry.RegisterImplementations(

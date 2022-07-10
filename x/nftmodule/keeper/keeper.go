@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	"math"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -21,23 +21,25 @@ const DNSDenomName = "domains"
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey                     storetypes.StoreKey // Unexposed key to access store from sdk.Context
-	bankKeeper                   keeper.Keeper
-	dnsDenomName                 string
-	domainBasePrice              uint64
-	domainDefaultValidityMinutes int
-	cdc                          codec.Codec
+	storeKey     storetypes.StoreKey // Unexposed key to access store from sdk.Context
+	bankKeeper   keeper.Keeper
+	dnsDenomName string
+	paramStore   paramtypes.Subspace
+	cdc          codec.Codec
 }
 
 // NewKeeper creates a new instance of the NFT Keeper
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, bankKeeper keeper.Keeper) Keeper {
+func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, bankKeeper keeper.Keeper, ps paramtypes.Subspace) Keeper {
+	// set KeyTable if it has not already been set
+	if !ps.HasKeyTable() {
+		ps = ps.WithKeyTable(types.ParamKeyTable())
+	}
 	return Keeper{
-		storeKey:                     storeKey,
-		bankKeeper:                   bankKeeper,
-		dnsDenomName:                 DNSDenomName,
-		domainBasePrice:              100 * uint64(math.Pow(10, 6)),
-		domainDefaultValidityMinutes: 10,
-		cdc:                          cdc,
+		storeKey:     storeKey,
+		bankKeeper:   bankKeeper,
+		dnsDenomName: DNSDenomName,
+		paramStore:   ps,
+		cdc:          cdc,
 	}
 }
 
@@ -68,10 +70,14 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 	})
 }
 
-// MintNFT mints an NFT and manages the NFT's existence within Collections and Owners
-func (k Keeper) MintNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
+// RegisterDomain mints an NFT and manages the NFT's existence within Collections and Owners
+func (k Keeper) RegisterDomain(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
 	if k.HasNFT(ctx, k.dnsDenomName, tokenID) {
-		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, k.dnsDenomName)
+		domain, err := k.Authorize(ctx, k.dnsDenomName, tokenID, owner)
+		if err != nil {
+			return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "Domain %s already exists in collection %s", tokenID, k.dnsDenomName)
+		}
+		return k.domainProlongation(ctx, domain, owner)
 	}
 	err := k.checkNFTValid(ctx, tokenID, owner)
 	if err != nil {
@@ -82,7 +88,8 @@ func (k Keeper) MintNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.Ac
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
 	}
 	domainReceivedData.Issued = time.Now()
-	domainReceivedData.ValidTill = time.Now().Add(time.Duration(k.domainDefaultValidityMinutes) * time.Minute)
+	domainExpirationMinutes := k.DomainExpirationMinutes(ctx)
+	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationMinutes) * time.Minute)
 
 	dataToSaveRaw, err := json.Marshal(domainReceivedData)
 	if err != nil {
@@ -91,7 +98,8 @@ func (k Keeper) MintNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.Ac
 	dataToSave := string(dataToSaveRaw)
 
 	zeroAddress := []byte("0")
-	err = k.payForDomain(ctx, k.domainBasePrice, owner, zeroAddress)
+	domainPriceUDWS := k.DomainPriceUDWS(ctx)
+	err = k.payForDomain(ctx, domainPriceUDWS, owner, zeroAddress)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
 	}
@@ -105,9 +113,42 @@ func (k Keeper) MintNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.Ac
 	return nil
 }
 
+func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseNFT, owner sdk.AccAddress) error {
+	storedData := domain.GetData()
+	domainRecordData, err := ParseNFTData([]byte(storedData))
+	if err != nil {
+		return sdkerrors.Wrapf(err, "cannot process record for domain %s", domain.GetID())
+	}
+	now := time.Now()
+	prologMinutes := k.DomainOwnerProlongationMinutes(ctx)
+	prologDuration := time.Duration(prologMinutes) * time.Minute
+	allowedProlongationAfter := domainRecordData.ValidTill.Add(-prologDuration)
+	if allowedProlongationAfter.After(now) {
+		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists,
+			"Domain %s prolongation not allowed not, try after %s",
+			domain.GetID(), allowedProlongationAfter.Format("2006-01-02T15:04:05"))
+	}
+	domainExpirationMinutes := k.DomainExpirationMinutes(ctx)
+	domainRecordData.ValidTill = domainRecordData.ValidTill.Add(time.Duration(domainExpirationMinutes) * time.Minute)
+	dataToSaveRaw, err := json.Marshal(domainRecordData)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
+	}
+	dataToSave := string(dataToSaveRaw)
+	zeroAddress := []byte("0")
+	domainPriceUDWS := k.DomainPriceUDWS(ctx)
+	err = k.payForDomain(ctx, domainPriceUDWS, owner, zeroAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
+	}
+	domain.Data = dataToSave
+	k.registerDomain(ctx, domain)
+	return nil
+}
+
 func (k Keeper) checkNFTValid(ctx sdk.Context, tokenID string, owner sdk.AccAddress) error {
 	// check domain in blacklist
-	domainBlocked := CheckDomainBlocked(tokenID)
+	domainBlocked := k.CheckDomainBlocked(ctx, tokenID)
 	if domainBlocked {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "domain %s in block list", tokenID)
 	}
@@ -141,29 +182,33 @@ func (k Keeper) ProcessDomainsExpiration(ctx sdk.Context) {
 	}
 }
 
-// EditNFT updates an already existing NFT
-func (k Keeper) EditNFT(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress) error {
-	denom, found := k.GetDenom(ctx, k.dnsDenomName)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", k.dnsDenomName)
-	}
-
-	if denom.UpdateRestricted {
-		// if true , nobody can update the NFT under this denom
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "nobody can update the NFT under this denom %s", denom.Id)
-	}
-
+// EditDomain updates an already existing NFT
+func (k Keeper) EditDomain(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress) error {
 	// just the owner of NFT can edit
-	nft, err := k.Authorize(ctx, k.dnsDenomName, tokenID, owner)
+	domain, err := k.Authorize(ctx, k.dnsDenomName, tokenID, owner)
 	if err != nil {
 		return err
 	}
 
 	if types.Modified(tokenData) {
-		nft.Data = tokenData
+		domainRecordData, err := ParseNFTData([]byte(domain.Data))
+		if err != nil {
+			return sdkerrors.Wrapf(err, "cannot process record for domain %s", domain.GetID())
+		}
+		receivedUpdateData, err := ParseNFTData([]byte(tokenData))
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
+		}
+		domainRecordData.Records = receivedUpdateData.Records
+		dataToSaveRaw, err := json.Marshal(domainRecordData)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
+		}
+		dataToSave := string(dataToSaveRaw)
+		domain.Data = dataToSave
 	}
 
-	k.registerDomain(ctx, nft)
+	k.registerDomain(ctx, domain)
 
 	return nil
 }
@@ -191,8 +236,7 @@ func (k Keeper) TransferDomainOwner(ctx sdk.Context, tokenID string, cancelTrans
 	currentOwner := domainRec.GetOwner()
 	domainRecUpdate := domainRec.(types.BaseNFT)
 	if currentOwner.Equals(trxSender) {
-		// Create transfer offer
-		// TODO: Create query to check for transfers
+		// Create of cancel transfer offer by owner
 		if cancelTransfer {
 			domainRecordData.TransferOffer = nil
 		} else {

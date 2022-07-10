@@ -156,7 +156,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	supplyResp := respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(1), supplyResp.Amount)
 
-	//------test GetCmdQueryNFT()-------------
+	//------test GetCmdQueryDomain()-------------
 	url = fmt.Sprintf("%s/irismod/nft/nfts/%s/%s", baseURL, denomID, tokenID)
 	resp, err = rest.GetRequest(url)
 	respType = proto.Message(&nfttypes.QueryNFTResponse{})

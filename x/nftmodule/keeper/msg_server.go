@@ -23,29 +23,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	}
 }
 
-// IssueDenom issue a new denom.
-func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (*types.MsgIssueDenomResponse, error) {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Id != m.dnsDenomName {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidDenom, "only denomID %s allowed", m.dnsDenomName)
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, msg.Symbol, sender,
-		msg.MintRestricted, msg.UpdateRestricted,
-		msg.Description, msg.Uri, msg.UriHash, msg.Data,
-	); err != nil {
-		return nil, err
-	}
-
-	return &types.MsgIssueDenomResponse{}, nil
-}
-
-func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.MsgMintNFTResponse, error) {
+func (m msgServer) RegisterDomain(goCtx context.Context, msg *types.MsgRegisterDomain) (*types.MsgRegisterDomainResponse, error) {
 	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
 	if err != nil {
 		return nil, err
@@ -58,14 +36,14 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.MintNFT(ctx, msg.Id, msg.Data, sender, recipient); err != nil {
+	if err := m.Keeper.RegisterDomain(ctx, msg.Id, msg.Data, sender, recipient); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgMintNFTResponse{}, nil
+	return &types.MsgRegisterDomainResponse{}, nil
 }
 
-func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types.MsgEditNFTResponse, error) {
+func (m msgServer) EditDomain(goCtx context.Context, msg *types.MsgEditDomain) (*types.MsgEditdomainResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -77,14 +55,14 @@ func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.EditNFT(ctx, msg.Id, msg.Data, sender); err != nil {
+	if err := m.Keeper.EditDomain(ctx, msg.Id, msg.Data, sender); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgEditNFTResponse{}, nil
+	return &types.MsgEditdomainResponse{}, nil
 }
 
-func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT) (*types.MsgTransferNFTResponse, error) {
+func (m msgServer) TransferDomain(goCtx context.Context, msg *types.MsgTransferDomain) (*types.MsgTransferDomainResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -102,10 +80,10 @@ func (m msgServer) TransferNFT(goCtx context.Context, msg *types.MsgTransferNFT)
 		return nil, err
 	}
 
-	return &types.MsgTransferNFTResponse{}, nil
+	return &types.MsgTransferDomainResponse{}, nil
 }
 
-func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.MsgBurnNFTResponse, error) {
+func (m msgServer) RemoveDomain(goCtx context.Context, msg *types.MsgRemoveDomain) (*types.MsgRemoveDomainResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
@@ -116,5 +94,5 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 		return nil, err
 	}
 
-	return &types.MsgBurnNFTResponse{}, nil
+	return &types.MsgRemoveDomainResponse{}, nil
 }

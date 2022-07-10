@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	supplyResp := respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(1), supplyResp.Amount)
 
-	//------test GetCmdQueryNFT()-------------
+	//------test GetCmdQueryDomain()-------------
 	respType = proto.Message(&nfttypes.BaseNFT{})
 	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID)
 	s.Require().NoError(err)
@@ -251,7 +251,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(data, nftItem.Data)
 	s.Require().Equal(recipient.String(), nftItem.Owner)
 
-	//------test GetCmdBurnNFT()-------------
+	//------test GetCmdRemoveDomain()-------------
 	newTokenID := "dgsbl"
 	args = []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagData, newTokenDate),

@@ -93,10 +93,10 @@ func (srv *DNSResolverService) dbLookup(queryResourceRecord DNSResourceRecord) [
 
 func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16) ([]string, error) {
 	queryClient := types.NewQueryClient(srv.cliCtx)
-	resp, err := queryClient.NFT(
+	resp, err := queryClient.Domain(
 		context.Background(),
-		&types.QueryNFTRequest{
-			TokenId: domain,
+		&types.QueryDomainRequest{
+			DomainName: domain,
 		},
 	)
 	if err != nil {
@@ -114,7 +114,7 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 		}
 	}
 	if storedRecords == nil {
-		domainRecords, err := keeper.ParseNFTData([]byte(resp.NFT.Data))
+		domainRecords, err := keeper.ParseNFTData([]byte(resp.Domain.Data))
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse stored record for domain %s: %w", domain, err)
 		}

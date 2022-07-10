@@ -7,80 +7,24 @@ import (
 
 // constant used to indicate that some field should not be updated
 const (
-	TypeMsgIssueDenom    = "issue_denom"
-	TypeMsgTransferNFT   = "transfer_nft"
-	TypeMsgEditNFT       = "edit_nft"
-	TypeMsgMintNFT       = "mint_nft"
-	TypeMsgBurnNFT       = "burn_nft"
-	TypeMsgTransferDenom = "transfer_denom"
+	TypeMsgTransferDomain = "transfer_domain"
+	TypeMsgEditDomain     = "edit_domain"
+	TypeMsgRegisterDomain = "register_domain"
+	TypeMsgRemoveDomain   = "remove_domain"
 )
 
 var (
-	_ sdk.Msg = &MsgIssueDenom{}
-	_ sdk.Msg = &MsgTransferNFT{}
-	_ sdk.Msg = &MsgEditNFT{}
-	_ sdk.Msg = &MsgMintNFT{}
-	_ sdk.Msg = &MsgBurnNFT{}
+	_ sdk.Msg = &MsgTransferDomain{}
+	_ sdk.Msg = &MsgEditDomain{}
+	_ sdk.Msg = &MsgRegisterDomain{}
+	_ sdk.Msg = &MsgRemoveDomain{}
 )
 
-// NewMsgIssueDenom is a constructor function for MsgSetName
-func NewMsgIssueDenom(denomID, denomName, schema, sender, symbol string,
-	mintRestricted, updateRestricted bool,
-	description, uri, uriHash, data string,
-) *MsgIssueDenom {
-	return &MsgIssueDenom{
-		Id:               denomID,
-		Name:             denomName,
-		Schema:           schema,
-		Sender:           sender,
-		Symbol:           symbol,
-		MintRestricted:   mintRestricted,
-		UpdateRestricted: updateRestricted,
-		Description:      description,
-		Uri:              uri,
-		UriHash:          uriHash,
-		Data:             data,
-	}
-}
-
-// Route Implements Msg
-func (msg MsgIssueDenom) Route() string { return RouterKey }
-
-// Type Implements Msg
-func (msg MsgIssueDenom) Type() string { return TypeMsgIssueDenom }
-
-// ValidateBasic Implements Msg.
-func (msg MsgIssueDenom) ValidateBasic() error {
-	if err := ValidateDenomID(msg.Id); err != nil {
-		return err
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
-	}
-	return ValidateKeywords(msg.Id)
-}
-
-// GetSignBytes Implements Msg.
-func (msg MsgIssueDenom) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
-}
-
-// GetSigners Implements Msg.
-func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
-// NewMsgTransferNFT is a constructor function for MsgSetName
-func NewMsgTransferNFT(
+// NewMsgTransferDomain is a constructor function for MsgSetName
+func NewMsgTransferDomain(
 	tokenID string, transferPrice uint64, cancelTransfer bool, sender, recipient string,
-) *MsgTransferNFT {
-	return &MsgTransferNFT{
+) *MsgTransferDomain {
+	return &MsgTransferDomain{
 		Id:        tokenID,
 		Price:     transferPrice,
 		Cancel:    cancelTransfer,
@@ -90,13 +34,13 @@ func NewMsgTransferNFT(
 }
 
 // Route Implements Msg
-func (msg MsgTransferNFT) Route() string { return RouterKey }
+func (msg MsgTransferDomain) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgTransferNFT) Type() string { return TypeMsgTransferNFT }
+func (msg MsgTransferDomain) Type() string { return TypeMsgTransferDomain }
 
 // ValidateBasic Implements Msg.
-func (msg MsgTransferNFT) ValidateBasic() error {
+func (msg MsgTransferDomain) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -104,13 +48,13 @@ func (msg MsgTransferNFT) ValidateBasic() error {
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgTransferNFT) GetSignBytes() []byte {
+func (msg MsgTransferDomain) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners Implements Msg.
-func (msg MsgTransferNFT) GetSigners() []sdk.AccAddress {
+func (msg MsgTransferDomain) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
@@ -118,9 +62,9 @@ func (msg MsgTransferNFT) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-// NewMsgEditNFT is a constructor function for MsgSetName
-func NewMsgEditNFT(tokenID, tokenData, sender string) *MsgEditNFT {
-	return &MsgEditNFT{
+// NewMsgEditDomain is a constructor function for MsgSetName
+func NewMsgEditDomain(tokenID, tokenData, sender string) *MsgEditDomain {
+	return &MsgEditDomain{
 		Id:     tokenID,
 		Data:   tokenData,
 		Sender: sender,
@@ -128,13 +72,13 @@ func NewMsgEditNFT(tokenID, tokenData, sender string) *MsgEditNFT {
 }
 
 // Route Implements Msg
-func (msg MsgEditNFT) Route() string { return RouterKey }
+func (msg MsgEditDomain) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgEditNFT) Type() string { return TypeMsgEditNFT }
+func (msg MsgEditDomain) Type() string { return TypeMsgEditDomain }
 
 // ValidateBasic Implements Msg.
-func (msg MsgEditNFT) ValidateBasic() error {
+func (msg MsgEditDomain) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -142,13 +86,13 @@ func (msg MsgEditNFT) ValidateBasic() error {
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgEditNFT) GetSignBytes() []byte {
+func (msg MsgEditDomain) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners Implements Msg.
-func (msg MsgEditNFT) GetSigners() []sdk.AccAddress {
+func (msg MsgEditDomain) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
@@ -156,9 +100,9 @@ func (msg MsgEditNFT) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-// NewMsgMintNFT is a constructor function for MsgMintNFT
-func NewMsgMintNFT(tokenID, tokenData, sender, recipient string) *MsgMintNFT {
-	return &MsgMintNFT{
+// NewMsgRegisterDomain is a constructor function for MsgMintNFT
+func NewMsgRegisterDomain(tokenID, tokenData, sender, recipient string) *MsgRegisterDomain {
+	return &MsgRegisterDomain{
 		Id:        tokenID,
 		Data:      tokenData,
 		Sender:    sender,
@@ -167,13 +111,13 @@ func NewMsgMintNFT(tokenID, tokenData, sender, recipient string) *MsgMintNFT {
 }
 
 // Route Implements Msg
-func (msg MsgMintNFT) Route() string { return RouterKey }
+func (msg MsgRegisterDomain) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
+func (msg MsgRegisterDomain) Type() string { return TypeMsgRegisterDomain }
 
 // ValidateBasic Implements Msg.
-func (msg MsgMintNFT) ValidateBasic() error {
+func (msg MsgRegisterDomain) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -184,13 +128,13 @@ func (msg MsgMintNFT) ValidateBasic() error {
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgMintNFT) GetSignBytes() []byte {
+func (msg MsgRegisterDomain) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners Implements Msg.
-func (msg MsgMintNFT) GetSigners() []sdk.AccAddress {
+func (msg MsgRegisterDomain) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
@@ -198,22 +142,22 @@ func (msg MsgMintNFT) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-// NewMsgBurnNFT is a constructor function for MsgBurnNFT
-func NewMsgBurnNFT(sender, tokenID string) *MsgBurnNFT {
-	return &MsgBurnNFT{
+// NewMsgRemoveDomain is a constructor function for MsgBurnNFT
+func NewMsgRemoveDomain(sender, tokenID string) *MsgRemoveDomain {
+	return &MsgRemoveDomain{
 		Sender: sender,
 		Id:     tokenID,
 	}
 }
 
 // Route Implements Msg
-func (msg MsgBurnNFT) Route() string { return RouterKey }
+func (msg MsgRemoveDomain) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgBurnNFT) Type() string { return TypeMsgBurnNFT }
+func (msg MsgRemoveDomain) Type() string { return TypeMsgRemoveDomain }
 
 // ValidateBasic Implements Msg.
-func (msg MsgBurnNFT) ValidateBasic() error {
+func (msg MsgRemoveDomain) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
@@ -221,13 +165,13 @@ func (msg MsgBurnNFT) ValidateBasic() error {
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgBurnNFT) GetSignBytes() []byte {
+func (msg MsgRemoveDomain) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
 }
 
 // GetSigners Implements Msg.
-func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
+func (msg MsgRemoveDomain) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)

@@ -11,9 +11,11 @@ import (
 )
 
 const (
-	DoNotModify = "[do-not-modify]"
-	MinDenomLen = 3
-	MaxDenomLen = 128
+	DoNotModify  = "[do-not-modify]"
+	MinDenomLen  = 3
+	MaxDenomLen  = 128
+	MinDomainLen = 1
+	MaxDomainLen = 255
 
 	MaxTokenURILen = 256
 
@@ -26,6 +28,8 @@ const (
 var (
 	// IsAlphaNumeric only accepts [a-z0-9]
 	IsAlphaNumeric = regexp.MustCompile(`^[a-z0-9]+$`).MatchString
+	// IsDomainValidChars only accepts [a-z0-9\.]
+	IsDomainValidChars = regexp.MustCompile(`^[a-z0-9\.-]+$`).MatchString
 	// IsBeginWithAlpha only begin with [a-z]
 	IsBeginWithAlpha = regexp.MustCompile(`^[a-z].*`).MatchString
 
@@ -48,12 +52,12 @@ func ValidateDenomID(denomID string) error {
 
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
-	if len(tokenID) < MinDenomLen || len(tokenID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of nft id(%s) only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDenomLen)
+	if len(tokenID) < MinDomainLen || len(tokenID) > MaxDomainLen {
+		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of domain name (%s) only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDomainLen)
 	}
-	//if !IsBeginWithAlpha(tokenID) || !IsAlphaNumeric(tokenID) {
-	//	return sdkerrors.Wrapf(ErrInvalidTokenID, "nft id(%s) only accepts alphanumeric characters, and begin with an english letter", tokenID)
-	//}
+	if !IsBeginWithAlpha(tokenID) || !IsDomainValidChars(tokenID) {
+		return sdkerrors.Wrapf(ErrInvalidTokenID, "nft domain name (%s) only accepts alphanumeric characters, dots, dashes, and begin with an english letter", tokenID)
+	}
 	return nil
 }
 

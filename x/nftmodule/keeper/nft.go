@@ -11,8 +11,8 @@ import (
 // GetNFT gets the the specified NFT
 func (k Keeper) GetNFT(ctx sdk.Context, tokenID string) (nft exported.NFT, err error) {
 	store := ctx.KVStore(k.storeKey)
-
-	bz := store.Get(types.KeyNFT(k.dnsDenomName, tokenID))
+	recKey := types.KeyNFT(k.dnsDenomName, tokenID)
+	bz := store.Get(recKey)
 	if bz == nil {
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "not found NFT: %s", tokenID)
 	}
@@ -63,7 +63,8 @@ func (k Keeper) registerDomain(ctx sdk.Context, nft types.BaseNFT) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshal(&nft)
-	store.Set(types.KeyNFT(k.dnsDenomName, nft.GetID()), bz)
+	recKey := types.KeyNFT(k.dnsDenomName, nft.GetID())
+	store.Set(recKey, bz)
 }
 
 // deleteNFT deletes an existing NFT from store

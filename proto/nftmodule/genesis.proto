@@ -3,10 +3,12 @@ package dewebservices.nft;
 
 import "gogoproto/gogo.proto";
 import "nftmodule/nft.proto";
+import "nftmodule/params.proto";
 
 option go_package = "github.com/deweb-services/deweb/x/nftmodule/types";
 
 // GenesisState defines the NFT module's genesis state
 message GenesisState {
     repeated Collection collections = 1 [ (gogoproto.nullable) = false ];
+    Params params = 3 [(gogoproto.nullable) = false];
 }

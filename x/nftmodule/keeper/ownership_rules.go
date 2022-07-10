@@ -31,11 +31,11 @@ func (e DomainDoesntExist) Error() string {
 	return fmt.Sprintf("domain %s was not registered", e.domainName)
 }
 
-var DomainsBlocklist = []string{"com", "org", "edu"}
-
-func CheckDomainBlocked(domain string) bool {
-	for _, blockedLD := range DomainsBlocklist {
-		if blockedLD == domain {
+func (k Keeper) CheckDomainBlocked(ctx types.Context, domain string) bool {
+	upperDomain := strings.ToUpper(domain)
+	blockedDomains := k.BlockedTLDs(ctx)
+	for _, blockedLD := range blockedDomains {
+		if blockedLD == upperDomain {
 			return true
 		}
 	}

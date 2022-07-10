@@ -18,14 +18,6 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		fmt.Printf("Query request to %s\n", path[0])
 		switch path[0] {
-		case types.QuerySupply:
-			return querySupply(ctx, req, k, legacyQuerierCdc)
-		case types.QueryOwner:
-			return queryOwner(ctx, req, k, legacyQuerierCdc)
-		case types.QueryCollection:
-			return queryCollection(ctx, req, k, legacyQuerierCdc)
-		case types.QueryDenom:
-			return queryDenom(ctx, req, k, legacyQuerierCdc)
 		case types.QueryDenoms:
 			return queryDenoms(ctx, req, k, legacyQuerierCdc)
 		case types.QueryNFT:
@@ -131,7 +123,7 @@ func queryNFT(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc
 
 	nft, err := k.GetNFT(ctx, params.TokenID)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", params.TokenID, params.Denom)
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid domain NFT %s", params.TokenID)
 	}
 
 	bz, err := codec.MarshalJSONIndent(legacyQuerierCdc, nft)

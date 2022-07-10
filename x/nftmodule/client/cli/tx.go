@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -28,119 +27,22 @@ func NewTxCmd() *cobra.Command {
 	}
 
 	txCmd.AddCommand(
-		GetCmdIssueDenom(),
 		GetCmdMintNFT(),
 		GetCmdEditNFT(),
 		GetCmdTransferNFT(),
-		GetCmdBurnNFT(),
+		GetCmdRemoveDomain(),
 	)
 
 	return txCmd
 }
 
-// GetCmdIssueDenom is the CLI command for an IssueDenom transaction
-func GetCmdIssueDenom() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:  "issue [denom-id]",
-		Long: "Issue a new denom.",
-		Example: fmt.Sprintf(
-			"$ %s tx nft issue <denom-id> "+
-				"--from=<key-name> "+
-				"--name=<denom-name> "+
-				"--symbol=<denom-symbol> "+
-				"--mint-restricted=<mint-restricted> "+
-				"--update-restricted=<update-restricted> "+
-				"--schema=<schema-content or path to schema.json> "+
-				"--description=<description> "+
-				"--uri=<uri> "+
-				"--uri-hash=<uri-hash> "+
-				"--data=<data> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
-			version.AppName,
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			denomName, err := cmd.Flags().GetString(FlagDenomName)
-			if err != nil {
-				return err
-			}
-			schema, err := cmd.Flags().GetString(FlagSchema)
-			if err != nil {
-				return err
-			}
-			symbol, err := cmd.Flags().GetString(FlagSymbol)
-			if err != nil {
-				return err
-			}
-			mintRestricted, err := cmd.Flags().GetBool(FlagMintRestricted)
-			if err != nil {
-				return err
-			}
-			updateRestricted, err := cmd.Flags().GetBool(FlagUpdateRestricted)
-			if err != nil {
-				return err
-			}
-			uri, err := cmd.Flags().GetString(FlagURI)
-			if err != nil {
-				return err
-			}
-			uriHash, err := cmd.Flags().GetString(FlagURIHash)
-			if err != nil {
-				return err
-			}
-			description, err := cmd.Flags().GetString(FlagDescription)
-			if err != nil {
-				return err
-			}
-			data, err := cmd.Flags().GetString(FlagData)
-			if err != nil {
-				return err
-			}
-			optionsContent, err := ioutil.ReadFile(schema)
-			if err == nil {
-				schema = string(optionsContent)
-			}
-
-			msg := types.NewMsgIssueDenom(
-				args[0],
-				denomName,
-				schema,
-				clientCtx.GetFromAddress().String(),
-				symbol,
-				mintRestricted,
-				updateRestricted,
-				description,
-				uri,
-				uriHash,
-				data,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-	cmd.Flags().AddFlagSet(FsIssueDenom)
-	_ = cmd.MarkFlagRequired(FlagMintRestricted)
-	_ = cmd.MarkFlagRequired(FlagUpdateRestricted)
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-// GetCmdMintNFT is the CLI command for a MintNFT transaction
+// GetCmdMintNFT is the CLI command for a RegisterDomain transaction
 func GetCmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "mint [domain]",
+		Use:  "register [domain]",
 		Long: "Register an NFT domain and set the owner to the recipient.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft mint <domain> "+
+			"$ %s tx nft register <domain> "+
 				"--data=<data> "+
 				"--recipient=<recipient> "+
 				"--from=<key-name> "+
@@ -175,7 +77,7 @@ func GetCmdMintNFT() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgMintNFT(
+			msg := types.NewMsgRegisterDomain(
 				args[0],
 				tokenData,
 				sender,
@@ -217,7 +119,7 @@ func GetCmdEditNFT() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgEditNFT(args[0], tokenData, clientCtx.GetFromAddress().String())
+			msg := types.NewMsgEditDomain(args[0], tokenData, clientCtx.GetFromAddress().String())
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -282,7 +184,7 @@ func GetCmdTransferNFT() *cobra.Command {
 				}
 			}
 
-			msg := types.NewMsgTransferNFT(
+			msg := types.NewMsgTransferDomain(
 				args[0],
 				priceInt,
 				cancelTransfer,
@@ -302,13 +204,13 @@ func GetCmdTransferNFT() *cobra.Command {
 	return cmd
 }
 
-// GetCmdBurnNFT is the CLI command for sending a BurnNFT transaction
-func GetCmdBurnNFT() *cobra.Command {
+// GetCmdRemoveDomain is the CLI command for sending a BurnNFT transaction
+func GetCmdRemoveDomain() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "burn [domain]",
-		Long: "Burn a domain NFT.",
+		Use:  "remove [domain]",
+		Long: "Remove a domain NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft burn <domain> "+
+			"$ %s tx nft remove <domain> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
@@ -321,7 +223,7 @@ func GetCmdBurnNFT() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgBurnNFT(clientCtx.GetFromAddress().String(), args[0])
+			msg := types.NewMsgRemoveDomain(clientCtx.GetFromAddress().String(), args[0])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

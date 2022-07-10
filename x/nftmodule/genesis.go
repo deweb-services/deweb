@@ -13,6 +13,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 		panic(err.Error())
 	}
 
+	k.SetParams(ctx, data.Params)
+
 	for _, c := range data.Collections {
 		if err := k.SetDenom(ctx, c.Denom); err != nil {
 			panic(err)
@@ -25,10 +27,18 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	return types.NewGenesisState(k.GetCollections(ctx))
+	params := k.GetParams(ctx)
+	return types.NewGenesisState(k.GetCollections(ctx), params)
 }
 
 // DefaultGenesisState returns a default genesis state
 func DefaultGenesisState() *types.GenesisState {
-	return types.NewGenesisState([]types.Collection{})
+	dnsDenom := types.Denom{
+		Id:     "domains",
+		Name:   "dnsregistry",
+		Symbol: "DwDNS",
+	}
+	return types.NewGenesisState([]types.Collection{{
+		Denom: dnsDenom,
+	}}, types.DefaultParams())
 }

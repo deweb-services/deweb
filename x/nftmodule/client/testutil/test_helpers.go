@@ -13,17 +13,6 @@ import (
 	nftcli "github.com/deweb-services/deweb/x/nftmodule/client/cli"
 )
 
-// IssueDenomExec creates a redelegate message.
-func IssueDenomExec(clientCtx client.Context, from string, denom string, extraArgs ...string) (testutil.BufferWriter, error) {
-	args := []string{
-		denom,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
-	}
-	args = append(args, extraArgs...)
-
-	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdIssueDenom(), args)
-}
-
 func BurnNFTExec(clientCtx client.Context, from string, denomID string, tokenID string, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
 		denomID,
@@ -32,7 +21,7 @@ func BurnNFTExec(clientCtx client.Context, from string, denomID string, tokenID 
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdBurnNFT(), args)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdRemoveDomain(), args)
 }
 
 func MintNFTExec(clientCtx client.Context, from string, denomID string, tokenID string, extraArgs ...string) (testutil.BufferWriter, error) {
@@ -126,5 +115,5 @@ func QueryNFTExec(clientCtx client.Context, denomID string, tokenID string, extr
 	}
 	args = append(args, extraArgs...)
 
-	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryNFT(), args)
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryDomain(), args)
 }

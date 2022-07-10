@@ -396,7 +396,7 @@ func New(
 		app.GetSubspace(dewebmoduletypes.ModuleName),
 	)
 
-	app.NftKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey], app.BankKeeper)
+	app.NftKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey], app.BankKeeper, app.GetSubspace(nfttypes.ModuleName))
 
 	dewebModule := dewebmodule.NewAppModule(appCodec, app.DewebKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -803,6 +803,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(dewebmoduletypes.ModuleName)
+	paramsKeeper.Subspace(nfttypes.ModuleName)
 	paramsKeeper.Subspace(wasmdmodule.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
