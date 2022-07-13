@@ -9,11 +9,12 @@ import (
 )
 
 const (
-	DoNotModify  = "[do-not-modify]"
-	MinDenomLen  = 3
-	MaxDenomLen  = 128
-	MinDomainLen = 1
-	MaxDomainLen = 255
+	DoNotModify      = "[do-not-modify]"
+	MinDenomLen      = 3
+	MaxDenomLen      = 128
+	MinDomainLen     = 1
+	MaxDomainLen     = 255
+	MaxDomainPartLen = 63
 
 	MaxTokenURILen = 256
 
@@ -51,10 +52,16 @@ func ValidateDenomID(denomID string) error {
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
 	if len(tokenID) < MinDomainLen || len(tokenID) > MaxDomainLen {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of domain name (%s) only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDomainLen)
+		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of domain name (%s) only accepts value [%d, %d]", tokenID, MinDomainLen, MaxDomainLen)
 	}
 	if !IsBeginWithAlpha(tokenID) || !IsDomainValidChars(tokenID) {
 		return sdkerrors.Wrapf(ErrInvalidTokenID, "nft domain name (%s) only accepts alphanumeric characters, dots, dashes, and begin with an english letter", tokenID)
+	}
+	domainParts := strings.Split(tokenID, ".")
+	for _, partVal := range domainParts {
+		if len(partVal) < MinDomainLen || len(partVal) > MaxDomainPartLen {
+			return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of domain part (%s) only accepts value [%d, %d]", partVal, MinDomainLen, MaxDomainPartLen)
+		}
 	}
 	return nil
 }
