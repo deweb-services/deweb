@@ -24,9 +24,9 @@ In Alice will try to register domain in Bob's zone she will receive an error `pa
 ./dewebd tx domain register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
-But Bob can register domain for Alice (her address `deweb1hl0d8mxd06ph43sfyenl3pu2ecrf7q64rgklz3`):
+But Bob can register domain for Alice (her address `deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee`):
 ```
-./dewebd tx domain register aliced.deweb --data="$BasicData" --recipient=deweb1hl0d8mxd06ph43sfyenl3pu2ecrf7q64rgklz3 --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register aliced.deweb --data="$BasicData" --recipient=deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 Then Alice can register domain `www.alice.deweb` because she is the owner of `alice.deweb`:
@@ -38,10 +38,10 @@ Alice can register domain for Bob in her zone and then transfer this NFT to Bob,
 ```
 ./dewebd tx domain register bob.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
-2-step transfer. First domain owner Alice send transaction with expecter domain received and price. Only selected receiver
-Bob (his address is `deweb1g5uwu39petj0w32xluz5prqfh78qemf3hjkndu`)can buy the domain. If no receiver determined, anyone can buy this domain.
+2-step transfer. First domain owner Alice send transaction with expecter domain receiver and price. Only selected receiver
+Bob (his address is `deweb138sq5w8yxsdzgvs7lse5j3dtr3e2t5z08cw8aj`)can buy the domain. If no receiver determined, anyone can buy this domain.
 ```
-./dewebd tx domain transfer bob.aliced.deweb --recipient=deweb1g5uwu39petj0w32xluz5prqfh78qemf3hjkndu --price=10000 --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain transfer bob.aliced.deweb --recipient=deweb138sq5w8yxsdzgvs7lse5j3dtr3e2t5z08cw8aj --price=10000 --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ./dewebd tx domain transfer bob.aliced.deweb --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 

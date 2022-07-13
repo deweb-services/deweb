@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"strings"
 	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -17,7 +19,10 @@ import (
 	"github.com/deweb-services/deweb/x/dns_module/types"
 )
 
-const DNSDenomName = "domains"
+const (
+	DNSDenomName = "domains"
+	TimeFactor   = time.Hour
+)
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
@@ -71,15 +76,15 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 }
 
 // RegisterDomain mints an NFT and manages the NFT's existence within Collections and Owners
-func (k Keeper) RegisterDomain(ctx sdk.Context, tokenID, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
-	if k.HasDomain(ctx, k.dnsDenomName, tokenID) {
-		domain, err := k.Authorize(ctx, tokenID, owner)
+func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
+	if k.HasDomain(ctx, k.dnsDenomName, domainName) {
+		domain, err := k.Authorize(ctx, domainName, owner)
 		if err != nil {
-			return sdkerrors.Wrapf(types.ErrDomainAlreadyExists, "Domain %s already exists in collection %s", tokenID, k.dnsDenomName)
+			return sdkerrors.Wrapf(types.ErrDomainAlreadyExists, "Domain %s already exists in collection %s", domainName, k.dnsDenomName)
 		}
 		return k.domainProlongation(ctx, domain, owner)
 	}
-	err := k.checkDomainValid(ctx, tokenID, owner)
+	err := k.checkDomainValid(ctx, domainName, owner)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "validation check failed")
 	}
@@ -89,7 +94,7 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, tokenID, tokenData string, owner
 	}
 	domainReceivedData.Issued = time.Now()
 	domainExpirationHours := k.DomainExpirationHours(ctx)
-	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationHours) * time.Hour)
+	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationHours) * TimeFactor)
 
 	dataToSaveRaw, err := json.Marshal(domainReceivedData)
 	if err != nil {
@@ -97,17 +102,23 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, tokenID, tokenData string, owner
 	}
 	dataToSave := string(dataToSaveRaw)
 
+	var domainPriceUDWS uint64
+	domainParts := strings.Split(domainName, ".")
+	if len(domainParts) == 1 {
+		domainPriceUDWS = k.DomainPriceUDWS(ctx)
+	} else {
+		domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
+	}
 	zeroAddress := []byte("0")
-	domainPriceUDWS := k.DomainPriceUDWS(ctx)
 	err = k.payForDomain(ctx, domainPriceUDWS, owner, zeroAddress)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
 	}
 	k.registerDomain(
 		ctx,
-		types.NewBaseNFT(tokenID, recipient, dataToSave),
+		types.NewBaseNFT(domainName, recipient, dataToSave),
 	)
-	k.setOwner(ctx, k.dnsDenomName, tokenID, recipient)
+	k.setOwner(ctx, k.dnsDenomName, domainName, recipient)
 	k.increaseSupply(ctx, k.dnsDenomName)
 
 	return nil
@@ -120,8 +131,8 @@ func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseDomain, own
 		return sdkerrors.Wrapf(err, "cannot process record for domain %s", domain.GetID())
 	}
 	now := time.Now()
-	prologHourss := k.DomainOwnerProlongationHours(ctx)
-	prologDuration := time.Duration(prologHourss) * time.Hour
+	prologHours := k.DomainOwnerProlongationHours(ctx)
+	prologDuration := time.Duration(prologHours) * TimeFactor
 	allowedProlongationAfter := domainRecordData.ValidTill.Add(-prologDuration)
 	if allowedProlongationAfter.After(now) {
 		return sdkerrors.Wrapf(types.ErrDomainAlreadyExists,
@@ -129,17 +140,40 @@ func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseDomain, own
 			domain.GetID(), allowedProlongationAfter.Format("2006-01-02T15:04:05"))
 	}
 	domainExpirationHours := k.DomainExpirationHours(ctx)
-	domainRecordData.ValidTill = domainRecordData.ValidTill.Add(time.Duration(domainExpirationHours) * time.Hour)
+	domainRecordData.ValidTill = domainRecordData.ValidTill.Add(time.Duration(domainExpirationHours) * TimeFactor)
 	dataToSaveRaw, err := json.Marshal(domainRecordData)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
 	}
 	dataToSave := string(dataToSaveRaw)
-	zeroAddress := []byte("0")
-	domainPriceUDWS := k.DomainPriceUDWS(ctx)
-	err = k.payForDomain(ctx, domainPriceUDWS, owner, zeroAddress)
+
+	var domainPriceUDWS uint64
+	var targetPayAddress = []byte("0")
+	domainParts := strings.Split(domain.Id, ".")
+	if len(domainParts) == 1 {
+		domainPriceUDWS = k.DomainPriceUDWS(ctx)
+	} else {
+		domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
+		parentDomainOwner, err := k.getParentDomainOwner(ctx, domain.Id)
+		if err != nil {
+			notExistErr := &DomainDoesntExist{}
+			if errors.As(err, &notExistErr) {
+				// No parent domain owner: burn prolongation price
+				domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
+			} else {
+				return sdkerrors.Wrapf(err, "cannot check parent domain ownership")
+			}
+		} else {
+			if !parentDomainOwner.Equals(owner) {
+				// Pay here for parent domain owner
+				targetPayAddress = parentDomainOwner.Bytes()
+			}
+		}
+	}
+
+	err = k.payForDomain(ctx, domainPriceUDWS, owner, targetPayAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
+		return sdkerrors.Wrapf(err, "cannot burn coins for core domain ")
 	}
 	domain.Data = dataToSave
 	k.registerDomain(ctx, domain)

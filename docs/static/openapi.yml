@@ -15774,6 +15774,9 @@ paths:
                   domainOwnerProlongationHours:
                     type: string
                     format: int64
+                  subDomainPrice:
+                    type: string
+                    format: uint64
                   blockTLDs:
                     type: array
                     items:
@@ -25582,6 +25585,9 @@ definitions:
       domainOwnerProlongationHours:
         type: string
         format: int64
+      subDomainPrice:
+        type: string
+        format: uint64
       blockTLDs:
         type: array
         items:
@@ -25619,6 +25625,9 @@ definitions:
           domainOwnerProlongationHours:
             type: string
             format: int64
+          subDomainPrice:
+            type: string
+            format: uint64
           blockTLDs:
             type: array
             items:

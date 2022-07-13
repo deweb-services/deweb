@@ -10,6 +10,11 @@ func (k Keeper) DomainPriceUDWS(ctx sdk.Context) (res uint64) {
 	return res
 }
 
+func (k Keeper) SubDomainPriceUDWS(ctx sdk.Context) (res uint64) {
+	k.paramStore.Get(ctx, types.KeySubDomainPrice, &res)
+	return res
+}
+
 func (k Keeper) DomainExpirationHours(ctx sdk.Context) (res int64) {
 	k.paramStore.Get(ctx, types.KeyDomainExpirationHours, &res)
 	return res
@@ -29,6 +34,7 @@ func (k Keeper) BlockedTLDs(ctx sdk.Context) (res []string) {
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.DomainPriceUDWS(ctx),
+		k.SubDomainPriceUDWS(ctx),
 		k.DomainExpirationHours(ctx),
 		k.DomainOwnerProlongationHours(ctx),
 		k.BlockedTLDs(ctx),

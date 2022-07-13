@@ -51,22 +51,30 @@ func (k Keeper) CheckAllowedForAddress(ctx types.Context, dnsName string, creato
 		}
 		return nil
 	}
-	parentDomainParts := domainParts[1:len(domainParts)]
-	parentDomain := strings.Join(parentDomainParts, ".")
-	chErr := k.checkUserOwnsDomain(ctx, parentDomain, creatorAddress)
-	if chErr != nil {
-		return errors.Wrap(chErr, "parent domain check error")
+	parentDomainOwner, err := k.getParentDomainOwner(ctx, dnsName)
+	if err != nil {
+		return errors.Wrap(err, "cannot get parent domain")
+	}
+	if !parentDomainOwner.Equals(creatorAddress) {
+		return &DomainNotOwned{domainName: dnsName}
 	}
 	return nil
 }
 
-func (k Keeper) checkUserOwnsDomain(ctx types.Context, dnsName string, creatorAddress types.AccAddress) error {
-	domainRec, err := k.GetDomain(ctx, dnsName)
+func (k Keeper) getParentDomainOwner(ctx types.Context, dnsName string) (types.AccAddress, error) {
+	domainParts := strings.Split(dnsName, ".")
+	if len(domainParts) == 1 {
+		domainRec, err := k.GetDomain(ctx, domainParts[0])
+		if err != nil {
+			return nil, &DomainDoesntExist{domainName: domainParts[0]}
+		}
+		return domainRec.GetOwner(), nil
+	}
+	parentDomainParts := domainParts[1:]
+	parentDomain := strings.Join(parentDomainParts, ".")
+	domainRec, err := k.GetDomain(ctx, parentDomain)
 	if err != nil {
-		return DomainDoesntExist{domainName: dnsName}
+		return nil, &DomainDoesntExist{domainName: dnsName}
 	}
-	if !domainRec.GetOwner().Equals(creatorAddress) {
-		return DomainNotOwned{domainName: dnsName}
-	}
-	return nil
+	return domainRec.GetOwner(), nil
 }

@@ -11,5 +11,6 @@ message Params {
   uint64 domainPrice = 1;
   int64 domainExpirationHours = 2;
   int64 domainOwnerProlongationHours = 3;
-  repeated string blockTLDs = 4 [ (gogoproto.nullable) = false ];
+  uint64 subDomainPrice = 4;
+  repeated string blockTLDs = 5 [ (gogoproto.nullable) = false ];
 }
