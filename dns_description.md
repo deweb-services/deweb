@@ -8,7 +8,7 @@ BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": 
 
 First Bob mint NFT for TLD `deweb`: 
 ```
-./dewebd tx nft register deweb --data="$BasicData" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register deweb --data="$BasicData" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 Prolongation request send via register command. Allowed only for domain owner. Other user will receive message that 
@@ -16,43 +16,43 @@ the domain already registered.
 
 Then create domain `test.deweb`:
 ```
-./dewebd tx nft register test.deweb --data="$BasicData" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register test.deweb --data="$BasicData" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 In Alice will try to register domain in Bob's zone she will receive an error `parent domain check error: domain deweb does not belong to this user`:
 ```
-./dewebd tx nft register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
-But Bob can register domain for Alice (her address `deweb1gq20zy0xryus2zhsy0e8s33k84n0unwgwlpp8d`):
+But Bob can register domain for Alice (her address `deweb1hl0d8mxd06ph43sfyenl3pu2ecrf7q64rgklz3`):
 ```
-./dewebd tx nft register alice.deweb --data="$BasicData" --recipient=deweb1gq20zy0xryus2zhsy0e8s33k84n0unwgwlpp8d --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register aliced.deweb --data="$BasicData" --recipient=deweb1hl0d8mxd06ph43sfyenl3pu2ecrf7q64rgklz3 --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 Then Alice can register domain `www.alice.deweb` because she is the owner of `alice.deweb`:
 ```
-./dewebd tx nft register www.alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register www.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 Alice can register domain for Bob in her zone and then transfer this NFT to Bob, so he will become an owner of `bob.alice.deweb`:
 ```
-./dewebd tx nft register bob.alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain register bob.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
-2-step transfer. First domain owner Bob send transaction with expecter domain received and price. Only selected receiver
-can buy the domain. If no receiver determined, anyone can buy this domain.
+2-step transfer. First domain owner Alice send transaction with expecter domain received and price. Only selected receiver
+Bob (his address is `deweb1g5uwu39petj0w32xluz5prqfh78qemf3hjkndu`)can buy the domain. If no receiver determined, anyone can buy this domain.
 ```
-./dewebd tx nft transfer bob.alice.deweb --recipient=deweb179xaeytshtdsjqw527ejrehdnfld3mmtz85cyq --price=10000 --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
-./dewebd tx nft transfer bob.alice.deweb --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain transfer bob.aliced.deweb --recipient=deweb1g5uwu39petj0w32xluz5prqfh78qemf3hjkndu --price=10000 --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain transfer bob.aliced.deweb --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
-To cacnel created transfer:
+To cancel created transfer:
 ```
-./dewebd tx nft transfer bob.alice.deweb --cancel=true --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain transfer bob.aliced.deweb --cancel=true --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 After transfer Alice cannot edit Bob's domain, but he can change DNS records: 
 ```
-./dewebd tx nft edit domains `bob.alice.deweb` --data="$BasicDataWithMX" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain edit bob.aliced.deweb --data="$BasicDataWithMX" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 ## Module parameters 

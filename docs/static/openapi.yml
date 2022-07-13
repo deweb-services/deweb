@@ -15720,13 +15720,9 @@ paths:
                     type: string
                   name:
                     type: string
-                  uri:
-                    type: string
                   data:
                     type: string
                   owner:
-                    type: string
-                  uriHash:
                     type: string
                 title: BaseNFT defines a non-fungible token
             title: QueryNFTResponse is the response type for the Query/NFT RPC method
@@ -25550,20 +25546,16 @@ definitions:
         type: string
       deleted:
         type: boolean
-  dewebservices.nft.BaseNFT:
+  dewebservices.nft.BaseDomain:
     type: object
     properties:
       id:
         type: string
       name:
         type: string
-      uri:
-        type: string
       data:
         type: string
       owner:
-        type: string
-      uriHash:
         type: string
     title: BaseNFT defines a non-fungible token
   dewebservices.nft.MsgEditdomainResponse:
@@ -25605,13 +25597,9 @@ definitions:
             type: string
           name:
             type: string
-          uri:
-            type: string
           data:
             type: string
           owner:
-            type: string
-          uriHash:
             type: string
         title: BaseNFT defines a non-fungible token
     title: QueryNFTResponse is the response type for the Query/NFT RPC method

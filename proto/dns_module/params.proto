@@ -1,0 +1,15 @@
+syntax = "proto3";
+package dewebservices.nft;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/deweb-services/deweb/x/dns_module/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  uint64 domainPrice = 1;
+  int64 domainExpirationHours = 2;
+  int64 domainOwnerProlongationHours = 3;
+  repeated string blockTLDs = 4 [ (gogoproto.nullable) = false ];
+}

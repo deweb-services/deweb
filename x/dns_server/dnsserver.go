@@ -6,8 +6,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/deweb-services/deweb/x/nftmodule/keeper"
-	"github.com/deweb-services/deweb/x/nftmodule/types"
+	"github.com/deweb-services/deweb/x/dns_module/keeper"
+	"github.com/deweb-services/deweb/x/dns_module/types"
 	"golang.org/x/net/dns/dnsmessage"
 	"net"
 	"os"
@@ -114,7 +114,7 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 		}
 	}
 	if storedRecords == nil {
-		domainRecords, err := keeper.ParseNFTData([]byte(resp.Domain.Data))
+		domainRecords, err := keeper.ParseDomainData([]byte(resp.Domain.Data))
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse stored record for domain %s: %w", domain, err)
 		}
@@ -317,7 +317,7 @@ func (srv *DNSResolverService) RunServer(port int) {
 		os.Exit(1)
 	}
 
-	fmt.Println("Listening at: ", serverAddr)
+	fmt.Println("DNS Listening at: ", serverAddr)
 
 	defer serverConn.Close()
 

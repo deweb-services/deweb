@@ -95,9 +95,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	nftmodule "github.com/deweb-services/deweb/x/nftmodule"
-	nftkeeper "github.com/deweb-services/deweb/x/nftmodule/keeper"
-	nfttypes "github.com/deweb-services/deweb/x/nftmodule/types"
+	dns_module "github.com/deweb-services/deweb/x/dns_module"
+	dnskeeper "github.com/deweb-services/deweb/x/dns_module/keeper"
+	dnstypes "github.com/deweb-services/deweb/x/dns_module/types"
 
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"github.com/tendermint/starport/starport/pkg/openapiconsole"
@@ -161,7 +161,7 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		dewebmodule.AppModuleBasic{},
-		nftmodule.AppModuleBasic{},
+		dns_module.AppModuleBasic{},
 		wasmdmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -239,7 +239,7 @@ type App struct {
 	wasmKeeper       wasmdmodule.Keeper
 	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
-	NftKeeper nftkeeper.Keeper
+	NftKeeper dnskeeper.Keeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -283,7 +283,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		authzkeeper.StoreKey, feegrant.StoreKey, dewebmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		wasmdmodule.StoreKey, nfttypes.StoreKey,
+		wasmdmodule.StoreKey, dnstypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -396,7 +396,7 @@ func New(
 		app.GetSubspace(dewebmoduletypes.ModuleName),
 	)
 
-	app.NftKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey], app.BankKeeper, app.GetSubspace(nfttypes.ModuleName))
+	app.NftKeeper = dnskeeper.NewKeeper(appCodec, keys[dnstypes.StoreKey], app.BankKeeper, app.GetSubspace(dnstypes.ModuleName))
 
 	dewebModule := dewebmodule.NewAppModule(appCodec, app.DewebKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -478,7 +478,7 @@ func New(
 		dewebModule,
 		wasmdmodule.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
+		dns_module.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -503,12 +503,12 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		// additional non simd modules
-		nfttypes.ModuleName,
+		dnstypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
-		nfttypes.ModuleName,
+		dnstypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -533,7 +533,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
-		nfttypes.ModuleName,
+		dnstypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -564,7 +564,7 @@ func New(
 		// wasm after ibc transfer
 		dewebmoduletypes.ModuleName,
 		wasmdmodule.ModuleName,
-		nfttypes.ModuleName,
+		dnstypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -803,7 +803,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(dewebmoduletypes.ModuleName)
-	paramsKeeper.Subspace(nfttypes.ModuleName)
+	paramsKeeper.Subspace(dnstypes.ModuleName)
 	paramsKeeper.Subspace(wasmdmodule.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
