@@ -22,11 +22,6 @@ func (bnft BaseDomain) GetID() string {
 	return bnft.Id
 }
 
-// GetName return the name of BaseNFT
-func (bnft BaseDomain) GetName() string {
-	return bnft.Name
-}
-
 // GetOwner return the owner of BaseNFT
 func (bnft BaseDomain) GetOwner() sdk.AccAddress {
 	owner, _ := sdk.AccAddressFromBech32(bnft.Owner)

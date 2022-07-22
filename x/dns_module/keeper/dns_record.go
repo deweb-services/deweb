@@ -17,10 +17,12 @@ type DNSTransferOffer struct {
 }
 
 type DNSNameRecord struct {
-	Issued        time.Time         `json:"issued"`
-	ValidTill     time.Time         `json:"valid_till"`
-	TransferOffer *DNSTransferOffer `json:"transfer_offer"`
-	Records       []DNSTypeRecord   `json:"records"`
+	Issued              time.Time         `json:"issued"`
+	ValidTill           time.Time         `json:"valid_till"`
+	TransferOffer       *DNSTransferOffer `json:"transfer_offer"`
+	SubDomainsOnSale    bool              `json:"sub_domains_sale"`
+	SubDomainsSalePrice uint64            `json:"sub_domains_sale_price"`
+	Records             []DNSTypeRecord   `json:"records"`
 }
 
 func ParseDomainData(data []byte) (DNSNameRecord, error) {

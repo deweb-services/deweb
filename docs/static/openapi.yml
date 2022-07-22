@@ -15703,9 +15703,95 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/dns/domains/{domainName}':
+  '/deweb/domains/v1beta1/address/{address}':
     get:
-      summary: NFT queries the NFT for the given denom and token ID
+      summary: Query domains owned by user
+      operationId: DewebservicesNftOwnedDomains
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total:
+                type: string
+                format: int64
+              domains:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    issued:
+                      type: string
+                    validTil:
+                      type: string
+                    transferOffer:
+                      type: object
+                      properties:
+                        price:
+                          type: string
+                          format: uint64
+                        ExpectedOwnerAddress:
+                          type: string
+                    records:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          values:
+                            type: array
+                            items:
+                              type: string
+                    subDomainsOnSale:
+                      type: boolean
+                    subDomainsSalePrice:
+                      type: string
+                      format: uint64
+                    owner:
+                      type: string
+            title: QueryNFTResponse is the response type for the Query/NFT RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: address
+          in: path
+          required: true
+          type: string
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: count
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - Query
+  '/deweb/domains/v1beta1/domain/{domainName}':
+    get:
+      summary: Query domain info by domain name
       operationId: DewebservicesNftDomain
       responses:
         '200':
@@ -15718,13 +15804,36 @@ paths:
                 properties:
                   id:
                     type: string
-                  name:
+                  issued:
                     type: string
-                  data:
+                  validTil:
                     type: string
+                  transferOffer:
+                    type: object
+                    properties:
+                      price:
+                        type: string
+                        format: uint64
+                      ExpectedOwnerAddress:
+                        type: string
+                  records:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        values:
+                          type: array
+                          items:
+                            type: string
+                  subDomainsOnSale:
+                    type: boolean
+                  subDomainsSalePrice:
+                    type: string
+                    format: uint64
                   owner:
                     type: string
-                title: BaseNFT defines a non-fungible token
             title: QueryNFTResponse is the response type for the Query/NFT RPC method
         default:
           description: An unexpected error response.
@@ -15751,7 +15860,7 @@ paths:
           type: string
       tags:
         - Query
-  /dns/params:
+  /deweb/domains/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: DewebservicesNftParams
@@ -25549,18 +25658,15 @@ definitions:
         type: string
       deleted:
         type: boolean
-  dewebservices.nft.BaseDomain:
+  dewebservices.nft.DNSRecords:
     type: object
     properties:
-      id:
+      type:
         type: string
-      name:
-        type: string
-      data:
-        type: string
-      owner:
-        type: string
-    title: BaseNFT defines a non-fungible token
+      values:
+        type: array
+        items:
+          type: string
   dewebservices.nft.MsgEditdomainResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
@@ -25601,13 +25707,80 @@ definitions:
         properties:
           id:
             type: string
-          name:
+          issued:
             type: string
-          data:
+          validTil:
             type: string
+          transferOffer:
+            type: object
+            properties:
+              price:
+                type: string
+                format: uint64
+              ExpectedOwnerAddress:
+                type: string
+          records:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                values:
+                  type: array
+                  items:
+                    type: string
+          subDomainsOnSale:
+            type: boolean
+          subDomainsSalePrice:
+            type: string
+            format: uint64
           owner:
             type: string
-        title: BaseNFT defines a non-fungible token
+    title: QueryNFTResponse is the response type for the Query/NFT RPC method
+  dewebservices.nft.QueryOwnedDomainsResponse:
+    type: object
+    properties:
+      total:
+        type: string
+        format: int64
+      domains:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            issued:
+              type: string
+            validTil:
+              type: string
+            transferOffer:
+              type: object
+              properties:
+                price:
+                  type: string
+                  format: uint64
+                ExpectedOwnerAddress:
+                  type: string
+            records:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  values:
+                    type: array
+                    items:
+                      type: string
+            subDomainsOnSale:
+              type: boolean
+            subDomainsSalePrice:
+              type: string
+              format: uint64
+            owner:
+              type: string
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
   dewebservices.nft.QueryParamsResponse:
     type: object
@@ -25633,6 +25806,49 @@ definitions:
             items:
               type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  dewebservices.nft.ResponseDomain:
+    type: object
+    properties:
+      id:
+        type: string
+      issued:
+        type: string
+      validTil:
+        type: string
+      transferOffer:
+        type: object
+        properties:
+          price:
+            type: string
+            format: uint64
+          ExpectedOwnerAddress:
+            type: string
+      records:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+            values:
+              type: array
+              items:
+                type: string
+      subDomainsOnSale:
+        type: boolean
+      subDomainsSalePrice:
+        type: string
+        format: uint64
+      owner:
+        type: string
+  dewebservices.nft.TransferOffer:
+    type: object
+    properties:
+      price:
+        type: string
+        format: uint64
+      ExpectedOwnerAddress:
+        type: string
   ibc.applications.transfer.v1.DenomTrace:
     type: object
     properties:

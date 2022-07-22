@@ -46,17 +46,6 @@ func (k Keeper) GetTotalSupply(ctx sdk.Context, denomID string) uint64 {
 	return types.MustUnMarshalSupply(k.cdc, bz)
 }
 
-// GetTotalSupplyOfOwner returns the amount of Domains by the specified conditions
-func (k Keeper) GetTotalSupplyOfOwner(ctx sdk.Context, id string, owner sdk.AccAddress) (supply uint64) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyOwner(owner, id, ""))
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		supply++
-	}
-	return supply
-}
-
 func (k Keeper) increaseSupply(ctx sdk.Context, denomID string) {
 	supply := k.GetTotalSupply(ctx, denomID)
 	supply++

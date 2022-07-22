@@ -12,13 +12,40 @@ option go_package = "github.com/deweb-services/deweb/x/dns_module/types";
 service Query {
     // Parameters queries the parameters of the module.
     rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-        option (google.api.http).get = "/dns/params";
+        option (google.api.http).get = "/deweb/domains/v1beta1/params";
     }
 
-    // NFT queries the NFT for the given denom and token ID
+    // Query domain info by domain name
     rpc Domain(QueryDomainRequest) returns (QueryDomainResponse) {
-        option (google.api.http).get = "/dns/domains/{domain_name}";
+        option (google.api.http).get = "/deweb/domains/v1beta1/domain/{domain_name}";
     }
+    // Query domains owned by user
+    rpc OwnedDomains(QueryOwnedDomainsRequest) returns (QueryOwnedDomainsResponse) {
+        option (google.api.http).get = "/deweb/domains/v1beta1/address/{address}";
+    }
+}
+
+message TransferOffer {
+    uint64 price = 1;
+    string ExpectedOwnerAddress = 2;
+}
+
+message DNSRecords {
+    string type = 1;
+    repeated string values = 2;
+}
+
+message ResponseDomain {
+    option (gogoproto.equal) = true;
+
+    string id = 1;
+    string issued = 2;
+    string validTil = 3;
+    TransferOffer transfer_offer = 4;
+    repeated DNSRecords records = 5;
+    bool subDomainsOnSale = 6;
+    uint64 subDomainsSalePrice = 7;
+    string owner = 8;
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -37,5 +64,18 @@ message QueryDomainRequest {
 
 // QueryNFTResponse is the response type for the Query/NFT RPC method
 message QueryDomainResponse {
-    BaseDomain domain = 1 [ (gogoproto.customname) = "Domain" ];
+    ResponseDomain domain = 1 [ (gogoproto.customname) = "Domain" ];
+}
+
+// QueryNFTRequest is the request type for the Query/NFT RPC method
+message QueryOwnedDomainsRequest {
+    string address = 1;
+    int64 offset = 2;
+    int64 count = 3;
+}
+
+// QueryNFTResponse is the response type for the Query/NFT RPC method
+message QueryOwnedDomainsResponse {
+    int64 total = 1;
+    repeated ResponseDomain domains = 2 [ (gogoproto.customname) = "Domains" ];
 }

@@ -14,8 +14,9 @@ func RegisterHandlers(cliCtx client.Context, r *mux.Router, queryRoute string) {
 }
 
 const (
-	RestParamTokenID = "token-id"
-	RestParamOwner   = "owner"
+	RestParamTokenID    = "token-id"
+	RestParamDomainName = "domainName"
+	RestParamOwner      = "owner"
 )
 
 type issueDenomReq struct {

@@ -3,6 +3,7 @@ Predefined denom `domains` added to genesis.
 Set test data for DNS:
 ```
 BasicData='{"records": [{"type": "A","values": ["192.168.1.10"]}]}'
+BasicDataWithSubPrice='{"records":[{"type": "A","values":["192.168.1.10"]}],"sub_domains_sale": true,"sub_domains_sale_price": 10000}'
 BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": "MX","values": ["mx.bob.alice.deweb."]}]}'
 ```
 
@@ -22,6 +23,16 @@ Then create domain `test.deweb`:
 In Alice will try to register domain in Bob's zone she will receive an error `parent domain check error: domain deweb does not belong to this user`:
 ```
 ./dewebd tx domain register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+```
+
+Bob can edit domain and allow anyone subdomains registration. He will receive payments for these domains:
+```
+./dewebd tx domain edit deweb --data="BasicDataWithSubPrice" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+```
+
+Then alice can register subdomain and pay to BOB:
+```
+./dewebd tx domain register newalice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 But Bob can register domain for Alice (her address `deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee`):

@@ -29,6 +29,210 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type TransferOffer struct {
+	Price                uint64 `protobuf:"varint,1,opt,name=price,proto3" json:"price,omitempty"`
+	ExpectedOwnerAddress string `protobuf:"bytes,2,opt,name=ExpectedOwnerAddress,proto3" json:"ExpectedOwnerAddress,omitempty"`
+}
+
+func (m *TransferOffer) Reset()         { *m = TransferOffer{} }
+func (m *TransferOffer) String() string { return proto.CompactTextString(m) }
+func (*TransferOffer) ProtoMessage()    {}
+func (*TransferOffer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78b0414670674d0c, []int{0}
+}
+func (m *TransferOffer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TransferOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TransferOffer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TransferOffer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TransferOffer.Merge(m, src)
+}
+func (m *TransferOffer) XXX_Size() int {
+	return m.Size()
+}
+func (m *TransferOffer) XXX_DiscardUnknown() {
+	xxx_messageInfo_TransferOffer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TransferOffer proto.InternalMessageInfo
+
+func (m *TransferOffer) GetPrice() uint64 {
+	if m != nil {
+		return m.Price
+	}
+	return 0
+}
+
+func (m *TransferOffer) GetExpectedOwnerAddress() string {
+	if m != nil {
+		return m.ExpectedOwnerAddress
+	}
+	return ""
+}
+
+type DNSRecords struct {
+	Type   string   `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Values []string `protobuf:"bytes,2,rep,name=values,proto3" json:"values,omitempty"`
+}
+
+func (m *DNSRecords) Reset()         { *m = DNSRecords{} }
+func (m *DNSRecords) String() string { return proto.CompactTextString(m) }
+func (*DNSRecords) ProtoMessage()    {}
+func (*DNSRecords) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78b0414670674d0c, []int{1}
+}
+func (m *DNSRecords) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DNSRecords) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DNSRecords.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DNSRecords) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DNSRecords.Merge(m, src)
+}
+func (m *DNSRecords) XXX_Size() int {
+	return m.Size()
+}
+func (m *DNSRecords) XXX_DiscardUnknown() {
+	xxx_messageInfo_DNSRecords.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DNSRecords proto.InternalMessageInfo
+
+func (m *DNSRecords) GetType() string {
+	if m != nil {
+		return m.Type
+	}
+	return ""
+}
+
+func (m *DNSRecords) GetValues() []string {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
+
+type ResponseDomain struct {
+	Id                  string         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Issued              string         `protobuf:"bytes,2,opt,name=issued,proto3" json:"issued,omitempty"`
+	ValidTil            string         `protobuf:"bytes,3,opt,name=validTil,proto3" json:"validTil,omitempty"`
+	TransferOffer       *TransferOffer `protobuf:"bytes,4,opt,name=transfer_offer,json=transferOffer,proto3" json:"transfer_offer,omitempty"`
+	Records             []*DNSRecords  `protobuf:"bytes,5,rep,name=records,proto3" json:"records,omitempty"`
+	SubDomainsOnSale    bool           `protobuf:"varint,6,opt,name=subDomainsOnSale,proto3" json:"subDomainsOnSale,omitempty"`
+	SubDomainsSalePrice uint64         `protobuf:"varint,7,opt,name=subDomainsSalePrice,proto3" json:"subDomainsSalePrice,omitempty"`
+	Owner               string         `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
+}
+
+func (m *ResponseDomain) Reset()         { *m = ResponseDomain{} }
+func (m *ResponseDomain) String() string { return proto.CompactTextString(m) }
+func (*ResponseDomain) ProtoMessage()    {}
+func (*ResponseDomain) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78b0414670674d0c, []int{2}
+}
+func (m *ResponseDomain) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ResponseDomain) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ResponseDomain.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ResponseDomain) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResponseDomain.Merge(m, src)
+}
+func (m *ResponseDomain) XXX_Size() int {
+	return m.Size()
+}
+func (m *ResponseDomain) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResponseDomain.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ResponseDomain proto.InternalMessageInfo
+
+func (m *ResponseDomain) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *ResponseDomain) GetIssued() string {
+	if m != nil {
+		return m.Issued
+	}
+	return ""
+}
+
+func (m *ResponseDomain) GetValidTil() string {
+	if m != nil {
+		return m.ValidTil
+	}
+	return ""
+}
+
+func (m *ResponseDomain) GetTransferOffer() *TransferOffer {
+	if m != nil {
+		return m.TransferOffer
+	}
+	return nil
+}
+
+func (m *ResponseDomain) GetRecords() []*DNSRecords {
+	if m != nil {
+		return m.Records
+	}
+	return nil
+}
+
+func (m *ResponseDomain) GetSubDomainsOnSale() bool {
+	if m != nil {
+		return m.SubDomainsOnSale
+	}
+	return false
+}
+
+func (m *ResponseDomain) GetSubDomainsSalePrice() uint64 {
+	if m != nil {
+		return m.SubDomainsSalePrice
+	}
+	return 0
+}
+
+func (m *ResponseDomain) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 type QueryParamsRequest struct {
 }
@@ -37,7 +241,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78b0414670674d0c, []int{0}
+	return fileDescriptor_78b0414670674d0c, []int{3}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -76,7 +280,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78b0414670674d0c, []int{1}
+	return fileDescriptor_78b0414670674d0c, []int{4}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -121,7 +325,7 @@ func (m *QueryDomainRequest) Reset()         { *m = QueryDomainRequest{} }
 func (m *QueryDomainRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryDomainRequest) ProtoMessage()    {}
 func (*QueryDomainRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78b0414670674d0c, []int{2}
+	return fileDescriptor_78b0414670674d0c, []int{5}
 }
 func (m *QueryDomainRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -159,14 +363,14 @@ func (m *QueryDomainRequest) GetDomainName() string {
 
 // QueryNFTResponse is the response type for the Query/NFT RPC method
 type QueryDomainResponse struct {
-	Domain *BaseDomain `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	Domain *ResponseDomain `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 }
 
 func (m *QueryDomainResponse) Reset()         { *m = QueryDomainResponse{} }
 func (m *QueryDomainResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryDomainResponse) ProtoMessage()    {}
 func (*QueryDomainResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78b0414670674d0c, []int{3}
+	return fileDescriptor_78b0414670674d0c, []int{6}
 }
 func (m *QueryDomainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -195,49 +399,242 @@ func (m *QueryDomainResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDomainResponse proto.InternalMessageInfo
 
-func (m *QueryDomainResponse) GetDomain() *BaseDomain {
+func (m *QueryDomainResponse) GetDomain() *ResponseDomain {
 	if m != nil {
 		return m.Domain
 	}
 	return nil
 }
 
+// QueryNFTRequest is the request type for the Query/NFT RPC method
+type QueryOwnedDomainsRequest struct {
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Offset  int64  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Count   int64  `protobuf:"varint,3,opt,name=count,proto3" json:"count,omitempty"`
+}
+
+func (m *QueryOwnedDomainsRequest) Reset()         { *m = QueryOwnedDomainsRequest{} }
+func (m *QueryOwnedDomainsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnedDomainsRequest) ProtoMessage()    {}
+func (*QueryOwnedDomainsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78b0414670674d0c, []int{7}
+}
+func (m *QueryOwnedDomainsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOwnedDomainsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOwnedDomainsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOwnedDomainsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnedDomainsRequest.Merge(m, src)
+}
+func (m *QueryOwnedDomainsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOwnedDomainsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnedDomainsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOwnedDomainsRequest proto.InternalMessageInfo
+
+func (m *QueryOwnedDomainsRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *QueryOwnedDomainsRequest) GetOffset() int64 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+func (m *QueryOwnedDomainsRequest) GetCount() int64 {
+	if m != nil {
+		return m.Count
+	}
+	return 0
+}
+
+// QueryNFTResponse is the response type for the Query/NFT RPC method
+type QueryOwnedDomainsResponse struct {
+	Total   int64             `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Domains []*ResponseDomain `protobuf:"bytes,2,rep,name=domains,proto3" json:"domains,omitempty"`
+}
+
+func (m *QueryOwnedDomainsResponse) Reset()         { *m = QueryOwnedDomainsResponse{} }
+func (m *QueryOwnedDomainsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnedDomainsResponse) ProtoMessage()    {}
+func (*QueryOwnedDomainsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78b0414670674d0c, []int{8}
+}
+func (m *QueryOwnedDomainsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOwnedDomainsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOwnedDomainsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOwnedDomainsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnedDomainsResponse.Merge(m, src)
+}
+func (m *QueryOwnedDomainsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOwnedDomainsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnedDomainsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOwnedDomainsResponse proto.InternalMessageInfo
+
+func (m *QueryOwnedDomainsResponse) GetTotal() int64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *QueryOwnedDomainsResponse) GetDomains() []*ResponseDomain {
+	if m != nil {
+		return m.Domains
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*TransferOffer)(nil), "dewebservices.nft.TransferOffer")
+	proto.RegisterType((*DNSRecords)(nil), "dewebservices.nft.DNSRecords")
+	proto.RegisterType((*ResponseDomain)(nil), "dewebservices.nft.ResponseDomain")
 	proto.RegisterType((*QueryParamsRequest)(nil), "dewebservices.nft.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "dewebservices.nft.QueryParamsResponse")
 	proto.RegisterType((*QueryDomainRequest)(nil), "dewebservices.nft.QueryDomainRequest")
 	proto.RegisterType((*QueryDomainResponse)(nil), "dewebservices.nft.QueryDomainResponse")
+	proto.RegisterType((*QueryOwnedDomainsRequest)(nil), "dewebservices.nft.QueryOwnedDomainsRequest")
+	proto.RegisterType((*QueryOwnedDomainsResponse)(nil), "dewebservices.nft.QueryOwnedDomainsResponse")
 }
 
 func init() { proto.RegisterFile("dns_module/query.proto", fileDescriptor_78b0414670674d0c) }
 
 var fileDescriptor_78b0414670674d0c = []byte{
-	// 399 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x92, 0xc1, 0x4a, 0xe3, 0x40,
-	0x18, 0xc7, 0x93, 0x65, 0x37, 0xb0, 0x53, 0xf6, 0xb0, 0xd3, 0xd2, 0xdd, 0x0d, 0xdd, 0x74, 0x19,
-	0x58, 0xf1, 0x62, 0x06, 0xea, 0xa1, 0xe0, 0xcd, 0xe0, 0x51, 0x8b, 0xf6, 0x24, 0x5e, 0xca, 0xb4,
-	0x19, 0x63, 0x20, 0x99, 0x49, 0x33, 0x89, 0x5a, 0x8a, 0x17, 0x9f, 0x40, 0xf0, 0xa5, 0x7a, 0x2c,
-	0x78, 0xf1, 0x54, 0x24, 0xf5, 0x09, 0xfa, 0x04, 0xd2, 0x99, 0x29, 0xa4, 0xb4, 0xc5, 0x5b, 0xbe,
-	0xf9, 0xbe, 0xff, 0xff, 0xff, 0x9b, 0x2f, 0x03, 0xea, 0x3e, 0x13, 0xbd, 0x98, 0xfb, 0x79, 0x44,
-	0xf1, 0x30, 0xa7, 0xe9, 0xc8, 0x4d, 0x52, 0x9e, 0x71, 0xf8, 0xd3, 0xa7, 0x77, 0xb4, 0x2f, 0x68,
-	0x7a, 0x1b, 0x0e, 0xa8, 0x70, 0xd9, 0x75, 0x66, 0xd7, 0x02, 0x1e, 0x70, 0xd9, 0xc5, 0xcb, 0x2f,
-	0x35, 0x68, 0x37, 0x02, 0xce, 0x83, 0x88, 0x62, 0x92, 0x84, 0x98, 0x30, 0xc6, 0x33, 0x92, 0x85,
-	0x9c, 0x09, 0xdd, 0xfd, 0x55, 0xb2, 0xf7, 0x79, 0x4c, 0x42, 0xb6, 0xa5, 0x91, 0x90, 0x94, 0xc4,
-	0x5a, 0x81, 0x6a, 0x00, 0x5e, 0x2c, 0x39, 0xce, 0xe5, 0x61, 0x97, 0x0e, 0x73, 0x2a, 0x32, 0xd4,
-	0x01, 0xd5, 0xb5, 0x53, 0x91, 0x70, 0x26, 0x28, 0x6c, 0x03, 0x4b, 0x89, 0x7f, 0x9b, 0xff, 0xcc,
-	0xfd, 0x4a, 0xeb, 0x8f, 0xbb, 0x81, 0xed, 0x2a, 0x89, 0xf7, 0x75, 0x32, 0x6b, 0x1a, 0x5d, 0x3d,
-	0x8e, 0xce, 0x74, 0xca, 0x89, 0x64, 0xd2, 0x29, 0xb0, 0x0d, 0x2a, 0x0a, 0xb2, 0xc7, 0x48, 0x4c,
-	0xa5, 0xe7, 0x77, 0xaf, 0xbe, 0x98, 0x35, 0xe1, 0x88, 0xc4, 0xd1, 0x11, 0x2a, 0x35, 0x51, 0x17,
-	0xa8, 0xaa, 0xb3, 0x2c, 0x2e, 0x35, 0xde, 0xca, 0x4e, 0xe3, 0x1d, 0x03, 0x4b, 0x0d, 0x69, 0xbc,
-	0xbf, 0x5b, 0xf0, 0x3c, 0x22, 0xa8, 0x92, 0x79, 0xa0, 0x98, 0x35, 0x2d, 0x6d, 0xa1, 0x85, 0xad,
-	0x85, 0x09, 0xbe, 0x49, 0x6b, 0x18, 0x01, 0x4b, 0x5d, 0x05, 0xfe, 0xdf, 0x62, 0xb3, 0xb9, 0x33,
-	0x7b, 0xef, 0xb3, 0x31, 0x45, 0x89, 0xaa, 0x8f, 0x2f, 0xef, 0xcf, 0x5f, 0x7e, 0xc0, 0x0a, 0xf6,
-	0x99, 0xd0, 0x3f, 0x03, 0x8e, 0x81, 0x26, 0xd9, 0x9d, 0xb6, 0xb6, 0xbb, 0xdd, 0x69, 0xeb, 0x3b,
-	0x41, 0x48, 0xa6, 0x35, 0xa0, 0x2d, 0xd3, 0xd4, 0x2d, 0x05, 0x1e, 0x97, 0x56, 0xfb, 0xe0, 0x9d,
-	0x4e, 0x0a, 0xc7, 0x9c, 0x16, 0x8e, 0xf9, 0x56, 0x38, 0xe6, 0xd3, 0xdc, 0x31, 0xa6, 0x73, 0xc7,
-	0x78, 0x9d, 0x3b, 0xc6, 0x55, 0x2b, 0x08, 0xb3, 0x9b, 0xbc, 0xef, 0x0e, 0x78, 0x8c, 0x65, 0xde,
-	0xc1, 0x2a, 0x50, 0x95, 0xf8, 0x1e, 0x97, 0x1e, 0x56, 0x36, 0x4a, 0xa8, 0xe8, 0x5b, 0xf2, 0x61,
-	0x1d, 0x7e, 0x04, 0x00, 0x00, 0xff, 0xff, 0x55, 0x29, 0x3b, 0x66, 0xeb, 0x02, 0x00, 0x00,
+	// 763 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xbf, 0x4f, 0x1b, 0x49,
+	0x14, 0xf6, 0xfa, 0x27, 0x3c, 0x1f, 0xe8, 0x6e, 0xb0, 0xb8, 0xc5, 0x3a, 0x6c, 0xdf, 0x4a, 0x9c,
+	0x2c, 0x38, 0xbc, 0x60, 0x0a, 0x4e, 0x74, 0x67, 0x81, 0xee, 0x8a, 0x04, 0xc8, 0x40, 0x93, 0x28,
+	0x12, 0x1a, 0x7b, 0xc7, 0xce, 0x4a, 0xeb, 0x1d, 0xb3, 0x33, 0x6b, 0x40, 0x88, 0x14, 0xa9, 0x53,
+	0x44, 0x4a, 0x99, 0x26, 0x7f, 0x44, 0xfe, 0x08, 0x4a, 0xa4, 0x34, 0xa9, 0xac, 0xc8, 0xa4, 0x48,
+	0x9d, 0xbf, 0x20, 0xda, 0x99, 0x71, 0xb0, 0xc5, 0x5a, 0xa1, 0xdb, 0x6f, 0xde, 0x9b, 0xef, 0x7d,
+	0xef, 0xbd, 0x6f, 0x07, 0x16, 0x1d, 0x9f, 0x9f, 0x74, 0x99, 0x13, 0x7a, 0xd4, 0x3e, 0x0d, 0x69,
+	0x70, 0x51, 0xeb, 0x05, 0x4c, 0x30, 0xf4, 0x9b, 0x43, 0xcf, 0x68, 0x93, 0xd3, 0xa0, 0xef, 0xb6,
+	0x28, 0xaf, 0xf9, 0x6d, 0x51, 0x2c, 0x74, 0x58, 0x87, 0xc9, 0xa8, 0x1d, 0x7d, 0xa9, 0xc4, 0xe2,
+	0x1f, 0x1d, 0xc6, 0x3a, 0x1e, 0xb5, 0x49, 0xcf, 0xb5, 0x89, 0xef, 0x33, 0x41, 0x84, 0xcb, 0x7c,
+	0xae, 0xa3, 0xbf, 0x8f, 0xd1, 0x3b, 0xac, 0x4b, 0x5c, 0x3f, 0x26, 0xd0, 0x23, 0x01, 0xe9, 0xea,
+	0x1b, 0xd6, 0x53, 0x98, 0x3b, 0x0e, 0x88, 0xcf, 0xdb, 0x34, 0x38, 0x68, 0xb7, 0x69, 0x80, 0x0a,
+	0x90, 0xe9, 0x05, 0x6e, 0x8b, 0x9a, 0x46, 0xc5, 0xa8, 0xa6, 0xb1, 0x02, 0xa8, 0x0e, 0x85, 0xbd,
+	0xf3, 0x1e, 0x6d, 0x09, 0xea, 0x1c, 0x9c, 0xf9, 0x34, 0xf8, 0xd7, 0x71, 0x02, 0xca, 0xb9, 0x99,
+	0xac, 0x18, 0xd5, 0x59, 0x1c, 0x1b, 0xb3, 0xfe, 0x01, 0xd8, 0xdd, 0x3f, 0xc2, 0xb4, 0xc5, 0x02,
+	0x87, 0x23, 0x04, 0x69, 0x71, 0xd1, 0x53, 0xb4, 0xb3, 0x58, 0x7e, 0xa3, 0x45, 0xc8, 0xf6, 0x89,
+	0x17, 0xd2, 0x88, 0x27, 0x55, 0x9d, 0xc5, 0x1a, 0x59, 0x37, 0x49, 0x98, 0xc7, 0x94, 0xf7, 0x98,
+	0xcf, 0xe9, 0xae, 0x6c, 0x03, 0xcd, 0x43, 0xd2, 0x75, 0xf4, 0xe5, 0xa4, 0xeb, 0x44, 0x57, 0x5d,
+	0xce, 0x43, 0xea, 0x68, 0x09, 0x1a, 0xa1, 0x22, 0xcc, 0xf4, 0x89, 0xe7, 0x3a, 0xc7, 0xae, 0x67,
+	0xa6, 0x64, 0xe4, 0x07, 0x46, 0xff, 0xc1, 0xbc, 0xd0, 0xbd, 0x9e, 0xb0, 0xa8, 0x59, 0x33, 0x5d,
+	0x31, 0xaa, 0xf9, 0x7a, 0xa5, 0x76, 0x6f, 0xfa, 0xb5, 0x89, 0xa1, 0xe0, 0x39, 0x31, 0x31, 0xa3,
+	0x6d, 0xc8, 0x05, 0xaa, 0x2d, 0x33, 0x53, 0x49, 0x55, 0xf3, 0xf5, 0xe5, 0x18, 0x86, 0xbb, 0xde,
+	0xf1, 0x28, 0x1b, 0xad, 0xc2, 0xaf, 0x3c, 0x6c, 0xaa, 0x96, 0xf8, 0x81, 0x7f, 0x44, 0x3c, 0x6a,
+	0x66, 0x2b, 0x46, 0x75, 0x06, 0xdf, 0x3b, 0x47, 0x1b, 0xb0, 0x70, 0x77, 0x16, 0x9d, 0x1c, 0xca,
+	0xb5, 0xe4, 0xe4, 0x5a, 0xe2, 0x42, 0xd1, 0xea, 0x58, 0xb4, 0x00, 0x73, 0x46, 0x36, 0xae, 0xc0,
+	0x4e, 0xfa, 0xeb, 0xfb, 0xb2, 0x61, 0x15, 0x00, 0x3d, 0x89, 0xfc, 0x76, 0x28, 0x97, 0x8f, 0xe9,
+	0x69, 0x48, 0xb9, 0xb0, 0xf6, 0x61, 0x61, 0xe2, 0x54, 0x8d, 0x1c, 0x6d, 0x43, 0x56, 0x99, 0x44,
+	0x0e, 0x3c, 0x5f, 0x5f, 0x8a, 0x69, 0x4f, 0x5d, 0x69, 0xa4, 0xaf, 0x07, 0xe5, 0x04, 0xd6, 0xe9,
+	0xd6, 0x63, 0x5d, 0x45, 0x49, 0xd3, 0x55, 0xd0, 0x36, 0xe4, 0x95, 0x19, 0x4f, 0x7c, 0xd2, 0xd5,
+	0x0e, 0x68, 0x2c, 0x7e, 0x1b, 0x94, 0xd1, 0x05, 0xe9, 0x7a, 0x3b, 0xd6, 0x58, 0xd0, 0xc2, 0xa0,
+	0xd0, 0x7e, 0x04, 0x9e, 0x6b, 0x79, 0x23, 0x3a, 0x2d, 0x6f, 0x0f, 0xb2, 0x2a, 0x49, 0xcb, 0xfb,
+	0x33, 0x46, 0xde, 0xa4, 0x7d, 0x1a, 0x30, 0x1c, 0x94, 0xb3, 0x9a, 0x46, 0x5f, 0xb6, 0x9a, 0x60,
+	0x4a, 0xf6, 0xc8, 0xb4, 0x8e, 0x1e, 0xe6, 0x48, 0xb2, 0x09, 0x39, 0xa2, 0x2d, 0xae, 0x3c, 0x37,
+	0x82, 0x91, 0xf1, 0x58, 0xbb, 0xcd, 0xa9, 0x90, 0xc6, 0x4b, 0x61, 0x8d, 0xa2, 0xe1, 0xb7, 0x58,
+	0xe8, 0x0b, 0xe9, 0xba, 0x14, 0x56, 0xc0, 0xba, 0x84, 0xa5, 0x98, 0x1a, 0xba, 0x8f, 0x02, 0x64,
+	0x04, 0x13, 0xc4, 0x93, 0x25, 0x52, 0x58, 0x01, 0xf4, 0x3f, 0xe4, 0x94, 0x40, 0xf5, 0x57, 0x3c,
+	0xa8, 0xbd, 0xfc, 0x70, 0x50, 0xce, 0x8d, 0xe8, 0x47, 0xd7, 0xeb, 0x1f, 0x52, 0x90, 0x91, 0xd5,
+	0xd1, 0x4b, 0xc8, 0xaa, 0x7d, 0xa1, 0x95, 0x18, 0xb2, 0xfb, 0xc6, 0x28, 0xfe, 0xf5, 0xb3, 0x34,
+	0x55, 0xde, 0x5a, 0x79, 0xf5, 0xf1, 0xcb, 0xdb, 0x64, 0x19, 0x2d, 0xdb, 0x32, 0x5f, 0x3f, 0x3a,
+	0xdc, 0xee, 0x6f, 0x36, 0xa9, 0x20, 0x9b, 0xfa, 0xad, 0x41, 0xaf, 0x0d, 0xd0, 0xd3, 0x9f, 0x2e,
+	0x60, 0xc2, 0x33, 0xd3, 0x05, 0x4c, 0x7a, 0xc1, 0xda, 0x92, 0x02, 0xd6, 0xd1, 0xda, 0x14, 0x01,
+	0x0a, 0xdb, 0x97, 0x63, 0x1e, 0xbb, 0x42, 0xef, 0x0c, 0xf8, 0x65, 0x7c, 0x23, 0x68, 0x6d, 0x5a,
+	0xb5, 0x18, 0x6f, 0x14, 0xff, 0x7e, 0x58, 0xb2, 0x16, 0xb8, 0x21, 0x05, 0xae, 0xa2, 0xea, 0x14,
+	0x81, 0xda, 0x57, 0xf6, 0xa5, 0xfe, 0xb8, 0x6a, 0x3c, 0xba, 0x1e, 0x96, 0x8c, 0x9b, 0x61, 0xc9,
+	0xf8, 0x3c, 0x2c, 0x19, 0x6f, 0x6e, 0x4b, 0x89, 0x9b, 0xdb, 0x52, 0xe2, 0xd3, 0x6d, 0x29, 0xf1,
+	0xac, 0xde, 0x71, 0xc5, 0x8b, 0xb0, 0x59, 0x6b, 0xb1, 0xae, 0x62, 0x5b, 0x1f, 0x89, 0xd0, 0xe4,
+	0xe7, 0xf6, 0xd8, 0x3b, 0x1f, 0x3d, 0xb1, 0xbc, 0x99, 0x95, 0xef, 0xfc, 0xd6, 0xf7, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xa1, 0xa6, 0x8d, 0xd2, 0x7a, 0x06, 0x00, 0x00,
+}
+
+func (this *ResponseDomain) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ResponseDomain)
+	if !ok {
+		that2, ok := that.(ResponseDomain)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Id != that1.Id {
+		return false
+	}
+	if this.Issued != that1.Issued {
+		return false
+	}
+	if this.ValidTil != that1.ValidTil {
+		return false
+	}
+	if !this.TransferOffer.Equal(that1.TransferOffer) {
+		return false
+	}
+	if len(this.Records) != len(that1.Records) {
+		return false
+	}
+	for i := range this.Records {
+		if !this.Records[i].Equal(that1.Records[i]) {
+			return false
+		}
+	}
+	if this.SubDomainsOnSale != that1.SubDomainsOnSale {
+		return false
+	}
+	if this.SubDomainsSalePrice != that1.SubDomainsSalePrice {
+		return false
+	}
+	if this.Owner != that1.Owner {
+		return false
+	}
+	return true
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -254,8 +651,10 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// NFT queries the NFT for the given denom and token ID
+	// Query domain info by domain name
 	Domain(ctx context.Context, in *QueryDomainRequest, opts ...grpc.CallOption) (*QueryDomainResponse, error)
+	// Query domains owned by user
+	OwnedDomains(ctx context.Context, in *QueryOwnedDomainsRequest, opts ...grpc.CallOption) (*QueryOwnedDomainsResponse, error)
 }
 
 type queryClient struct {
@@ -284,12 +683,23 @@ func (c *queryClient) Domain(ctx context.Context, in *QueryDomainRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) OwnedDomains(ctx context.Context, in *QueryOwnedDomainsRequest, opts ...grpc.CallOption) (*QueryOwnedDomainsResponse, error) {
+	out := new(QueryOwnedDomainsResponse)
+	err := c.cc.Invoke(ctx, "/dewebservices.nft.Query/OwnedDomains", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// NFT queries the NFT for the given denom and token ID
+	// Query domain info by domain name
 	Domain(context.Context, *QueryDomainRequest) (*QueryDomainResponse, error)
+	// Query domains owned by user
+	OwnedDomains(context.Context, *QueryOwnedDomainsRequest) (*QueryOwnedDomainsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -301,6 +711,9 @@ func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsReq
 }
 func (*UnimplementedQueryServer) Domain(ctx context.Context, req *QueryDomainRequest) (*QueryDomainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Domain not implemented")
+}
+func (*UnimplementedQueryServer) OwnedDomains(ctx context.Context, req *QueryOwnedDomainsRequest) (*QueryOwnedDomainsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OwnedDomains not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -343,6 +756,24 @@ func _Query_Domain_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_OwnedDomains_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnedDomainsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).OwnedDomains(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dewebservices.nft.Query/OwnedDomains",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).OwnedDomains(ctx, req.(*QueryOwnedDomainsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "dewebservices.nft.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -355,9 +786,179 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Domain",
 			Handler:    _Query_Domain_Handler,
 		},
+		{
+			MethodName: "OwnedDomains",
+			Handler:    _Query_OwnedDomains_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "dns_module/query.proto",
+}
+
+func (m *TransferOffer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TransferOffer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TransferOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ExpectedOwnerAddress) > 0 {
+		i -= len(m.ExpectedOwnerAddress)
+		copy(dAtA[i:], m.ExpectedOwnerAddress)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ExpectedOwnerAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Price != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Price))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DNSRecords) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DNSRecords) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DNSRecords) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Values) > 0 {
+		for iNdEx := len(m.Values) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Values[iNdEx])
+			copy(dAtA[i:], m.Values[iNdEx])
+			i = encodeVarintQuery(dAtA, i, uint64(len(m.Values[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Type) > 0 {
+		i -= len(m.Type)
+		copy(dAtA[i:], m.Type)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Type)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ResponseDomain) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ResponseDomain) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ResponseDomain) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if m.SubDomainsSalePrice != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SubDomainsSalePrice))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.SubDomainsOnSale {
+		i--
+		if m.SubDomainsOnSale {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.Records) > 0 {
+		for iNdEx := len(m.Records) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Records[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if m.TransferOffer != nil {
+		{
+			size, err := m.TransferOffer.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.ValidTil) > 0 {
+		i -= len(m.ValidTil)
+		copy(dAtA[i:], m.ValidTil)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ValidTil)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Issued) > 0 {
+		i -= len(m.Issued)
+		copy(dAtA[i:], m.Issued)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Issued)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
@@ -481,6 +1082,88 @@ func (m *QueryDomainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryOwnedDomainsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOwnedDomainsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOwnedDomainsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Count != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Count))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Offset != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Offset))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOwnedDomainsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOwnedDomainsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOwnedDomainsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Domains) > 0 {
+		for iNdEx := len(m.Domains) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Domains[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.Total != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Total))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -492,6 +1175,82 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *TransferOffer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Price != 0 {
+		n += 1 + sovQuery(uint64(m.Price))
+	}
+	l = len(m.ExpectedOwnerAddress)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *DNSRecords) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Type)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			l = len(s)
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *ResponseDomain) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Issued)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.ValidTil)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.TransferOffer != nil {
+		l = m.TransferOffer.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if len(m.Records) > 0 {
+		for _, e := range m.Records {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.SubDomainsOnSale {
+		n += 2
+	}
+	if m.SubDomainsSalePrice != 0 {
+		n += 1 + sovQuery(uint64(m.SubDomainsSalePrice))
+	}
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryParamsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -538,11 +1297,550 @@ func (m *QueryDomainResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryOwnedDomainsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Offset != 0 {
+		n += 1 + sovQuery(uint64(m.Offset))
+	}
+	if m.Count != 0 {
+		n += 1 + sovQuery(uint64(m.Count))
+	}
+	return n
+}
+
+func (m *QueryOwnedDomainsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Total != 0 {
+		n += 1 + sovQuery(uint64(m.Total))
+	}
+	if len(m.Domains) > 0 {
+		for _, e := range m.Domains {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
 func sovQuery(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *TransferOffer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TransferOffer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TransferOffer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
+			}
+			m.Price = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Price |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExpectedOwnerAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ExpectedOwnerAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DNSRecords) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DNSRecords: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DNSRecords: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Values", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Values = append(m.Values, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ResponseDomain) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ResponseDomain: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ResponseDomain: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issued", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issued = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValidTil", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ValidTil = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TransferOffer", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.TransferOffer == nil {
+				m.TransferOffer = &TransferOffer{}
+			}
+			if err := m.TransferOffer.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Records", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Records = append(m.Records, &DNSRecords{})
+			if err := m.Records[len(m.Records)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDomainsOnSale", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SubDomainsOnSale = bool(v != 0)
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDomainsSalePrice", wireType)
+			}
+			m.SubDomainsSalePrice = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubDomainsSalePrice |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -818,9 +2116,232 @@ func (m *QueryDomainResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Domain == nil {
-				m.Domain = &BaseDomain{}
+				m.Domain = &ResponseDomain{}
 			}
 			if err := m.Domain.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOwnedDomainsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOwnedDomainsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOwnedDomainsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Offset", wireType)
+			}
+			m.Offset = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Offset |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Count", wireType)
+			}
+			m.Count = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Count |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOwnedDomainsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOwnedDomainsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOwnedDomainsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Total", wireType)
+			}
+			m.Total = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Total |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Domains", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Domains = append(m.Domains, &ResponseDomain{})
+			if err := m.Domains[len(m.Domains)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

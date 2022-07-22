@@ -6,14 +6,13 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/deweb-services/deweb/x/dns_module/types";
 option (gogoproto.goproto_getters_all) = false;
 
-// BaseNFT defines a non-fungible token
+// BaseDomain defines a non-fungible domain token
 message BaseDomain {
     option (gogoproto.equal) = true;
 
     string id = 1;
-    string name = 2;
-    string data = 3;
-    string owner = 4;
+    string data = 2;
+    string owner = 3;
 }
 
 // Denom defines a type of NFT

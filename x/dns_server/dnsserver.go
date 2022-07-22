@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/deweb-services/deweb/x/dns_module/keeper"
 	"github.com/deweb-services/deweb/x/dns_module/types"
 	"golang.org/x/net/dns/dnsmessage"
 	"net"
@@ -44,7 +43,7 @@ const (
 )
 
 type CacheRecord struct {
-	Values     []keeper.DNSTypeRecord
+	Values     []*types.DNSRecords
 	CreateTime time.Time
 }
 
@@ -103,7 +102,7 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 		return nil, fmt.Errorf("cannot perform NFT search: %w", err)
 	}
 
-	var storedRecords []keeper.DNSTypeRecord
+	var storedRecords []*types.DNSRecords
 	recFromCache, ok := srv.cachedRecords[domain]
 	if ok {
 		cacheExpireTime := recFromCache.CreateTime.Add(10 * time.Second)
@@ -114,15 +113,11 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 		}
 	}
 	if storedRecords == nil {
-		domainRecords, err := keeper.ParseDomainData([]byte(resp.Domain.Data))
-		if err != nil {
-			return nil, fmt.Errorf("cannot parse stored record for domain %s: %w", domain, err)
-		}
-		storedRecords = domainRecords.Records
 		srv.cachedRecords[domain] = CacheRecord{
-			Values:     domainRecords.Records,
+			Values:     resp.Domain.Records,
 			CreateTime: time.Now(),
 		}
+		storedRecords = resp.Domain.Records
 	}
 
 	recordTypeName, ok := recordTypesMapping[recordType]
@@ -130,8 +125,8 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 		return nil, fmt.Errorf("unsupported type %d", recordType)
 	}
 	for _, rec := range storedRecords {
-		if rec.RecordType == recordTypeName {
-			return rec.RecordValues, nil
+		if rec.Type == recordTypeName {
+			return rec.Values, nil
 		}
 	}
 	return nil, fmt.Errorf("record for %s not found", domain)

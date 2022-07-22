@@ -16,13 +16,13 @@ import (
 
 func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	// Mint an NFT
-	r.HandleFunc(fmt.Sprintf("/%s/domains/register", types.ModuleName), registerDomainHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc("/deweb/domains/v1beta1/domain/register", registerDomainHandlerFn(cliCtx)).Methods("POST")
 	// Update an NFT
-	r.HandleFunc(fmt.Sprintf("/%s/domains/{%s}", types.ModuleName, RestParamTokenID), editDomainHandlerFn(cliCtx)).Methods("PUT")
+	r.HandleFunc(fmt.Sprintf("/deweb/domains/v1beta1/domain/{%s}", RestParamDomainName), editDomainHandlerFn(cliCtx)).Methods("PUT")
 	// Transfer an NFT to an address
-	r.HandleFunc(fmt.Sprintf("/%s/domains/{%s}/transfer", types.ModuleName, RestParamTokenID), transferDomainHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/deweb/domains/v1beta1/domain/{%s}/transfer", RestParamDomainName), transferDomainHandlerFn(cliCtx)).Methods("POST")
 	// Burn an NFT
-	r.HandleFunc(fmt.Sprintf("/%s/domains/{%s}/burn", types.ModuleName, RestParamTokenID), burnDomainHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/deweb/domains/v1beta1/domain/{%s}/burn", RestParamDomainName), burnDomainHandlerFn(cliCtx)).Methods("POST")
 }
 
 func registerDomainHandlerFn(cliCtx client.Context) http.HandlerFunc {
@@ -126,7 +126,7 @@ func burnDomainHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		// create the message
-		msg := types.NewMsgRemoveDomain(req.Owner, vars[RestParamTokenID])
+		msg := types.NewMsgRemoveDomain(req.Owner, vars[RestParamDomainName])
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

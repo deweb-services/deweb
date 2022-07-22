@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/deweb-services/deweb/x/dns_module/exported"
 	"strings"
 )
 
@@ -62,13 +63,21 @@ func (k Keeper) CheckAllowedForAddress(ctx types.Context, dnsName string, creato
 }
 
 func (k Keeper) getParentDomainOwner(ctx types.Context, dnsName string) (types.AccAddress, error) {
+	domainRec, err := k.getParentDomain(ctx, dnsName)
+	if err != nil {
+		return nil, err
+	}
+	return domainRec.GetOwner(), nil
+}
+
+func (k Keeper) getParentDomain(ctx types.Context, dnsName string) (exported.Domain, error) {
 	domainParts := strings.Split(dnsName, ".")
 	if len(domainParts) == 1 {
 		domainRec, err := k.GetDomain(ctx, domainParts[0])
 		if err != nil {
 			return nil, &DomainDoesntExist{domainName: domainParts[0]}
 		}
-		return domainRec.GetOwner(), nil
+		return domainRec, nil
 	}
 	parentDomainParts := domainParts[1:]
 	parentDomain := strings.Join(parentDomainParts, ".")
@@ -76,5 +85,5 @@ func (k Keeper) getParentDomainOwner(ctx types.Context, dnsName string) (types.A
 	if err != nil {
 		return nil, &DomainDoesntExist{domainName: dnsName}
 	}
-	return domainRec.GetOwner(), nil
+	return domainRec, nil
 }

@@ -6,85 +6,48 @@ import (
 	"github.com/deweb-services/deweb/x/dns_module/types"
 )
 
-// GetOwner gets all the ID collections owned by an address and denom ID
-func (k Keeper) GetOwner(ctx sdk.Context, address sdk.AccAddress, denom string) types.Owner {
+// GetByOwner gets all the domains owned by an address
+func (k Keeper) GetByOwner(ctx sdk.Context, address sdk.AccAddress) types.Owner {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.KeyOwner(address, denom, ""))
+	iterator := sdk.KVStorePrefixIterator(store, types.KeyOwner(address, ""))
 	defer iterator.Close()
 
 	owner := types.Owner{
 		Address:       address.String(),
 		IDCollections: types.IDCollections{},
 	}
-	idsMap := make(map[string][]string)
+	domainsCollections := types.IDCollections{}
+	resDomains := make([]string, 0)
 
 	for ; iterator.Valid(); iterator.Next() {
-		_, denomID, tokenID, _ := types.SplitKeyOwner(iterator.Key())
-		if ids, ok := idsMap[denomID]; ok {
-			idsMap[denomID] = append(ids, tokenID)
-		} else {
-			idsMap[denomID] = []string{tokenID}
-			owner.IDCollections = append(
-				owner.IDCollections,
-				types.IDCollection{DenomId: denomID},
-			)
-		}
+		key := iterator.Key()
+		_, domainName, _ := types.SplitKeyOwner(key)
+		resDomains = append(resDomains, domainName)
+		domainsCollections = domainsCollections.Add(k.dnsDenomName, domainName)
 	}
 
-	for i := 0; i < len(owner.IDCollections); i++ {
-		owner.IDCollections[i].TokenIds = idsMap[owner.IDCollections[i].DenomId]
-	}
+	owner.IDCollections = domainsCollections
 
 	return owner
 }
 
-// GetOwners gets all the ID collections
-func (k Keeper) GetOwners(ctx sdk.Context) (owners types.Owners) {
+func (k Keeper) deleteOwner(ctx sdk.Context, tokenID string, owner sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.KeyOwner(nil, "", ""))
-	defer iterator.Close()
-
-	idcsMap := make(map[string]types.IDCollections)
-	for ; iterator.Valid(); iterator.Next() {
-		key := iterator.Key()
-		address, denom, id, _ := types.SplitKeyOwner(key)
-		if _, ok := idcsMap[address.String()]; !ok {
-			idcsMap[address.String()] = types.IDCollections{}
-			owners = append(
-				owners,
-				types.Owner{Address: address.String()},
-			)
-		}
-		idcs := idcsMap[address.String()]
-		idcs = idcs.Add(denom, id)
-		idcsMap[address.String()] = idcs
-	}
-	for i, owner := range owners {
-		owners[i].IDCollections = idcsMap[owner.Address]
-	}
-
-	return owners
+	store.Delete(types.KeyOwner(owner, tokenID))
 }
 
-func (k Keeper) deleteOwner(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyOwner(owner, denomID, tokenID))
-}
-
-func (k Keeper) setOwner(ctx sdk.Context,
-	denomID, tokenID string,
-	owner sdk.AccAddress) {
+func (k Keeper) setOwner(ctx sdk.Context, tokenID string, owner sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := types.MustMarshalTokenID(k.cdc, tokenID)
-	store.Set(types.KeyOwner(owner, denomID, tokenID), bz)
+	store.Set(types.KeyOwner(owner, tokenID), bz)
 }
 
-func (k Keeper) swapOwner(ctx sdk.Context, denomID, tokenID string, srcOwner, dstOwner sdk.AccAddress) {
+func (k Keeper) swapOwner(ctx sdk.Context, tokenID string, srcOwner, dstOwner sdk.AccAddress) {
 
 	// delete old owner key
-	k.deleteOwner(ctx, denomID, tokenID, srcOwner)
+	k.deleteOwner(ctx, tokenID, srcOwner)
 
 	// set new owner key
-	k.setOwner(ctx, denomID, tokenID, dstOwner)
+	k.setOwner(ctx, tokenID, dstOwner)
 }

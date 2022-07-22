@@ -16,7 +16,7 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router, queryRoute string
 	// Get the params of module
 	r.HandleFunc(fmt.Sprintf("/%s/params", types.ModuleName), queryParams(cliCtx, queryRoute)).Methods("GET")
 	// Query a single domain NFT
-	r.HandleFunc(fmt.Sprintf("/%s/dns/{%s}", types.ModuleName, RestParamTokenID), queryDomain(cliCtx, queryRoute)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/deweb/domains/v1beta1/domain/{%s}", RestParamDomainName), queryDomain(cliCtx, queryRoute)).Methods("GET")
 }
 
 func queryParams(cliCtx client.Context, queryRoute string) http.HandlerFunc {
@@ -43,12 +43,12 @@ func queryDomain(cliCtx client.Context, queryRoute string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		tokenID := vars[RestParamTokenID]
-		if err := types.ValidateTokenID(tokenID); err != nil {
+		domainName := vars[RestParamDomainName]
+		if err := types.ValidateTokenID(domainName); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 
-		params := types.NewQueryDomainsParams(tokenID)
+		params := types.NewQueryDomainsParams(domainName)
 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

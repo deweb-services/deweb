@@ -88,6 +88,29 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	if err != nil {
 		return sdkerrors.Wrapf(err, "validation check failed")
 	}
+	parentDomain, err := k.getParentDomain(ctx, domainName)
+
+	// Check ownership of upper-level domain
+	var subDomainPrice uint64
+	var subDomainPaymentReceiver sdk.AccAddress
+	chErr := k.CheckAllowedForAddress(ctx, domainName, owner)
+	if chErr != nil {
+		ownedErr := &DomainNotOwned{}
+		if errors.As(chErr, &ownedErr) {
+			parentDomainData, err := ParseDomainData([]byte(parentDomain.GetData()))
+			if err != nil {
+				return sdkerrors.Wrapf(err, "cannot process parent domain data")
+			}
+			if !parentDomainData.SubDomainsOnSale {
+				return sdkerrors.Wrapf(types.ErrDomainPermissionDenied, chErr.Error())
+			}
+			subDomainPrice = parentDomainData.SubDomainsSalePrice
+			subDomainPaymentReceiver = parentDomain.GetOwner()
+		} else {
+			return sdkerrors.Wrapf(types.ErrDomainPermissionDenied, chErr.Error())
+		}
+	}
+
 	domainReceivedData, err := ParseDomainData([]byte(tokenData))
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
@@ -103,14 +126,21 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	dataToSave := string(dataToSaveRaw)
 
 	var domainPriceUDWS uint64
+	var paymentReceiver = []byte("0")
+
 	domainParts := strings.Split(domainName, ".")
 	if len(domainParts) == 1 {
 		domainPriceUDWS = k.DomainPriceUDWS(ctx)
 	} else {
-		domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
+		if subDomainPaymentReceiver != nil {
+			domainPriceUDWS = subDomainPrice
+			paymentReceiver = subDomainPaymentReceiver
+		} else {
+			domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
+		}
 	}
-	zeroAddress := []byte("0")
-	err = k.payForDomain(ctx, domainPriceUDWS, owner, zeroAddress)
+
+	err = k.payForDomain(ctx, domainPriceUDWS, owner, paymentReceiver)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
 	}
@@ -118,7 +148,7 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 		ctx,
 		types.NewBaseNFT(domainName, recipient, dataToSave),
 	)
-	k.setOwner(ctx, k.dnsDenomName, domainName, recipient)
+	k.setOwner(ctx, domainName, recipient)
 	k.increaseSupply(ctx, k.dnsDenomName)
 
 	return nil
@@ -187,12 +217,6 @@ func (k Keeper) checkDomainValid(ctx sdk.Context, tokenID string, owner sdk.AccA
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "domain %s in block list", tokenID)
 	}
 
-	// Check ownership of upper-level domain
-	chErr := k.CheckAllowedForAddress(ctx, tokenID, owner)
-	if chErr != nil {
-		return sdkerrors.Wrapf(types.ErrDomainPermissionDenied, chErr.Error())
-	}
-
 	return nil
 }
 
@@ -234,6 +258,8 @@ func (k Keeper) EditDomain(ctx sdk.Context, tokenID, tokenData string, owner sdk
 			return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
 		}
 		domainRecordData.Records = receivedUpdateData.Records
+		domainRecordData.SubDomainsOnSale = receivedUpdateData.SubDomainsOnSale
+		domainRecordData.SubDomainsSalePrice = receivedUpdateData.SubDomainsSalePrice
 		dataToSaveRaw, err := json.Marshal(domainRecordData)
 		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
@@ -301,7 +327,7 @@ func (k Keeper) TransferDomainOwner(ctx sdk.Context, tokenID string, cancelTrans
 		if err != nil {
 			return sdkerrors.Wrapf(err, "cannot send coins to pay for domain")
 		}
-		k.swapOwner(ctx, k.dnsDenomName, tokenID, domainRec.GetOwner(), trxSender)
+		k.swapOwner(ctx, tokenID, domainRec.GetOwner(), trxSender)
 		domainRecUpdate.Owner = trxSender.String()
 		domainRecordData.TransferOffer = nil
 	}
@@ -345,7 +371,7 @@ func (k Keeper) RemoveDomain(ctx sdk.Context, tokenID string, owner sdk.AccAddre
 	}
 
 	k.deleteNFT(ctx, k.dnsDenomName, nft)
-	k.deleteOwner(ctx, k.dnsDenomName, tokenID, owner)
+	k.deleteOwner(ctx, tokenID, owner)
 	k.decreaseSupply(ctx, k.dnsDenomName)
 
 	return nil
