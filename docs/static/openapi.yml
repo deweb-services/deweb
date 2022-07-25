@@ -15725,7 +15725,7 @@ paths:
                       type: string
                     issued:
                       type: string
-                    validTil:
+                    validTill:
                       type: string
                     transferOffer:
                       type: object
@@ -15806,7 +15806,7 @@ paths:
                     type: string
                   issued:
                     type: string
-                  validTil:
+                  validTill:
                     type: string
                   transferOffer:
                     type: object
@@ -25709,7 +25709,7 @@ definitions:
             type: string
           issued:
             type: string
-          validTil:
+          validTill:
             type: string
           transferOffer:
             type: object
@@ -25753,7 +25753,7 @@ definitions:
               type: string
             issued:
               type: string
-            validTil:
+            validTill:
               type: string
             transferOffer:
               type: object
@@ -25813,7 +25813,7 @@ definitions:
         type: string
       issued:
         type: string
-      validTil:
+      validTill:
         type: string
       transferOffer:
         type: object

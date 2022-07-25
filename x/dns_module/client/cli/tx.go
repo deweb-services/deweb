@@ -101,7 +101,7 @@ func GetCmdEditDomain() *cobra.Command {
 		Use:  "edit [domain]",
 		Long: "Edit the domain data of an NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft edit <domain> "+
+			"$ %s tx domain edit <domain> "+
 				"--data=<data> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+

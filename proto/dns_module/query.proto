@@ -40,7 +40,7 @@ message ResponseDomain {
 
     string id = 1;
     string issued = 2;
-    string validTil = 3;
+    string validTill = 3;
     TransferOffer transfer_offer = 4;
     repeated DNSRecords records = 5;
     bool subDomainsOnSale = 6;

@@ -76,7 +76,7 @@ func (q queryServer) Domain(c context.Context, request *types.QueryDomainRequest
 	respDomain := &types.ResponseDomain{
 		Id:                  baseDomainNFT.Id,
 		Issued:              domainRecordData.Issued.Format(time.RFC3339),
-		ValidTil:            domainRecordData.ValidTill.Format(time.RFC3339),
+		ValidTill:           domainRecordData.ValidTill.Format(time.RFC3339),
 		TransferOffer:       domainTransferOffer,
 		Records:             resRecords,
 		SubDomainsOnSale:    domainRecordData.SubDomainsOnSale,
