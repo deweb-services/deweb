@@ -1,0 +1,12 @@
+{
+  "title": "Increase the lease time for domains",
+  "description": "Set lease time to 60 minutes for domains",
+  "changes": [
+    {
+      "subspace": "nft",
+      "key": "DomainExpiration",
+      "value": "60"
+    }
+  ],
+  "deposit": "10000000udws"
+}
