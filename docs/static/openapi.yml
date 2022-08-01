@@ -15706,7 +15706,7 @@ paths:
   '/deweb/domains/v1beta1/address/{address}':
     get:
       summary: Query domains owned by user
-      operationId: DewebservicesNftOwnedDomains
+      operationId: DewebservicesDomainOwnedDomains
       responses:
         '200':
           description: A successful response.
@@ -15792,7 +15792,7 @@ paths:
   '/deweb/domains/v1beta1/domain/{domainName}':
     get:
       summary: Query domain info by domain name
-      operationId: DewebservicesNftDomain
+      operationId: DewebservicesDomainDomain
       responses:
         '200':
           description: A successful response.
@@ -15863,7 +15863,7 @@ paths:
   /deweb/domains/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: DewebservicesNftParams
+      operationId: DewebservicesDomainParams
       responses:
         '200':
           description: A successful response.
@@ -25658,7 +25658,7 @@ definitions:
         type: string
       deleted:
         type: boolean
-  dewebservices.nft.DNSRecords:
+  dewebservices.domain.DNSRecords:
     type: object
     properties:
       type:
@@ -25667,19 +25667,19 @@ definitions:
         type: array
         items:
           type: string
-  dewebservices.nft.MsgEditdomainResponse:
+  dewebservices.domain.MsgEditdomainResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
-  dewebservices.nft.MsgRegisterDomainResponse:
+  dewebservices.domain.MsgRegisterDomainResponse:
     type: object
     description: MsgMintNFTResponse defines the Msg/MintNFT response type.
-  dewebservices.nft.MsgRemoveDomainResponse:
+  dewebservices.domain.MsgRemoveDomainResponse:
     type: object
     description: MsgBurnNFTResponse defines the Msg/BurnNFT response type.
-  dewebservices.nft.MsgTransferDomainResponse:
+  dewebservices.domain.MsgTransferDomainResponse:
     type: object
     description: MsgTransferNFTResponse defines the Msg/TransferNFT response type.
-  dewebservices.nft.Params:
+  dewebservices.domain.Params:
     type: object
     properties:
       domainPrice:
@@ -25699,7 +25699,7 @@ definitions:
         items:
           type: string
     description: Params defines the parameters for the module.
-  dewebservices.nft.QueryDomainResponse:
+  dewebservices.domain.QueryDomainResponse:
     type: object
     properties:
       domain:
@@ -25738,7 +25738,7 @@ definitions:
           owner:
             type: string
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
-  dewebservices.nft.QueryOwnedDomainsResponse:
+  dewebservices.domain.QueryOwnedDomainsResponse:
     type: object
     properties:
       total:
@@ -25782,7 +25782,7 @@ definitions:
             owner:
               type: string
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
-  dewebservices.nft.QueryParamsResponse:
+  dewebservices.domain.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -25806,7 +25806,7 @@ definitions:
             items:
               type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  dewebservices.nft.ResponseDomain:
+  dewebservices.domain.ResponseDomain:
     type: object
     properties:
       id:
@@ -25841,7 +25841,7 @@ definitions:
         format: uint64
       owner:
         type: string
-  dewebservices.nft.TransferOffer:
+  dewebservices.domain.TransferOffer:
     type: object
     properties:
       price:
