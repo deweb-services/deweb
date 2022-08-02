@@ -15528,7 +15528,7 @@ paths:
         - Query
   /deweb/external_wallets/v1beta1/list:
     get:
-      operationId: DewebservicesDewebDewebFilterUserWalletRecords
+      operationId: DewebserviceDewebV1Beta1FilterUserWalletRecords
       responses:
         '200':
           description: A successful response.
@@ -15600,7 +15600,7 @@ paths:
   /deweb/filter_chain_mappings_records/v1beta1/list:
     get:
       summary: Queries a list of FilterChainMappingsRecords items.
-      operationId: DewebservicesDewebDewebFilterChainMappingsRecords
+      operationId: DewebserviceDewebV1Beta1FilterChainMappingsRecords
       responses:
         '200':
           description: A successful response.
@@ -15670,7 +15670,7 @@ paths:
   /dewebservices/deweb/deweb/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: DewebservicesDewebDewebParams
+      operationId: DewebserviceDewebV1Beta1Params
       responses:
         '200':
           description: A successful response.
@@ -15706,7 +15706,7 @@ paths:
   '/deweb/domains/v1beta1/address/{address}':
     get:
       summary: Query domains owned by user
-      operationId: DewebservicesDomainOwnedDomains
+      operationId: DewebservicesDomainV1Beta1OwnedDomains
       responses:
         '200':
           description: A successful response.
@@ -15792,7 +15792,7 @@ paths:
   '/deweb/domains/v1beta1/domain/{domainName}':
     get:
       summary: Query domain info by domain name
-      operationId: DewebservicesDomainDomain
+      operationId: DewebservicesDomainV1Beta1Domain
       responses:
         '200':
           description: A successful response.
@@ -15863,7 +15863,7 @@ paths:
   /deweb/domains/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: DewebservicesDomainParams
+      operationId: DewebservicesDomainV1Beta1Params
       responses:
         '200':
           description: A successful response.
@@ -25582,7 +25582,7 @@ definitions:
     title: |-
       QuerySmartContractStateResponse is the response type for the
       Query/SmartContractState RPC method
-  dewebservices.deweb.deweb.ChainMappingRecordResponse:
+  dewebservice.deweb.v1beta1.ChainMappingRecordResponse:
     type: object
     properties:
       owner:
@@ -25593,18 +25593,18 @@ definitions:
         type: string
       deleted:
         type: boolean
-  dewebservices.deweb.deweb.MsgConnectChainResponse:
+  dewebservice.deweb.v1beta1.MsgConnectChainResponse:
     type: object
-  dewebservices.deweb.deweb.MsgDeleteChainConnectResponse:
+  dewebservice.deweb.v1beta1.MsgDeleteChainConnectResponse:
     type: object
-  dewebservices.deweb.deweb.MsgDeleteWalletResponse:
+  dewebservice.deweb.v1beta1.MsgDeleteWalletResponse:
     type: object
-  dewebservices.deweb.deweb.MsgSaveWalletResponse:
+  dewebservice.deweb.v1beta1.MsgSaveWalletResponse:
     type: object
-  dewebservices.deweb.deweb.Params:
+  dewebservice.deweb.v1beta1.Params:
     type: object
     description: Params defines the parameters for the module.
-  dewebservices.deweb.deweb.QueryFilterChainMappingsRecordsResponse:
+  dewebservice.deweb.v1beta1.QueryFilterChainMappingsRecordsResponse:
     type: object
     properties:
       records:
@@ -25620,7 +25620,7 @@ definitions:
               type: string
             deleted:
               type: boolean
-  dewebservices.deweb.deweb.QueryFilterUserWalletRecordsResponse:
+  dewebservice.deweb.v1beta1.QueryFilterUserWalletRecordsResponse:
     type: object
     properties:
       records:
@@ -25638,14 +25638,14 @@ definitions:
               type: string
             deleted:
               type: boolean
-  dewebservices.deweb.deweb.QueryParamsResponse:
+  dewebservice.deweb.v1beta1.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  dewebservices.deweb.deweb.WalletRecordResponse:
+  dewebservice.deweb.v1beta1.WalletRecordResponse:
     type: object
     properties:
       owner:
@@ -25658,7 +25658,7 @@ definitions:
         type: string
       deleted:
         type: boolean
-  dewebservices.domain.DNSRecords:
+  dewebservices.domain.v1beta1.DNSRecords:
     type: object
     properties:
       type:
@@ -25667,19 +25667,19 @@ definitions:
         type: array
         items:
           type: string
-  dewebservices.domain.MsgEditdomainResponse:
+  dewebservices.domain.v1beta1.MsgEditdomainResponse:
     type: object
     description: MsgEditNFTResponse defines the Msg/EditNFT response type.
-  dewebservices.domain.MsgRegisterDomainResponse:
+  dewebservices.domain.v1beta1.MsgRegisterDomainResponse:
     type: object
     description: MsgMintNFTResponse defines the Msg/MintNFT response type.
-  dewebservices.domain.MsgRemoveDomainResponse:
+  dewebservices.domain.v1beta1.MsgRemoveDomainResponse:
     type: object
     description: MsgBurnNFTResponse defines the Msg/BurnNFT response type.
-  dewebservices.domain.MsgTransferDomainResponse:
+  dewebservices.domain.v1beta1.MsgTransferDomainResponse:
     type: object
     description: MsgTransferNFTResponse defines the Msg/TransferNFT response type.
-  dewebservices.domain.Params:
+  dewebservices.domain.v1beta1.Params:
     type: object
     properties:
       domainPrice:
@@ -25699,7 +25699,7 @@ definitions:
         items:
           type: string
     description: Params defines the parameters for the module.
-  dewebservices.domain.QueryDomainResponse:
+  dewebservices.domain.v1beta1.QueryDomainResponse:
     type: object
     properties:
       domain:
@@ -25738,7 +25738,7 @@ definitions:
           owner:
             type: string
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
-  dewebservices.domain.QueryOwnedDomainsResponse:
+  dewebservices.domain.v1beta1.QueryOwnedDomainsResponse:
     type: object
     properties:
       total:
@@ -25782,7 +25782,7 @@ definitions:
             owner:
               type: string
     title: QueryNFTResponse is the response type for the Query/NFT RPC method
-  dewebservices.domain.QueryParamsResponse:
+  dewebservices.domain.v1beta1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -25806,7 +25806,7 @@ definitions:
             items:
               type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  dewebservices.domain.ResponseDomain:
+  dewebservices.domain.v1beta1.ResponseDomain:
     type: object
     properties:
       id:
@@ -25841,7 +25841,7 @@ definitions:
         format: uint64
       owner:
         type: string
-  dewebservices.domain.TransferOffer:
+  dewebservices.domain.v1beta1.TransferOffer:
     type: object
     properties:
       price:

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dewebservices.deweb.deweb;
+package dewebservice.deweb.v1beta1;
 
 // this line is used by starport scaffolding # proto/tx/import
 
