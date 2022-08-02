@@ -29,7 +29,7 @@ const runAll = async (): Promise<void> => {
 
     // Here we get transaction example
     const dnsTX: IndexedTx = (await client.getTx(
-        "791EFD071C7A4F3DEDFC52624ABB46E41633F3E855058EEBB5AD3893E971EC45"
+        "5BAC879555BBA561358737889102411BDA91E12B5C914A980530665C138AAC2F"
     ))!
     console.log("DNS Tx:", dnsTX)
     const decodedTx: Tx = Tx.decode(dnsTX.tx)
@@ -41,7 +41,7 @@ const runAll = async (): Promise<void> => {
 
 
     const myRegistry = new Registry(defaultRegistryTypes);
-    myRegistry.register("/dewebservices.domain.MsgRegisterDomain", MsgRegisterDomain);
+    myRegistry.register("/dewebservices.domain.v1beta1.MsgRegisterDomain", MsgRegisterDomain);
     const signingClient = await SigningStargateClient.connectWithSigner(
         rpc,
         aliceSigner,
@@ -74,7 +74,7 @@ const runAll = async (): Promise<void> => {
         // the message(s)
         [
             {
-                typeUrl: "/dewebservices.domain.MsgRegisterDomain",
+                typeUrl: "/dewebservices.domain.v1beta1.MsgRegisterDomain",
                 value: {
                     id: 'dewebnne',
                     data: '{"records": [{"type": "A","values": ["192.168.1.10"]}]}',
