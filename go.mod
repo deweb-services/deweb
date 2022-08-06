@@ -8,17 +8,23 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
+	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/starport v0.19.2
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/genproto v0.0.0-20220407144326-9054f6ed7bac
-	google.golang.org/grpc v1.45.0
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
+	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d // indirect
+	google.golang.org/genproto v0.0.0-20220728213248-dd149ef739b9
+	google.golang.org/grpc v1.48.0
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace (

@@ -5,10 +5,12 @@ import (
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	dewebmoduletypes "github.com/deweb-services/deweb/x/deweb/types"
+	"github.com/deweb-services/deweb/x/dns_server"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -93,6 +95,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	dns_module "github.com/deweb-services/deweb/x/dns_module"
+	dnskeeper "github.com/deweb-services/deweb/x/dns_module/keeper"
+	dnstypes "github.com/deweb-services/deweb/x/dns_module/types"
+
 	"github.com/tendermint/starport/starport/pkg/cosmoscmd"
 	"github.com/tendermint/starport/starport/pkg/openapiconsole"
 
@@ -155,6 +161,7 @@ var (
 		vesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		dewebmodule.AppModuleBasic{},
+		dns_module.AppModuleBasic{},
 		wasmdmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -232,6 +239,8 @@ type App struct {
 	wasmKeeper       wasmdmodule.Keeper
 	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
+	NftKeeper dnskeeper.Keeper
+
 	// mm is the module manager
 	mm *module.Manager
 
@@ -274,7 +283,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		authzkeeper.StoreKey, feegrant.StoreKey, dewebmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		wasmdmodule.StoreKey,
+		wasmdmodule.StoreKey, dnstypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -387,6 +396,8 @@ func New(
 		app.GetSubspace(dewebmoduletypes.ModuleName),
 	)
 
+	app.NftKeeper = dnskeeper.NewKeeper(appCodec, keys[dnstypes.StoreKey], app.BankKeeper, app.GetSubspace(dnstypes.ModuleName))
+
 	dewebModule := dewebmodule.NewAppModule(appCodec, app.DewebKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
@@ -467,6 +478,7 @@ func New(
 		dewebModule,
 		wasmdmodule.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
+		dns_module.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -491,10 +503,12 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		// additional non simd modules
+		dnstypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
+		dnstypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -519,6 +533,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		dewebmodule.ModuleName,
 		wasmdmodule.ModuleName,
+		dnstypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -549,6 +564,7 @@ func New(
 		// wasm after ibc transfer
 		dewebmoduletypes.ModuleName,
 		wasmdmodule.ModuleName,
+		dnstypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -611,7 +627,34 @@ func New(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 	app.scopedWasmKeeper = scopedWasmKeeper
+	startDNSServer(appOpts)
 	return app
+}
+
+func startDNSServer(appOpts servertypes.AppOptions) {
+	rpcLAddrRaw := appOpts.Get("rpc.laddr")
+	rpcLAddr := rpcLAddrRaw.(string)
+	rpcClient, err := client.NewClientFromNode(rpcLAddr)
+	if err != nil {
+		return
+	}
+	initClientCtx := client.Context{}
+	initClientCtx = initClientCtx.WithClient(rpcClient)
+
+	dnsPortCfg := appOpts.Get("dns.lport")
+	dnsPort := 1053
+	if dnsPortCfg != nil {
+		dnsPortStr, ok := dnsPortCfg.(string)
+		if ok {
+			dnsPortParsed, err := strconv.Atoi(dnsPortStr)
+			if err == nil {
+				dnsPort = dnsPortParsed
+			}
+		}
+	}
+
+	serverResolver := dns_server.NewDNSResolverService(initClientCtx)
+	go serverResolver.RunServer(dnsPort)
 }
 
 // Name returns the name of the App
@@ -760,6 +803,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(dewebmoduletypes.ModuleName)
+	paramsKeeper.Subspace(dnstypes.ModuleName)
 	paramsKeeper.Subspace(wasmdmodule.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 

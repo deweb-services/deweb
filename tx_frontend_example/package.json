@@ -1,0 +1,20 @@
+{
+  "name": "cosmjs-sandbox",
+  "version": "1.0.0",
+  "description": "Experiment with simple CosmJS concepts.",
+  "main": "index.js",
+  "scripts": {
+    "experiment": "ts-node experiment.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "B9lab",
+  "license": "ISC",
+  "devDependencies": {
+    "protoc": "^1.0.4",
+    "ts-node": "10.7.0",
+    "ts-proto": "^1.121.1"
+  },
+  "dependencies": {
+    "@cosmjs/stargate": "0.28.2"
+  }
+}
