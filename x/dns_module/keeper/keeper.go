@@ -119,12 +119,6 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	domainExpirationHours := k.DomainExpirationHours(ctx)
 	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationHours) * TimeFactor)
 
-	dataToSaveRaw, err := json.Marshal(domainReceivedData)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
-	}
-	dataToSave := string(dataToSaveRaw)
-
 	var domainPriceUDWS uint64
 	var paymentReceiver = []byte("0")
 
@@ -134,6 +128,7 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	} else {
 		if subDomainPaymentReceiver != nil {
 			domainPriceUDWS = subDomainPrice
+			domainReceivedData.DomainProlongationPrice = domainPriceUDWS
 			paymentReceiver = subDomainPaymentReceiver
 		} else {
 			domainPriceUDWS = k.SubDomainPriceUDWS(ctx)
@@ -144,6 +139,13 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot burn coins for domain")
 	}
+
+	dataToSaveRaw, err := json.Marshal(domainReceivedData)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrJSONMarshal, "internal error marshal record: %w", err)
+	}
+	dataToSave := string(dataToSaveRaw)
+
 	k.registerDomain(
 		ctx,
 		types.NewBaseNFT(domainName, recipient, dataToSave),
@@ -197,6 +199,7 @@ func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseDomain, own
 			if !parentDomainOwner.Equals(owner) {
 				// Pay here for parent domain owner
 				targetPayAddress = parentDomainOwner.Bytes()
+				domainPriceUDWS = domainRecordData.DomainProlongationPrice
 			}
 		}
 	}

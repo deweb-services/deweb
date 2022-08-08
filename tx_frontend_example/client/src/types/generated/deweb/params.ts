@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.deweb.deweb";
+export const protobufPackage = "dewebservices.deweb.v1beta1";
 
 /** Params defines the parameters for the module. */
 export interface Params {}

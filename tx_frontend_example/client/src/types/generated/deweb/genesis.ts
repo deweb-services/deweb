@@ -3,7 +3,7 @@ import { Params } from "./params";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.deweb.deweb";
+export const protobufPackage = "dewebservices.deweb.v1beta1";
 
 /** GenesisState defines the deweb module's genesis state. */
 export interface GenesisState {

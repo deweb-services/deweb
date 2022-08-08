@@ -27,7 +27,7 @@ In Alice will try to register domain in Bob's zone she will receive an error `pa
 
 Bob can edit domain and allow anyone subdomains registration. He will receive payments for these domains:
 ```
-./dewebd tx domain edit deweb --data="BasicDataWithSubPrice" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
+./dewebd tx domain edit deweb --data="$BasicDataWithSubPrice" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 Then alice can register subdomain and pay to BOB:

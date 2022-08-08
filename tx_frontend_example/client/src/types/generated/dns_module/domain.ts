@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.domain";
+export const protobufPackage = "dewebservices.domain.v1beta1";
 
 /** BaseDomain defines a non-fungible domain token */
 export interface BaseDomain {

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dewebservices.deweb.deweb;
+package dewebservices.deweb.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "deweb/params.proto";

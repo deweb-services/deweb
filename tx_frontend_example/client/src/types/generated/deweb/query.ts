@@ -3,7 +3,7 @@ import { Params } from "./params";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.deweb.deweb";
+export const protobufPackage = "dewebservices.deweb.v1beta1";
 
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -723,7 +723,7 @@ export class QueryClientImpl implements Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Query",
+      "dewebservices.deweb.v1beta1.Query",
       "Params",
       data
     );
@@ -737,7 +737,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryFilterUserWalletRecordsResponse> {
     const data = QueryFilterUserWalletRecordsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Query",
+      "dewebservices.deweb.v1beta1.Query",
       "FilterUserWalletRecords",
       data
     );
@@ -752,7 +752,7 @@ export class QueryClientImpl implements Query {
     const data =
       QueryFilterChainMappingsRecordsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Query",
+      "dewebservices.deweb.v1beta1.Query",
       "FilterChainMappingsRecords",
       data
     );

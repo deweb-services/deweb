@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.deweb.deweb";
+export const protobufPackage = "dewebservices.deweb.v1beta1";
 
 export interface MsgSaveWallet {
   creator: string;
@@ -541,7 +541,7 @@ export class MsgClientImpl implements Msg {
   SaveWallet(request: MsgSaveWallet): Promise<MsgSaveWalletResponse> {
     const data = MsgSaveWallet.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Msg",
+      "dewebservices.deweb.v1beta1.Msg",
       "SaveWallet",
       data
     );
@@ -553,7 +553,7 @@ export class MsgClientImpl implements Msg {
   DeleteWallet(request: MsgDeleteWallet): Promise<MsgDeleteWalletResponse> {
     const data = MsgDeleteWallet.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Msg",
+      "dewebservices.deweb.v1beta1.Msg",
       "DeleteWallet",
       data
     );
@@ -565,7 +565,7 @@ export class MsgClientImpl implements Msg {
   ConnectChain(request: MsgConnectChain): Promise<MsgConnectChainResponse> {
     const data = MsgConnectChain.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Msg",
+      "dewebservices.deweb.v1beta1.Msg",
       "ConnectChain",
       data
     );
@@ -579,7 +579,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgDeleteChainConnectResponse> {
     const data = MsgDeleteChainConnect.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.deweb.deweb.Msg",
+      "dewebservices.deweb.v1beta1.Msg",
       "DeleteChainConnect",
       data
     );

@@ -3,7 +3,7 @@ import { Params } from "./params";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.domain";
+export const protobufPackage = "dewebservices.domain.v1beta1";
 
 export interface TransferOffer {
   price: Long;
@@ -758,7 +758,7 @@ export class QueryClientImpl implements Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Query",
+      "dewebservices.domain.v1beta1.Query",
       "Params",
       data
     );
@@ -770,7 +770,7 @@ export class QueryClientImpl implements Query {
   Domain(request: QueryDomainRequest): Promise<QueryDomainResponse> {
     const data = QueryDomainRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Query",
+      "dewebservices.domain.v1beta1.Query",
       "Domain",
       data
     );
@@ -784,7 +784,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryOwnedDomainsResponse> {
     const data = QueryOwnedDomainsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Query",
+      "dewebservices.domain.v1beta1.Query",
       "OwnedDomains",
       data
     );

@@ -4,7 +4,7 @@ import Long from "long";
 import { Collection } from "./domain";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.domain";
+export const protobufPackage = "dewebservices.domain.v1beta1";
 
 /** GenesisState defines the NFT module's genesis state */
 export interface GenesisState {

@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "dewebservices.domain";
+export const protobufPackage = "dewebservices.domain.v1beta1";
 
 /** MsgTransferNFT defines an SDK message for transferring an NFT to recipient. */
 export interface MsgTransferDomain {
@@ -580,7 +580,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgRegisterDomainResponse> {
     const data = MsgRegisterDomain.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Msg",
+      "dewebservices.domain.v1beta1.Msg",
       "RegisterDomain",
       data
     );
@@ -592,7 +592,7 @@ export class MsgClientImpl implements Msg {
   EditDomain(request: MsgEditDomain): Promise<MsgEditdomainResponse> {
     const data = MsgEditDomain.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Msg",
+      "dewebservices.domain.v1beta1.Msg",
       "EditDomain",
       data
     );
@@ -606,7 +606,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgTransferDomainResponse> {
     const data = MsgTransferDomain.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Msg",
+      "dewebservices.domain.v1beta1.Msg",
       "TransferDomain",
       data
     );
@@ -618,7 +618,7 @@ export class MsgClientImpl implements Msg {
   RemoveDomain(request: MsgRemoveDomain): Promise<MsgRemoveDomainResponse> {
     const data = MsgRemoveDomain.encode(request).finish();
     const promise = this.rpc.request(
-      "dewebservices.domain.Msg",
+      "dewebservices.domain.v1beta1.Msg",
       "RemoveDomain",
       data
     );

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dewebservices.domain;
+package dewebservices.domain.v1beta1;
 
 import "gogoproto/gogo.proto";
 
