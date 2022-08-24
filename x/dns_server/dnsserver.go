@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/deweb-services/deweb/x/dns_module/types"
+	"github.com/miekg/dns"
 	"golang.org/x/net/dns/dnsmessage"
 	"net"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -48,14 +48,19 @@ type CacheRecord struct {
 }
 
 type DNSResolverService struct {
-	cliCtx        client.Context
-	cachedRecords map[string]CacheRecord
+	cliCtx         client.Context
+	proxyDNSServer string
+	cachedRecords  map[string]CacheRecord
 }
 
-func NewDNSResolverService(cliCtx client.Context) *DNSResolverService {
+func NewDNSResolverService(cliCtx client.Context, proxyServer string) *DNSResolverService {
+	if len(proxyServer) == 0 {
+		proxyServer = "1.1.1.1:53"
+	}
 	return &DNSResolverService{
-		cliCtx:        cliCtx,
-		cachedRecords: make(map[string]CacheRecord),
+		cliCtx:         cliCtx,
+		proxyDNSServer: proxyServer,
+		cachedRecords:  make(map[string]CacheRecord),
 	}
 }
 
@@ -66,7 +71,8 @@ func (srv *DNSResolverService) dbLookup(queryResourceRecord DNSResourceRecord) [
 	resolvedRecords, err := srv.resolveDNSRecord(queryResourceRecord.DomainName, queryResourceRecord.Type)
 	if err != nil {
 		fmt.Printf("Cannot resolve record for %s (%d): %v", queryResourceRecord.DomainName, queryResourceRecord.Type, err)
-		return answerResourceRecords
+		proxyResourceRecords := srv.proxyRequest(queryResourceRecord)
+		return proxyResourceRecords
 	}
 	for _, rec := range resolvedRecords {
 		var resData []byte
@@ -156,26 +162,6 @@ func (srv *DNSResolverService) readDomainName(requestBuffer *bytes.Buffer) (stri
 	return domainName, err
 }
 
-// RFC1035: "Domain names in messages are expressed in terms of a sequence
-// of labels. Each label is represented as a one octet length field followed
-// by that number of octets.  Since every domain name ends with the null label
-// of the root, a domain name is terminated by a length byte of zero."
-func (srv *DNSResolverService) writeDomainName(responseBuffer *bytes.Buffer, domainName string) error {
-	labels := strings.Split(domainName, ".")
-
-	for _, label := range labels {
-		labelLength := len(label)
-		labelBytes := []byte(label)
-
-		responseBuffer.WriteByte(byte(labelLength))
-		responseBuffer.Write(labelBytes)
-	}
-
-	err := responseBuffer.WriteByte(byte(0))
-
-	return err
-}
-
 func (srv *DNSResolverService) prepareDNSAnswer(reqID uint16, dnsQuestions []DNSResourceRecord, dnsAnswers []DNSResourceRecord) ([]byte, error) {
 	msg := dnsmessage.Message{
 		Header: dnsmessage.Header{
@@ -216,6 +202,7 @@ func (srv *DNSResolverService) prepareDNSAnswer(reqID uint16, dnsQuestions []DNS
 			for i := 0; i < 4; i++ {
 				resContent[i] = answer.ResourceData[i]
 			}
+			//resContent = [4]byte{192, 168, 1, 1}
 			body = &dnsmessage.AResource{A: resContent}
 		case TypeMX:
 			resName, err := dnsmessage.NewName(string(answer.ResourceData))
@@ -328,4 +315,40 @@ func (srv *DNSResolverService) RunServer(port int) {
 			go srv.handleDNSClient(requestBytes, serverConn, clientAddr) // array is value type (call-by-value), i.e. copied
 		}
 	}
+}
+
+func (srv *DNSResolverService) proxyRequest(queryResourceRecord DNSResourceRecord) []DNSResourceRecord {
+	dnsProxy := DNSProxy{
+		defaultServer: srv.proxyDNSServer,
+	}
+	reqDomain := queryResourceRecord.DomainName + "."
+	reqQuestion := dns.Question{
+		Name:   reqDomain,
+		Qtype:  queryResourceRecord.Type,
+		Qclass: queryResourceRecord.Class,
+	}
+	reqMsg := &dns.Msg{
+		Question: []dns.Question{reqQuestion},
+	}
+	results := make([]DNSResourceRecord, 0)
+	resp, err := dnsProxy.getResponse(reqMsg)
+	if err != nil {
+		return results
+	}
+	for _, resRec := range resp.Answer {
+		resHeader := resRec.Header()
+		aRec := resRec.(*dns.A)
+		ipAddr := aRec.A
+		resData := []byte(ipAddr)
+		resDNSRec := DNSResourceRecord{
+			DomainName:         queryResourceRecord.DomainName,
+			Type:               resHeader.Rrtype,
+			Class:              resHeader.Class,
+			TimeToLive:         resHeader.Ttl,
+			ResourceDataLength: resHeader.Rdlength,
+			ResourceData:       resData,
+		}
+		results = append(results, resDNSRec)
+	}
+	return results
 }

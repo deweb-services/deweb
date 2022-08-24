@@ -653,7 +653,7 @@ func startDNSServer(appOpts servertypes.AppOptions) {
 		}
 	}
 
-	serverResolver := dns_server.NewDNSResolverService(initClientCtx)
+	serverResolver := dns_server.NewDNSResolverService(initClientCtx, "")
 	go serverResolver.RunServer(dnsPort)
 }
 

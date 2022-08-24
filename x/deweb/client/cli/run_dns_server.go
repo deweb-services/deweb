@@ -11,7 +11,7 @@ import (
 
 func CmdRunDNSServer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "run-dns-server [port]",
+		Use:   "run-dns-server [port] [proxy_server:port]",
 		Short: "Run DNS server for DNS NFT",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -19,13 +19,17 @@ func CmdRunDNSServer() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("cannot parse parameter limit: %w", err)
 			}
+			var proxyServer string
+			if len(args) > 1 {
+				proxyServer = args[1]
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			serverResolver := dns_server.NewDNSResolverService(clientCtx)
+			serverResolver := dns_server.NewDNSResolverService(clientCtx, proxyServer)
 			serverResolver.RunServer(int(reqPort))
 
 			return nil
