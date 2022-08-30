@@ -3,34 +3,25 @@ package dns_server
 import (
 	"fmt"
 	"github.com/miekg/dns"
-	"regexp"
+	"net"
 )
 
-type DNSProxy struct {
-	servers       map[string]interface{}
-	defaultServer string
-}
-
-func (proxy *DNSProxy) getResponse(requestMsg *dns.Msg) (*dns.Msg, error) {
+func (srv *DNSResolverService) getResponse(requestMsg *dns.Msg) (*dns.Msg, error) {
 	responseMsg := new(dns.Msg)
 	if len(requestMsg.Question) > 0 {
 		question := requestMsg.Question[0]
 
-		dnsServer := proxy.getIPFromConfigs(question.Name, proxy.servers)
-		if dnsServer == "" {
-			dnsServer = proxy.defaultServer
-		}
-
-		switch question.Qtype {
-		case dns.TypeA:
-			answer, err := proxy.processTypeA(dnsServer, &question, requestMsg)
+		resAddresses, err := srv.resolveDNSRecord(question.Name, question.Qtype)
+		if err == nil {
+			ip := resAddresses[0]
+			fmt.Printf("record for %s: %s found in chain\n", question.Name, ip)
+			answer, err := dns.NewRR(fmt.Sprintf("%s A %s", question.Name, ip))
 			if err != nil {
-				return responseMsg, err
+				return nil, err
 			}
-			responseMsg.Answer = append(responseMsg.Answer, *answer)
-
-		default:
-			answer, err := proxy.processOtherTypes(dnsServer, &question, requestMsg)
+			responseMsg.Answer = append(responseMsg.Answer, answer)
+		} else {
+			answer, err := srv.processOtherTypes(srv.proxyDNSServer, &question, requestMsg)
 			if err != nil {
 				return responseMsg, err
 			}
@@ -41,7 +32,7 @@ func (proxy *DNSProxy) getResponse(requestMsg *dns.Msg) (*dns.Msg, error) {
 	return responseMsg, nil
 }
 
-func (proxy *DNSProxy) processOtherTypes(dnsServer string, q *dns.Question, requestMsg *dns.Msg) (*dns.RR, error) {
+func (srv *DNSResolverService) processOtherTypes(dnsServer string, q *dns.Question, requestMsg *dns.Msg) (*dns.RR, error) {
 	queryMsg := new(dns.Msg)
 	requestMsg.CopyTo(queryMsg)
 	queryMsg.Question = []dns.Question{*q}
@@ -57,31 +48,47 @@ func (proxy *DNSProxy) processOtherTypes(dnsServer string, q *dns.Question, requ
 	return nil, fmt.Errorf("not found")
 }
 
-func (proxy *DNSProxy) processTypeA(dnsServer string, q *dns.Question, requestMsg *dns.Msg) (*dns.RR, error) {
-	queryMsg := new(dns.Msg)
-	requestMsg.CopyTo(queryMsg)
-	queryMsg.Question = []dns.Question{*q}
+//func (srv *DNSResolverService) processTypeA(dnsServer string, q *dns.Question, requestMsg *dns.Msg) (*dns.RR, error) {
+//	// Here we try to get from blockchain
+//	//ip := srv.getIPFromChain(q.Name)
+//
+//
+//	if err != nil {
+//		queryMsg := new(dns.Msg)
+//		requestMsg.CopyTo(queryMsg)
+//		queryMsg.Question = []dns.Question{*q}
+//
+//		msg, err := lookup(dnsServer, queryMsg)
+//		if err != nil {
+//			return nil, err
+//		}
+//
+//		if len(msg.Answer) > 0 {
+//			return &msg.Answer[len(msg.Answer)-1], nil
+//		}
+//
+//	} else {
+//		ip := resAddresses[0]
+//		answer, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
+//		if err != nil {
+//			return nil, err
+//		}
+//		return &answer, nil
+//	}
+//	return nil, fmt.Errorf("not found")
+//}
 
-	msg, err := lookup(dnsServer, queryMsg)
+func GetOutboundIP() (net.IP, error) {
+
+	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
 
-	if len(msg.Answer) > 0 {
-		return &msg.Answer[len(msg.Answer)-1], nil
-	}
-	return nil, fmt.Errorf("not found")
-}
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
-func (proxy *DNSProxy) getIPFromConfigs(domain string, configs map[string]interface{}) string {
-
-	for k, v := range configs {
-		match, _ := regexp.MatchString(k+"\\.", domain)
-		if match {
-			return v.(string)
-		}
-	}
-	return ""
+	return localAddr.IP, nil
 }
 
 func lookup(server string, m *dns.Msg) (*dns.Msg, error) {
