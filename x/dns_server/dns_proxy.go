@@ -14,10 +14,15 @@ func (srv *DNSResolverService) getResponse(requestMsg *dns.Msg) (*dns.Msg, error
 		resAddresses, err := srv.resolveDNSRecord(question.Name, question.Qtype)
 		if err == nil {
 			ip := resAddresses[0]
+			recordTypeName, ok := recordTypesMapping[question.Qtype]
+			if !ok {
+				fmt.Printf("unsupported type %d for domain %s \n", question.Qtype, question.Name)
+				return responseMsg, nil
+			}
 			fmt.Printf("record for %s: %s found in chain\n", question.Name, ip)
-			answer, err := dns.NewRR(fmt.Sprintf("%s A %s", question.Name, ip))
+			answer, err := dns.NewRR(fmt.Sprintf("%s %s %s", question.Name, recordTypeName, ip))
 			if err != nil {
-				return nil, err
+				return responseMsg, err
 			}
 			responseMsg.Answer = append(responseMsg.Answer, answer)
 		} else {
