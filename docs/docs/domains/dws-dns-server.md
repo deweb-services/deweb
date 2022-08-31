@@ -13,7 +13,7 @@ It has 10-seconds cache to prevent constant requests to GRPC server.
 To listen on port UDP/53, node process must be executed as a root user. To prevent the whole node running by root user we have a special command which will run only DNS server:
 
 ```
-sudo dewebd q deweb run-dns-server 53
+sudo dewebd q deweb run-dns-server 53 1.1.1.1:53
 ```
 
 Currently DNS Server supports only A and MX records.
