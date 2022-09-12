@@ -89,4 +89,4 @@ Is the version match, now you have two options
 
 Sirius testnet chainId: `deweb-testnet-2`
 
-- [Instructions](https://docs.deweb.services/guides/validator-setup-guide)
+- [Instructions](https://docs.deweb.services/fullnode/validator-setup)
