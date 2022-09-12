@@ -9,7 +9,7 @@ const config = {
   title: "Decentralized Web Services (DWS)",
   tagline: "Web3.0 starts here",
   url: "https://docs.deweb.services",
-  baseUrl: "/",
+  baseUrl: "/deweb/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
