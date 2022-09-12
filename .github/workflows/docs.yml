@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16"
       # Install and build Docusaurus website
       - name: Build Docusaurus website
         run: |
@@ -34,5 +34,6 @@ jobs:
         with:
           target_branch: gh-pages
           build_dir: docs/build
+          fqdn: docs.deweb.services
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

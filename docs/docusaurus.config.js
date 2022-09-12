@@ -8,8 +8,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const config = {
   title: "Decentralized Web Services (DWS)",
   tagline: "Web3.0 starts here",
-  url: "https://deweb-services.github.com ",
-  baseUrl: "/deweb/",
+  url: "https://docs.deweb.services",
+  baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
@@ -61,7 +61,7 @@ const config = {
               },
               {
                 label: "Validator Setup Guide",
-                to: "/guides/validator-setup-guide",
+                to: "/fullnode/validator-setup",
               },
             ],
           },
