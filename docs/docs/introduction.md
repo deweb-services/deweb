@@ -6,9 +6,9 @@ sidebar_position: 1
 
 **Decentralized Web Services (DWS)** is a public Proof-of-Stake (PoS) blockchain application built with **[Cosmos SDK](https://docs.cosmos.network/)**. DWS offers reliable, scalable, secure and decentralized cloud computing services.
 
-## Menkar Testnet
+## Sirius Testnet
 
-Menkar Testnet is live!
+Sirius Testnet is live!
 
 ## Block Explorers
 
@@ -20,5 +20,5 @@ Menkar Testnet is live!
 
 ## Community
 
-- **[Discord](https://discord.gg/NENJeq58Tc)**
+- **[Discord](https://discord.gg/dws)**
 - **[Twitter](https://twitter.com/dewebservices)**

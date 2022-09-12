@@ -1,6 +1,7 @@
 # DWS Docs
 
-DWS Docs portal is built using [Docusaurus 2](https://docusaurus.io/).
+This repo contains the documentation of Decentralized Web Services hosted on https://docs.deweb.services.
+Feel free to open issues/PRs to contribute!
 
 ### Installation
 
@@ -39,3 +40,7 @@ $ GIT_USER=<Your GitHub username> npm run deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+### Credits
+
+> Docs powered by [Docusaurus 2](https://docusaurus.io/), a modern static website generator.

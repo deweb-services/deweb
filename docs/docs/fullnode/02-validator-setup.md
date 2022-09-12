@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Validator Setup Guide
 
-## Menkar Testnet
+## Sirius Testnet
 
 **dewebd** is a blockchain application built using Cosmos SDK v.0.45.5 and Tendermint v.0.34.19.
 
@@ -36,7 +36,7 @@ Instructions for setting up the connection with the DWS TestNet Blockchain.
 1. Set the chain-id parameter
 
 ```bash
-dewebd config chain-id deweb-testnet-1
+dewebd config chain-id deweb-testnet-2
 ```
 
 2. **Create a wallet:** You may create a wallet with one or more keys (addresses) using `dewebd`; you can choose a name of your own liking (we strongly advice you use one word)
@@ -62,7 +62,7 @@ Your address will look something similar like this: `deweb1q6wt62l9r4zef7nj97j5x
 3. **Initialize the folders:** change Moniker by your validator name (use quotes for two or more separated words "Royal Queen Seeds")
 
 ```bash
-dewebd init Moniker --chain-id deweb-testnet-1
+dewebd init Moniker --chain-id deweb-testnet-2
 ```
 
 This will create a `$HOME/.deweb` folder
@@ -175,7 +175,7 @@ dewebd tx staking create-validator \
     --min-self-delegation 1 \
     --moniker YOUR_MONIKER \
     --pubkey $(dewebd tendermint show-validator) \
-    --chain-id deweb-testnet-1 \
+    --chain-id deweb-testnet-2 \
     --gas auto \
     --gas-adjustment 1.5 \
     --gas-prices 0.001udws
