@@ -61,7 +61,7 @@ const config = {
               },
               {
                 label: "Validator Setup Guide",
-                to: "/guides/validator-setup-guide",
+                to: "/fullnode/validator-setup",
               },
             ],
           },
