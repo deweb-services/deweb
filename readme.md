@@ -83,7 +83,6 @@ The output must be `0.3`
 Is the version match, now you have two options
 
 - Move the binary to the /usr/local/bin path with: `sudo mv build/dewebd /usr/local/bin/`
-- Compile and install the binary in the $GOPATH path: `make install`
 
 ## Join our Sirius Testnet
 
