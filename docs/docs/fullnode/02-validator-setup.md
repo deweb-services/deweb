@@ -8,24 +8,7 @@ sidebar_position: 1
 
 **dewebd** is a blockchain application built using Cosmos SDK v.0.45.5 and Tendermint v.0.34.19.
 
-You can run the validator software using the binary or compiling it by yourself, you can choose between _Step 0a_ or _Step 0b_ and continue at _Step 1_.
-
-## Step 0A - Run a fullnode / validator using the binaries
-
-By downloading the binary we avoid compiling the source code.
-
-Download the latest version (v0.3) from Github:
-
-```bash
-cd $HOME
-wget https://github.com/deweb-services/deweb/releases/download/v0.3/dewebd
-chmod +x dewebd
-sudo mv dewebd /usr/local/bin/
-```
-
-**NOTE:** If you have downloaded the binary avoid _Step 0B_ and go to _Step 1_
-
-## Step 0B - Run a fullnode / validator by compiling source code (not recommended for new users)
+## Step 0 - Run a fullnode / validator by compiling source code
 
 The updated instructions are always in our GitHub Readme page, click on this **[link](https://github.com/deweb-services/deweb)** to go there.
 
@@ -36,7 +19,7 @@ Instructions for setting up the connection with the DWS TestNet Blockchain.
 1. Set the chain-id parameter
 
 ```bash
-dewebd config chain-id deweb-testnet-2
+dewebd config chain-id deweb-testnet-3
 ```
 
 2. **Create a wallet:** You may create a wallet with one or more keys (addresses) using `dewebd`; you can choose a name of your own liking (we strongly advice you use one word)
@@ -62,7 +45,7 @@ Your address will look something similar like this: `deweb1q6wt62l9r4zef7nj97j5x
 3. **Initialize the folders:** change Moniker by your validator name (use quotes for two or more separated words "Royal Queen Seeds")
 
 ```bash
-dewebd init Moniker --chain-id deweb-testnet-2
+dewebd init Moniker --chain-id deweb-testnet-3
 ```
 
 This will create a `$HOME/.deweb` folder
@@ -83,7 +66,7 @@ It is better to get the seeds from **[NodeJumper](https://nodejumper.io/dws-test
 :::
 
 ```bash
-sed -E -i 's/seeds = \".*\"/seeds = \"08b7968ec375444f86912c2d9c3d28e04a5f14c4@seed1.deweb.services:26656\"/' $HOME/.deweb/config/config.toml
+sed -E -i 's/seeds = \".*\"/seeds = \"4e46b666a70387003b927417ed1ac7f2b7e1bea4@31.44.6.80:26656\"/' $HOME/.deweb/config/config.toml
 ```
 
 6. You can **set the minimum gas prices** for transactions to be accepted into your node’s mempool. This sets a lower bound on gas prices, preventing spam.
@@ -175,7 +158,7 @@ dewebd tx staking create-validator \
     --min-self-delegation 1 \
     --moniker YOUR_MONIKER \
     --pubkey $(dewebd tendermint show-validator) \
-    --chain-id deweb-testnet-2 \
+    --chain-id deweb-testnet-3 \
     --gas auto \
     --gas-adjustment 1.5 \
     --gas-prices 0.001udws
