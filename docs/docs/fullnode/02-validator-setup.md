@@ -66,7 +66,7 @@ It is better to get the seeds from **[NodeJumper](https://nodejumper.io/dws-test
 :::
 
 ```bash
-sed -E -i 's/seeds = \".*\"/seeds = \"08b7968ec375444f86912c2d9c3d28e04a5f14c4@seed1.deweb.services:26656\"/' $HOME/.deweb/config/config.toml
+sed -E -i 's/seeds = \".*\"/seeds = \"4e46b666a70387003b927417ed1ac7f2b7e1bea4@31.44.6.80:26656\"/' $HOME/.deweb/config/config.toml
 ```
 
 6. You can **set the minimum gas prices** for transactions to be accepted into your node’s mempool. This sets a lower bound on gas prices, preventing spam.
