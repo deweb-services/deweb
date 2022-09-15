@@ -77,6 +77,7 @@ func (k Keeper) IssueDenom(ctx sdk.Context,
 
 // RegisterDomain mints an NFT and manages the NFT's existence within Collections and Owners
 func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, owner sdk.AccAddress, recipient sdk.AccAddress) error {
+	blockTime := ctx.BlockTime()
 	if k.HasDomain(ctx, k.dnsDenomName, domainName) {
 		domain, err := k.Authorize(ctx, domainName, owner)
 		if err != nil {
@@ -115,9 +116,9 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
 	}
-	domainReceivedData.Issued = time.Now()
+	domainReceivedData.Issued = blockTime
 	domainExpirationHours := k.DomainExpirationHours(ctx)
-	domainReceivedData.ValidTill = time.Now().Add(time.Duration(domainExpirationHours) * TimeFactor)
+	domainReceivedData.ValidTill = blockTime.Add(time.Duration(domainExpirationHours) * TimeFactor)
 
 	var domainPriceUDWS uint64
 	var paymentReceiver = []byte("0")
@@ -161,7 +162,7 @@ func (k Keeper) domainProlongation(ctx sdk.Context, domain types.BaseDomain, own
 	if err != nil {
 		return sdkerrors.Wrapf(err, "cannot process record for domain %s", domain.GetID())
 	}
-	now := time.Now()
+	now := ctx.BlockTime()
 	prologHours := k.DomainOwnerProlongationHours(ctx)
 	prologDuration := time.Duration(prologHours) * TimeFactor
 	allowedProlongationAfter := domainRecordData.ValidTill.Add(-prologDuration)
@@ -224,7 +225,7 @@ func (k Keeper) checkDomainValid(ctx sdk.Context, tokenID string, owner sdk.AccA
 
 func (k Keeper) ProcessDomainsExpiration(ctx sdk.Context) {
 	allDomains := k.GetDomains(ctx, k.dnsDenomName)
-	now := time.Now()
+	now := ctx.BlockTime()
 	for _, domain := range allDomains {
 		storedData := domain.GetData()
 		domainRecord, err := ParseDomainData([]byte(storedData))
