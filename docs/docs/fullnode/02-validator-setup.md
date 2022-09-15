@@ -19,7 +19,7 @@ Instructions for setting up the connection with the DWS TestNet Blockchain.
 1. Set the chain-id parameter
 
 ```bash
-dewebd config chain-id deweb-testnet-3
+dewebd config chain-id deweb-testnet-sirius
 ```
 
 2. **Create a wallet:** You may create a wallet with one or more keys (addresses) using `dewebd`; you can choose a name of your own liking (we strongly advice you use one word)
@@ -45,7 +45,7 @@ Your address will look something similar like this: `deweb1q6wt62l9r4zef7nj97j5x
 3. **Initialize the folders:** change Moniker by your validator name (use quotes for two or more separated words "Royal Queen Seeds")
 
 ```bash
-dewebd init Moniker --chain-id deweb-testnet-3
+dewebd init Moniker --chain-id deweb-testnet-sirius
 ```
 
 This will create a `$HOME/.deweb` folder
@@ -66,7 +66,7 @@ It is better to get the seeds from **[NodeJumper](https://nodejumper.io/dws-test
 :::
 
 ```bash
-sed -E -i 's/seeds = \".*\"/seeds = \"4e46b666a70387003b927417ed1ac7f2b7e1bea4@31.44.6.80:26656\"/' $HOME/.deweb/config/config.toml
+sed -E -i 's/seeds = \".*\"/seeds = \"2b1aebd0029570c20932bf7a17b3d7e67cbacc52@31.44.6.134:26656\"/' $HOME/.deweb/config/config.toml
 ```
 
 6. You can **set the minimum gas prices** for transactions to be accepted into your node’s mempool. This sets a lower bound on gas prices, preventing spam.
@@ -158,7 +158,7 @@ dewebd tx staking create-validator \
     --min-self-delegation 1 \
     --moniker YOUR_MONIKER \
     --pubkey $(dewebd tendermint show-validator) \
-    --chain-id deweb-testnet-3 \
+    --chain-id deweb-testnet-sirius \
     --gas auto \
     --gas-adjustment 1.5 \
     --gas-prices 0.001udws

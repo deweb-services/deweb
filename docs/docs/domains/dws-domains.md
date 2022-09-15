@@ -30,7 +30,7 @@ If we want to start selling the subdomains, we should set `"sub_domains_sale": t
 First we can mint a TLD `deweb`:
 
 ```
-dewebd tx domain register deweb --data="$BasicData" --from bob --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register deweb --data="$BasicData" --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 ## Extend domain ownership (Prolongation)
@@ -41,13 +41,13 @@ the domain is already registered.
 Let's create a domain `test.deweb`:
 
 ```
-dewebd tx domain register test.deweb --data="$BasicData" --from bob --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register test.deweb --data="$BasicData" --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 If Alice will try to register domain in Bob's zone she will receive an error `parent domain check error: domain deweb does not belong to this user`:
 
 ```
-dewebd tx domain register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register alice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 ## Edit domain settings
@@ -56,7 +56,7 @@ Bob can edit domain and allow anyone to buy subdomains of the domain he own. He 
 
 ```
 BasicDataWithSubPrice='{"records":[{"type": "A","values":["192.168.1.10"]}],"sub_domains_sale": true,"sub_domains_sale_price": 10000}'
-dewebd tx domain edit deweb --data="BasicDataWithSubPrice" --from bob --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain edit deweb --data="BasicDataWithSubPrice" --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 ## Subdomain ownership examples
@@ -65,25 +65,25 @@ Then Alice can register subdomain and pay the fee to Bob:
 
 ```
 BasicData='{"records": [{"type": "A","values": ["192.168.1.10"]}]}'
-dewebd tx domain register newalice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register newalice.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 But Bob also can register subdomain for Alice (her address `deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee`):
 
 ```
-dewebd tx domain register alice.deweb --data="$BasicData" --recipient=deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee --from bob --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register alice.deweb --data="$BasicData" --recipient=deweb1x6s67chad4p2rznmclskw7xr3qfppfhjkqs3ee --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 Then Alice can register domain `www.alice.deweb` because she is the owner of `alice.deweb`:
 
 ```
-dewebd tx domain register www.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register www.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 Alice can register domain for Bob in her zone and then transfer this Domain to Bob, so he will become an owner of `bob.alice.deweb`:
 
 ```
-dewebd tx domain register bob.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain register bob.aliced.deweb --data="$BasicData" --from alice --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 ## 2-step transfer
@@ -94,13 +94,13 @@ Firstly the domain owner Alice sends the transaction with expected domain receiv
 
 ```
 dewebd tx domain transfer bob.aliced.deweb --recipient=deweb138sq5w8yxsdzgvs7lse5j3dtr3e2t5z08cw8aj --price=10000 --from alice --chain-id deweb-2 --gas 2000000 --output json -b block
-dewebd tx domain transfer bob.aliced.deweb --from bob --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain transfer bob.aliced.deweb --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 To cancel created transfer:
 
 ```
-dewebd tx domain transfer bob.aliced.deweb --cancel=true --from alice --chain-id deweb-testnet-3 --gas 2000000 --output json -b block
+dewebd tx domain transfer bob.aliced.deweb --cancel=true --from alice --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
 ## Module parameters
@@ -130,5 +130,5 @@ Parameters that can be changed via Government proposal:
 Submit proposal:
 
 ```
-dewebd tx gov submit-proposal param-change dns_proposal.json --from alice --chain-id deweb-testnet-3 --gas 2000000
+dewebd tx gov submit-proposal param-change dns_proposal.json --from alice --chain-id deweb-testnet-sirius --gas 2000000
 ```
