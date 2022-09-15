@@ -68,7 +68,7 @@ Should return go version go1.19 linux/amd64
 ```
 git clone https://github.com/deweb-services/deweb.git
 cd deweb
-git checkout v0.3
+git checkout v0.3.1
 make build   #it build the binary in build/ folder
 ```
 
@@ -78,7 +78,7 @@ To know the version:
 build/dewebd version
 ```
 
-The output must be `0.3`
+The output must be `0.3.1`
 
 Is the version match, now you have two options
 
@@ -87,6 +87,6 @@ Is the version match, now you have two options
 
 ## Join our Sirius Testnet
 
-Sirius testnet chainId: `deweb-testnet-2`
+Sirius testnet chainId: `deweb-testnet-sirius`
 
 - [Instructions](https://docs.deweb.services/fullnode/validator-setup)
