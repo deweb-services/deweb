@@ -30,6 +30,8 @@ If we want to start selling the subdomains, we should set `"sub_domains_sale": t
 First we can mint a TLD `deweb`:
 
 ```
+# how to:
+# dewebd tx domain register <domainName> --data="$BasicData" --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 dewebd tx domain register deweb --data="$BasicData" --from bob --chain-id deweb-testnet-sirius --gas 2000000 --output json -b block
 ```
 
