@@ -76,6 +76,10 @@ const config = {
                 label: "Twitter",
                 href: "https://twitter.com/dewebservices",
               },
+              {
+                label: "Telegram Chat",
+                href: "https://t.me/dewebservices_chat",
+              },
             ],
           },
           {
@@ -96,6 +100,10 @@ const config = {
               {
                 label: "Explorer",
                 href: "https://explore.deweb.services/",
+              },
+              {
+                label: "Telegram",
+                href: "https://t.me/deweb_services",
               },
             ],
           },
