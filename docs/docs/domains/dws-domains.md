@@ -22,7 +22,8 @@ If we want to buy a domain, we can set DNS records:
 BasicDataEmpty='{}'
 BasicData='{"records": [{"type": "A","values": ["192.168.1.10"]}]}'
 BasicDataWithSubPrice='{"records":[{"type": "A","values":["192.168.1.10"]}],"sub_domains_sale": true,"sub_domains_sale_price": 10000}'
-BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": "MX","values": ["mx.bob.alice.deweb."]}]}'
+BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": "MX","values": ["10 mx.bob.alice.deweb."]}]}'
+BasicDataWithCNAME='{"records": [{"type": "CNAME","values": ["test.deweb.com."]}]}'
 ```
 
 If we want to start selling the subdomains, we should set `"sub_domains_sale": true` and `"sub_domains_sale_price": 10000`, where `sub_domains_sale_price` is in `udws` denom.
