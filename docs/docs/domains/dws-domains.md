@@ -24,15 +24,6 @@ BasicData='{"records": [{"type": "A","values": ["192.168.1.10"]}]}'
 BasicDataWithSubPrice='{"records":[{"type": "A","values":["192.168.1.10"]}],"sub_domains_sale": true,"sub_domains_sale_price": 10000}'
 BasicDataWithMX='{"records": [{"type": "A","values": ["192.168.1.10"]},{"type": "MX","values": ["10 mx.bob.alice.deweb."]}]}'
 BasicDataWithCNAME='{"records": [{"type": "CNAME","values": ["test.deweb.com."]}]}'
-
-TestOneDataWithCNAME='{"records": [{"type": "CNAME","values": ["github.com."]}]}'
-./dewebd tx domain register testsite --data="$TestOneDataWithCNAME" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
-
-TestVideoDataWithCNAME='{"records": [{"type": "CNAME","values": ["youtube.com."]}]}'
-./dewebd tx domain register video.testsite --data="$TestVideoDataWithCNAME" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
-
-TestWWWDataWithCNAME='{"records": [{"type": "CNAME","values": ["dewebd.com."]}]}'
-./dewebd tx domain register www.testsite --data="$TestWWWDataWithCNAME" --from bob --chain-id deweb-testnet-0 --gas 2000000 --output json -b block
 ```
 
 If we want to start selling the subdomains, we should set `"sub_domains_sale": true` and `"sub_domains_sale_price": 10000`, where `sub_domains_sale_price` is in `udws` denom.
