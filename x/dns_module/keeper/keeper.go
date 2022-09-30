@@ -116,6 +116,10 @@ func (k Keeper) RegisterDomain(ctx sdk.Context, domainName, tokenData string, ow
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal, "invalid data")
 	}
+	err = domainReceivedData.validateRecords()
+	if err != nil {
+		return sdkerrors.Wrapf(err, "invalid data")
+	}
 	domainReceivedData.Issued = blockTime
 	domainExpirationHours := k.DomainExpirationHours(ctx)
 	domainReceivedData.ValidTill = blockTime.Add(time.Duration(domainExpirationHours) * TimeFactor)
