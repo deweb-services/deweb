@@ -9,17 +9,16 @@ func (srv *DNSResolverService) getResponse(requestMsg *dns.Msg) (*dns.Msg, error
 	responseMsg := new(dns.Msg)
 	if len(requestMsg.Question) > 0 {
 		question := requestMsg.Question[0]
-
+		_, ok := recordTypesMapping[question.Qtype]
+		if !ok {
+			fmt.Printf("unsupported type %d for domain %s \n", question.Qtype, question.Name)
+			return responseMsg, nil
+		}
 		resAddresses, err := srv.resolveDNSRecord(question.Name, question.Qtype)
 		if err == nil {
 			storedVal := resAddresses[0]
-			recordTypeName, ok := recordTypesMapping[question.Qtype]
-			if !ok {
-				fmt.Printf("unsupported type %d for domain %s \n", question.Qtype, question.Name)
-				return responseMsg, nil
-			}
-			fmt.Printf("record for %s: %s found in chain\n", question.Name, storedVal)
-			answer, err := dns.NewRR(fmt.Sprintf("%s %s %s", question.Name, recordTypeName, storedVal))
+			fmt.Printf("record for %s: %s found in chain\n", question.Name, storedVal.value)
+			answer, err := dns.NewRR(fmt.Sprintf("%s %s %s", question.Name, storedVal.recType, storedVal.value))
 			if err != nil {
 				return responseMsg, err
 			}
