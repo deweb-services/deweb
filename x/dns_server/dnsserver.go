@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -44,21 +45,27 @@ func (srv *DNSResolverService) RunServer(port int) {
 	dns.HandleFunc(".", func(w dns.ResponseWriter, r *dns.Msg) {
 		switch r.Opcode {
 		case dns.OpcodeQuery:
+			qStrings := make([]string, 0, len(r.Question))
+			for _, q := range r.Question {
+				qStr := strings.ReplaceAll(q.String(), "\t", " | ")
+				qStrings = append(qStrings, qStr)
+			}
+
 			m, err := srv.getResponse(r)
 			if err != nil {
-				fmt.Printf("Failed lookup for %s with error: %s\n", r, err.Error())
+				logStr := fmt.Sprintf("Failed lookup for [%s] with error: %s\n", strings.Join(qStrings, ";"), err.Error())
+				fmt.Printf(logStr)
 				m.SetReply(r)
 				w.WriteMsg(m)
 				return
 			}
-			if len(m.Answer) > 0 {
-				pattern := regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
-				ipAddress := pattern.FindAllString(m.Answer[0].String(), -1)
-
+			ipPattern := regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
+			for _, answer := range m.Answer {
+				ipAddress := ipPattern.FindAllString(m.Answer[0].String(), -1)
 				if len(ipAddress) > 0 {
-					fmt.Printf("Lookup for %s with ip %s\n", m.Answer[0].Header().Name, ipAddress[0])
+					fmt.Printf("Lookup for [%s] answer for %s with ip %s\n", strings.Join(qStrings, ";"), answer.Header().Name, ipAddress[0])
 				} else {
-					fmt.Printf("Lookup for %s with response %s\n", m.Answer[0].Header().Name, m.Answer[0])
+					fmt.Printf("Lookup for [%s] answer %s with response %s\n", strings.Join(qStrings, ";"), answer.Header().Name, answer.String())
 				}
 			}
 			m.SetReply(r)

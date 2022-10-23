@@ -8,7 +8,12 @@ import (
 	"time"
 )
 
-func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16) ([]string, error) {
+type resolvedRecord struct {
+	recType string
+	value   string
+}
+
+func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16) ([]resolvedRecord, error) {
 	if strings.HasSuffix(domain, ".") {
 		domain = domain[:len(domain)-1]
 	}
@@ -45,10 +50,37 @@ func (srv *DNSResolverService) resolveDNSRecord(domain string, recordType uint16
 	if !ok {
 		return nil, fmt.Errorf("unsupported type %d", recordType)
 	}
+	var cnameRecords []string
+	var resRecords []string
 	for _, rec := range storedRecords {
 		if rec.Type == recordTypeName {
-			return rec.Values, nil
+			resRecords = rec.Values
+			break
 		}
+		if rec.Type == "CNAME" {
+			cnameRecords = rec.Values
+		}
+	}
+	result := make([]resolvedRecord, 0)
+	if resRecords != nil {
+		for _, resRec := range resRecords {
+			respItem := resolvedRecord{
+				recType: recordTypeName,
+				value:   resRec,
+			}
+			result = append(result, respItem)
+		}
+		return result, nil
+	}
+	if cnameRecords != nil {
+		for _, resRec := range cnameRecords {
+			respItem := resolvedRecord{
+				recType: "CNAME",
+				value:   resRec,
+			}
+			result = append(result, respItem)
+		}
+		return result, nil
 	}
 	return nil, fmt.Errorf("record for %s not found", domain)
 }
