@@ -1,32 +1,33 @@
-accounts:
-  - name: alice
-    coins: ["100000000000000udws"]
-  - name: bob
-    coins: ["1000000000udws"]
+version: 1
 build:
-  binary: "dewebd"
-validator:
-  name: bob
-  staked: "10000000udws"
-client:
-  openapi:
-    path: "docs/static/openapi.yml"
+  binary: dewebd
+  proto:
+    path: proto
+    third_party_paths:
+    - third_party/proto
+    - proto_vendor
+accounts:
+- name: alice
+  coins:
+  - 100000000000000udws
+- name: bob
+  coins:
+  - 1000000000udws
 faucet:
   name: bob
-  coins: ["100000udws"]
-dns:
-  lport: 1053
+  coins:
+  - 100000udws
+  host: 0.0.0.0:4500
+client:
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
-  chain_id: "deweb-testnet-0"
   app_state:
-    staking:
-      params:
-        bond_denom: "udws"
     gov:
       deposit_params:
         min_deposit:
-          - amount: "10000000"
-            denom: "udws"
+        - amount: "10000000"
+          denom: udws
     mint:
       minter:
         inflation: "0.000000000000000000"
@@ -35,15 +36,18 @@ genesis:
         inflation_max: "0.000000000000000000"
         inflation_min: "0.000000000000000000"
         inflation_rate_change: "0.000000000000000000"
-        mint_denom: "udws"
-    token: 
-      params: 
-        token_tax_rate: "0.400000000000000000"
-        issue_token_base_fee: 
-          denom: "dws"
+        mint_denom: udws
+    staking:
+      params:
+        bond_denom: udws
+    token:
+      params:
+        issue_token_base_fee:
           amount: "1000"
+          denom: dws
         mint_token_fee_ratio: "0.100000000000000000"
-    crisis:
-      constant_fee:
-        amount: "100000000",
-        denom: "udws"
+        token_tax_rate: "0.400000000000000000"
+  chain_id: deweb-testnet-0
+validators:
+- name: bob
+  bonded: 10000000udws
